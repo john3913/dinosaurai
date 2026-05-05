@@ -3,27 +3,690 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dinosaurai</title>
+  <title>Dinosaurai — Games & Fun Apps</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦕</text></svg>" />
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg:     #07090F;
+      --green:  #7EFF50;
+      --orange: #FF6B35;
+      --blue:   #00D4FF;
+      --purple: #9B5CF6;
+      --white:  #F2F2F3;
+      --dim:    rgba(242,242,243,0.42);
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
     body {
-      background: #0a0a0a;
-      color: #f0f0f0;
-      font-family: 'Courier New', monospace;
+      background: var(--bg);
+      color: var(--white);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* ─── CANVAS BACKGROUND ─────────────────────────── */
+    #bg-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .page { position: relative; z-index: 1; }
+
+    /* ─── NAV ─────────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
       display: flex;
       align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      flex-direction: column;
-      gap: 1rem;
+      gap: 2rem;
+      padding: 1.25rem 3rem;
+      background: linear-gradient(to bottom, rgba(7,9,15,0.85) 0%, transparent 100%);
+      backdrop-filter: blur(10px);
     }
-    h1 { font-size: 4rem; letter-spacing: 0.2em; }
-    p { color: #666; font-size: 0.9rem; }
+    .nav-logo {
+      font-size: 1rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      background: linear-gradient(90deg, var(--green), var(--blue));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-right: auto;
+      text-decoration: none;
+    }
+    .nav-link {
+      color: var(--dim);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    .nav-link:hover { color: var(--white); }
+    .nav-btn {
+      background: rgba(126,255,80,0.1);
+      color: var(--green);
+      border: 1px solid rgba(126,255,80,0.3);
+      padding: 0.45rem 1.2rem;
+      border-radius: 100px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      letter-spacing: 0.04em;
+      transition: all 0.2s;
+    }
+    .nav-btn:hover {
+      background: rgba(126,255,80,0.2);
+      border-color: rgba(126,255,80,0.6);
+    }
+
+    /* ─── HERO ────────────────────────────────────────── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 8rem 2rem 6rem;
+      position: relative;
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 240px;
+      background: linear-gradient(to bottom, transparent, var(--bg));
+      pointer-events: none;
+    }
+
+    .dino-mark {
+      font-size: 3.5rem;
+      display: block;
+      margin-bottom: 1.5rem;
+      animation: dino-float 3.5s ease-in-out infinite;
+      filter: drop-shadow(0 0 20px rgba(126,255,80,0.3));
+    }
+    @keyframes dino-float {
+      0%, 100% { transform: translateY(0) rotate(-2deg); }
+      50%       { transform: translateY(-10px) rotate(2deg); }
+    }
+
+    .wordmark {
+      font-size: clamp(4rem, 12vw, 10rem);
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      line-height: 0.95;
+      background: linear-gradient(135deg, var(--green) 0%, #BBFF70 35%, var(--blue) 65%, var(--purple) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 1.5rem;
+      animation: fadeUp 0.9s ease both;
+      animation-delay: 0.1s;
+    }
+
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: rgba(155,92,246,0.12);
+      border: 1px solid rgba(155,92,246,0.3);
+      color: var(--purple);
+      padding: 0.4rem 1.1rem;
+      border-radius: 100px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 1.75rem;
+      animation: fadeUp 0.9s ease both;
+    }
+
+    .hero-sub {
+      font-size: clamp(1rem, 2.5vw, 1.3rem);
+      color: var(--dim);
+      font-weight: 300;
+      line-height: 1.65;
+      max-width: 540px;
+      margin-bottom: 2.5rem;
+      animation: fadeUp 0.9s ease both;
+      animation-delay: 0.2s;
+    }
+
+    .hero-cta {
+      display: flex;
+      gap: 0.875rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      animation: fadeUp 0.9s ease both;
+      animation-delay: 0.3s;
+    }
+
+    .btn {
+      padding: 0.875rem 2.25rem;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      text-decoration: none;
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+      letter-spacing: 0.02em;
+      transition: all 0.25s ease;
+    }
+    .btn-solid {
+      background: linear-gradient(135deg, var(--green), #A8FF60);
+      color: #050A01;
+      box-shadow: 0 0 32px rgba(126,255,80,0.18);
+    }
+    .btn-solid:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 40px rgba(126,255,80,0.35);
+    }
+    .btn-ghost {
+      background: transparent;
+      color: var(--white);
+      border: 1px solid rgba(255,255,255,0.14);
+    }
+    .btn-ghost:hover {
+      border-color: rgba(255,255,255,0.35);
+      transform: translateY(-2px);
+    }
+
+    .scroll-indicator {
+      position: absolute;
+      bottom: 2rem; left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      opacity: 0.3;
+      animation: fadeUp 1s ease both;
+      animation-delay: 0.8s;
+    }
+    .scroll-indicator span {
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+    .scroll-line {
+      width: 1px;
+      height: 36px;
+      background: linear-gradient(to bottom, var(--green), transparent);
+      animation: scroll-pulse 2s ease-in-out infinite;
+    }
+    @keyframes scroll-pulse {
+      0%, 100% { opacity: 0.3; transform: scaleY(0.8); }
+      50%       { opacity: 1;   transform: scaleY(1); }
+    }
+
+    /* ─── DIVIDER ─────────────────────────────────────── */
+    .rule {
+      height: 1px;
+      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.07) 30%, rgba(255,255,255,0.07) 70%, transparent 100%);
+      margin: 0 3rem;
+    }
+
+    /* ─── SECTION WRAPPER ─────────────────────────────── */
+    .section {
+      padding: 6rem 3rem;
+      max-width: 1160px;
+      margin: 0 auto;
+    }
+
+    .section-eyebrow {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--green);
+      margin-bottom: 0.75rem;
+    }
+    .section-h {
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+      margin-bottom: 0.875rem;
+    }
+    .section-body {
+      font-size: 1.05rem;
+      color: var(--dim);
+      font-weight: 300;
+      line-height: 1.7;
+      max-width: 500px;
+    }
+
+    /* ─── GAMES GRID ─────────────────────────────────── */
+    .games-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+      gap: 1.25rem;
+      margin-top: 3rem;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 18px;
+      padding: 2rem 1.875rem;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      border-radius: 18px 18px 0 0;
+    }
+    .card-green::before  { background: linear-gradient(90deg, var(--green), transparent); }
+    .card-orange::before { background: linear-gradient(90deg, var(--orange), transparent); }
+    .card-blue::before   { background: linear-gradient(90deg, var(--blue), transparent); }
+    .card-purple::before { background: linear-gradient(90deg, var(--purple), transparent); }
+
+    .card:hover { transform: translateY(-5px); border-color: rgba(255,255,255,0.13); box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+    .card-green:hover  { box-shadow: 0 20px 50px rgba(126,255,80,0.08); }
+    .card-orange:hover { box-shadow: 0 20px 50px rgba(255,107,53,0.08); }
+    .card-blue:hover   { box-shadow: 0 20px 50px rgba(0,212,255,0.08); }
+    .card-purple:hover { box-shadow: 0 20px 50px rgba(155,92,246,0.08); }
+
+    .card-icon {
+      font-size: 2.6rem;
+      display: block;
+      margin-bottom: 1.25rem;
+      transition: transform 0.3s ease;
+    }
+    .card:hover .card-icon { transform: scale(1.12) rotate(3deg); }
+
+    .card-badge {
+      display: inline-block;
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 0.22rem 0.7rem;
+      border-radius: 100px;
+      margin-bottom: 0.875rem;
+    }
+    .badge-green  { background: rgba(126,255,80,0.1);  color: var(--green);  border: 1px solid rgba(126,255,80,0.25); }
+    .badge-orange { background: rgba(255,107,53,0.1);  color: var(--orange); border: 1px solid rgba(255,107,53,0.25); }
+    .badge-blue   { background: rgba(0,212,255,0.1);   color: var(--blue);   border: 1px solid rgba(0,212,255,0.25); }
+    .badge-purple { background: rgba(155,92,246,0.1);  color: var(--purple); border: 1px solid rgba(155,92,246,0.25); }
+
+    .card-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.5rem;
+    }
+    .card-desc {
+      font-size: 0.88rem;
+      color: var(--dim);
+      line-height: 1.6;
+    }
+
+    /* ─── MANIFESTO ──────────────────────────────────── */
+    .manifesto {
+      background: rgba(255,255,255,0.015);
+      border-top:    1px solid rgba(255,255,255,0.05);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      padding: 7rem 2rem;
+    }
+    .manifesto-inner {
+      max-width: 820px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .manifesto-quote {
+      font-size: clamp(1.6rem, 3.5vw, 2.5rem);
+      font-weight: 700;
+      line-height: 1.4;
+      color: rgba(242,242,243,0.85);
+      margin-bottom: 2.5rem;
+    }
+    .manifesto-quote em {
+      font-style: normal;
+      background: linear-gradient(90deg, var(--green), var(--blue));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .manifesto-quote strong {
+      font-weight: 700;
+      background: linear-gradient(90deg, var(--orange), var(--purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ─── FOOTER ─────────────────────────────────────── */
+    footer {
+      padding: 3rem;
+      text-align: center;
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+    .footer-logo {
+      font-size: 1.3rem;
+      font-weight: 900;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      background: linear-gradient(90deg, var(--green), var(--orange));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.5rem;
+    }
+    .footer-sub {
+      font-size: 0.78rem;
+      color: rgba(242,242,243,0.2);
+      letter-spacing: 0.1em;
+    }
+
+    /* ─── FLOATING PIXELS ────────────────────────────── */
+    .pixel-field {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+    .px {
+      position: absolute;
+      width: 3px;
+      height: 3px;
+      border-radius: 1px;
+      opacity: 0;
+      animation: px-float linear infinite;
+    }
+    @keyframes px-float {
+      0%   { transform: translateY(0) rotate(0deg);   opacity: 0; }
+      8%   { opacity: 0.5; }
+      92%  { opacity: 0.25; }
+      100% { transform: translateY(-110vh) rotate(540deg); opacity: 0; }
+    }
+
+    /* ─── SHARED ANIMATION ────────────────────────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── RESPONSIVE ─────────────────────────────────── */
+    @media (max-width: 720px) {
+      nav { padding: 1rem 1.5rem; }
+      nav .nav-link { display: none; }
+      .section { padding: 4rem 1.5rem; }
+      .manifesto { padding: 5rem 1.5rem; }
+      footer { padding: 2rem 1.5rem; }
+      .rule { margin: 0 1.5rem; }
+    }
   </style>
 </head>
 <body>
-  <h1>🦕</h1>
-  <h1>DINOSAURAI</h1>
-  <p>dinosaurai.vercel.app</p>
+
+<canvas id="bg-canvas"></canvas>
+<div class="pixel-field" id="pixel-field"></div>
+
+<div class="page">
+
+  <!-- NAV -->
+  <nav>
+    <a class="nav-logo" href="#">🦕 Dinosaurai</a>
+    <a class="nav-link" href="#games">Games</a>
+    <a class="nav-link" href="#apps">Apps</a>
+    <button class="nav-btn">Early Access</button>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <span class="dino-mark">🦕</span>
+    <div class="hero-tag">🎮 Games &nbsp;&amp;&nbsp; Fun Apps Studio</div>
+    <h1 class="wordmark">DINOSAURAI</h1>
+    <p class="hero-sub">A studio building original games, fun apps, and weird digital experiences. Prehistoric imagination, modern execution.</p>
+    <div class="hero-cta">
+      <a href="#games" class="btn btn-solid">See What's Coming</a>
+      <a href="https://github.com/john3913/dinosaurai" target="_blank" class="btn btn-ghost">GitHub →</a>
+    </div>
+    <div class="scroll-indicator">
+      <span>Scroll</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <div class="rule"></div>
+
+  <!-- GAMES SECTION -->
+  <div class="section" id="games">
+    <div class="section-eyebrow">What We're Building</div>
+    <h2 class="section-h">Games &amp; Apps</h2>
+    <p class="section-body">Original titles in development. Launching fast, iterating fast, keeping it fun.</p>
+
+    <div class="games-grid">
+
+      <div class="card card-green">
+        <span class="card-icon">🦖</span>
+        <span class="card-badge badge-green">Runner · Coming Soon</span>
+        <div class="card-title">Rex Run</div>
+        <p class="card-desc">Infinite dino runner through procedurally generated prehistoric worlds. Obstacles, power-ups, leaderboards.</p>
+      </div>
+
+      <div class="card card-orange">
+        <span class="card-icon">🧩</span>
+        <span class="card-badge badge-orange">Puzzle · In Progress</span>
+        <div class="card-title">Fossil Hunt</div>
+        <p class="card-desc">Dig through layers of ancient earth. Uncover complete skeletons before time runs out. Zen but ruthless.</p>
+      </div>
+
+      <div class="card card-blue">
+        <span class="card-icon">⚡</span>
+        <span class="card-badge badge-blue">Battle · Coming Soon</span>
+        <div class="card-title">Dino Clash</div>
+        <p class="card-desc">Real-time dino combat with a herd-building mechanic. Evolve traits, conquer territories.</p>
+      </div>
+
+      <div class="card card-purple">
+        <span class="card-icon">🌍</span>
+        <span class="card-badge badge-purple">Strategy · Idea Stage</span>
+        <div class="card-title">Pangaea</div>
+        <p class="card-desc">Guide a species through the age of dinosaurs. Survive extinction events, adapt, and dominate.</p>
+      </div>
+
+      <div class="card card-green" id="apps">
+        <span class="card-icon">⌨️</span>
+        <span class="card-badge badge-green">App · In Progress</span>
+        <div class="card-title">Speed Type</div>
+        <p class="card-desc">Typing game with real-time multiplayer. Themed word sets, custom races, global rankings.</p>
+      </div>
+
+      <div class="card card-orange">
+        <span class="card-icon">🎲</span>
+        <span class="card-badge badge-orange">Fun Tool · Coming Soon</span>
+        <div class="card-title">App-a-Day</div>
+        <p class="card-desc">Spin the wheel, get a random micro-app idea, build it in 24 hrs. Weekly community drops.</p>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="rule"></div>
+
+  <!-- MANIFESTO -->
+  <div class="manifesto">
+    <div class="manifesto-inner">
+      <p class="manifesto-quote">
+        "We make things that are <em>genuinely fun</em> to use.
+        <strong>No bloat. No friction.</strong>
+        Just great games and clever apps that feel
+        <em>alive from the first click.</em>"
+      </p>
+      <a href="#" class="btn btn-solid">Join Early Access</a>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-logo">🦕 Dinosaurai</div>
+    <p class="footer-sub">dinosaurai.vercel.app &nbsp;·&nbsp; 2026</p>
+  </footer>
+
+</div><!-- /page -->
+
+<script>
+/* ─── CANVAS SPARK NETWORK ─────────────────────────── */
+(function() {
+  const canvas = document.getElementById('bg-canvas');
+  const ctx = canvas.getContext('2d');
+
+  const COLORS = ['#7EFF50','#00D4FF','#FF6B35','#9B5CF6'];
+  let nodes = [], edges = [], sparks = [];
+  let W, H;
+
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+    build();
+  }
+
+  function build() {
+    nodes = []; edges = []; sparks = [];
+    const count = Math.max(18, Math.floor(W * H / 70000));
+
+    for (let i = 0; i < count; i++) {
+      nodes.push({ x: Math.random() * W, y: Math.random() * H });
+    }
+
+    // k-nearest neighbours (k=3)
+    const edgeSet = new Set();
+    for (let i = 0; i < nodes.length; i++) {
+      const ranked = nodes
+        .map((n, j) => ({ j, d: Math.hypot(n.x - nodes[i].x, n.y - nodes[i].y) }))
+        .filter(r => r.j !== i)
+        .sort((a, b) => a.d - b.d)
+        .slice(0, 3);
+
+      ranked.forEach(r => {
+        const key = Math.min(i, r.j) + '_' + Math.max(i, r.j);
+        if (!edgeSet.has(key)) {
+          edgeSet.add(key);
+          edges.push({ a: nodes[i], b: nodes[r.j] });
+        }
+      });
+    }
+
+    // Seed sparks
+    edges.forEach(e => {
+      if (Math.random() > 0.25) {
+        sparks.push(makeSpark(e));
+      }
+    });
+  }
+
+  function makeSpark(edge) {
+    return {
+      edge,
+      t:      Math.random(),
+      speed:  0.0004 + Math.random() * 0.0006,
+      color:  COLORS[Math.floor(Math.random() * COLORS.length)],
+      trailLen: 0.07 + Math.random() * 0.08,
+    };
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+
+    // Backbone lines
+    ctx.lineWidth = 1;
+    edges.forEach(e => {
+      ctx.beginPath();
+      ctx.strokeStyle = 'rgba(126,255,80,0.045)';
+      ctx.moveTo(e.a.x, e.a.y);
+      ctx.lineTo(e.b.x, e.b.y);
+      ctx.stroke();
+    });
+
+    // Nodes
+    nodes.forEach(n => {
+      ctx.beginPath();
+      ctx.fillStyle = 'rgba(126,255,80,0.08)';
+      ctx.arc(n.x, n.y, 1.5, 0, Math.PI * 2);
+      ctx.fill();
+    });
+
+    // Sparks
+    sparks.forEach(s => {
+      s.t += s.speed;
+      if (s.t > 1 + s.trailLen) {
+        // respawn on a random edge
+        const e = edges[Math.floor(Math.random() * edges.length)];
+        s.edge = e;
+        s.t = 0;
+        s.color = COLORS[Math.floor(Math.random() * COLORS.length)];
+        s.speed = 0.0004 + Math.random() * 0.0006;
+        s.trailLen = 0.07 + Math.random() * 0.08;
+      }
+
+      const tHead = Math.min(1, s.t);
+      const tTail = Math.max(0, s.t - s.trailLen);
+      if (tHead <= tTail) return;
+
+      const e = s.edge;
+      const x1 = e.a.x + (e.b.x - e.a.x) * tTail;
+      const y1 = e.a.y + (e.b.y - e.a.y) * tTail;
+      const x2 = e.a.x + (e.b.x - e.a.x) * tHead;
+      const y2 = e.a.y + (e.b.y - e.a.y) * tHead;
+
+      // Fade in/out
+      const alpha = tHead < 0.1 ? tHead / 0.1 : (s.t > 0.9 ? (1 - (s.t - 0.9) / 0.1) : 1);
+
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, alpha) * 0.85;
+      ctx.shadowColor = s.color;
+      ctx.shadowBlur  = 8;
+      ctx.strokeStyle = s.color;
+      ctx.lineWidth   = 1.6;
+      ctx.lineCap     = 'round';
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
+      ctx.restore();
+    });
+
+    requestAnimationFrame(draw);
+  }
+
+  window.addEventListener('resize', resize);
+  resize();
+  draw();
+})();
+
+/* ─── FLOATING PIXEL PARTICLES ─────────────────────── */
+(function() {
+  const field  = document.getElementById('pixel-field');
+  const colors = ['#7EFF50','#FF6B35','#00D4FF','#9B5CF6','#BBFF70'];
+  for (let i = 0; i < 28; i++) {
+    const el = document.createElement('div');
+    el.className = 'px';
+    el.style.left             = Math.random() * 100 + 'vw';
+    el.style.bottom           = '-6px';
+    el.style.background       = colors[i % colors.length];
+    el.style.animationDuration = (14 + Math.random() * 22) + 's';
+    el.style.animationDelay   = (Math.random() * 24) + 's';
+    field.appendChild(el);
+  }
+})();
+</script>
 </body>
 </html>
