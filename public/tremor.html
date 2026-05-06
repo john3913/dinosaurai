@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+  <title>Tremor — Dinosaurai</title>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      width: 100%; height: 100%;
+      background: #06080D;
+      overflow: hidden;
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    canvas { display: block; }
+
+    /* ── HUD ───────────────────────────────────────── */
+    #hud {
+      position: fixed; top: 0; left: 0; right: 0;
+      padding: 1.25rem 1.5rem;
+      display: flex; justify-content: space-between; align-items: center;
+      pointer-events: none; z-index: 10;
+    }
+    .hud-score {
+      font-family: -apple-system, system-ui, sans-serif;
+      font-size: 0.9rem; font-weight: 700;
+      letter-spacing: 0.12em; color: rgba(126,255,80,0.75);
+    }
+    .hud-lives { font-size: 1.1rem; display: flex; gap: 4px; }
+    .hud-back {
+      position: fixed; top: 1.1rem; right: 1.5rem;
+      font-family: -apple-system, system-ui, sans-serif;
+      font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em;
+      color: rgba(242,242,243,0.2); text-decoration: none;
+      z-index: 10; pointer-events: all;
+      transition: color 0.2s;
+    }
+    .hud-back:hover { color: rgba(242,242,243,0.5); }
+
+    /* ── BURROW BAR ─────────────────────────────────── */
+    #burrow-bar {
+      position: fixed; bottom: 2rem; left: 50%;
+      transform: translateX(-50%);
+      width: 130px; text-align: center;
+      pointer-events: none; z-index: 10;
+    }
+    .b-track {
+      height: 3px; background: rgba(255,255,255,0.07);
+      border-radius: 3px; overflow: hidden; margin-bottom: 0.4rem;
+    }
+    .b-fill {
+      height: 100%; width: 100%;
+      background: linear-gradient(90deg, #7EFF50, #00D4FF);
+      border-radius: 3px; transition: width 0.1s linear;
+    }
+    .b-label {
+      font-family: -apple-system, system-ui, sans-serif;
+      font-size: 0.58rem; font-weight: 700;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: rgba(255,255,255,0.22);
+    }
+
+    /* ── VIGNETTE (burrow) ─────────────────────────── */
+    #vignette {
+      position: fixed; inset: 0;
+      background: radial-gradient(ellipse at center, transparent 20%, rgba(0,0,0,0.96) 100%);
+      pointer-events: none; z-index: 5; opacity: 0;
+      transition: opacity 0.45s ease;
+    }
+
+    /* ── SCREENS ────────────────────────────────────── */
+    .screen {
+      position: fixed; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      z-index: 20; text-align: center;
+      padding: 2rem; pointer-events: all;
+      cursor: pointer;
+    }
+    .screen-hidden { display: none; }
+
+    .t-big {
+      font-family: -apple-system, system-ui, sans-serif;
+      font-size: clamp(5rem, 14vw, 10rem);
+      font-weight: 900; letter-spacing: -0.03em;
+      line-height: 1; color: #F2F2F3; margin-bottom: 0.4rem;
+    }
+    .t-sub {
+      font-family: -apple-system, system-ui, sans-serif;
+      font-size: clamp(0.9rem, 2vw, 1.1rem);
+      font-weight: 300; color: rgba(242,242,243,0.42);
+      letter-spacing: 0.04em; line-height: 1.7;
+      margin-bottom: 2.5rem; max-width: 380px;
+    }
+    .hints {
+      display: flex; flex-direction: column; gap: 0.55rem;
+      margin-bottom: 2.75rem;
+    }
+    .hint {
+      font-family: -apple-system, system-ui, sans-serif;
+      font-size: 0.8rem; color: rgba(242,242,243,0.35);
+      letter-spacing: 0.03em;
+    }
+    .hint b { color: rgba(242,242,243,0.72); font-weight: 600; }
+    .tap {
+      font-family: -apple-system, system-ui, sans-serif;
+      font-size: 0.8rem; font-weight: 700;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: rgba(126,255,80,0.55);
+      animation: blink 1.8s ease-in-out infinite;
+    }
+    @keyframes blink {
+      0%,100% { opacity: 0.4; } 50% { opacity: 1; }
+    }
+
+    /* dead screen */
+    .dead-eyebrow {
+      font-family: -apple-system, system-ui, sans-serif;
+      font-size: 0.68rem; font-weight: 700;
+      letter-spacing: 0.3em; text-transform: uppercase;
+      color: rgba(255,107,53,0.65); margin-bottom: 0.8rem;
+    }
+    .dead-title {
+      font-family: -apple-system, system-ui, sans-serif;
+      font-size: clamp(3.5rem, 11vw, 7.5rem);
+      font-weight: 900; letter-spacing: -0.02em;
+      color: #F2F2F3; line-height: 1; margin-bottom: 1.75rem;
+    }
+    .dead-stats {
+      display: flex; gap: 3rem;
+      margin-bottom: 2rem; flex-wrap: wrap; justify-content: center;
+    }
+    .stat-v {
+      font-family: -apple-system, system-ui, sans-serif;
+      font-size: 2.25rem; font-weight: 800;
+      color: #7EFF50; display: block; letter-spacing: -0.02em;
+    }
+    .stat-k {
+      font-family: -apple-system, system-ui, sans-serif;
+      font-size: 0.65rem; font-weight: 700;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: rgba(242,242,243,0.28);
+    }
+    .trait-card {
+      background: rgba(126,255,80,0.05);
+      border: 1px solid rgba(126,255,80,0.18);
+      border-radius: 14px; padding: 1rem 1.75rem;
+      margin-bottom: 2.5rem; max-width: 320px;
+    }
+    .trait-eyebrow {
+      font-family: -apple-system, system-ui, sans-serif;
+      font-size: 0.6rem; font-weight: 700;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      color: rgba(126,255,80,0.45); margin-bottom: 0.35rem;
+    }
+    .trait-name {
+      font-family: -apple-system, system-ui, sans-serif;
+      font-size: 1rem; font-weight: 700; color: #7EFF50;
+      margin-bottom: 0.2rem;
+    }
+    .trait-desc {
+      font-family: -apple-system, system-ui, sans-serif;
+      font-size: 0.8rem; color: rgba(242,242,243,0.4); font-weight: 300;
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="game"></canvas>
+
+<div id="hud">
+  <div class="hud-score" id="score-display">INSECTS: 0</div>
+  <div class="hud-lives" id="lives-display"></div>
+</div>
+<a class="hud-back" href="/">← DINOSAURAI</a>
+
+<div id="burrow-bar">
+  <div class="b-track"><div class="b-fill" id="b-fill"></div></div>
+  <div class="b-label" id="b-label">Hold to burrow</div>
+</div>
+
+<div id="vignette"></div>
+
+<!-- Start screen -->
+<div class="screen" id="screen-start">
+  <div class="t-big">TREMOR</div>
+  <div class="t-sub">You can't see them.<br>But you can <em>feel</em> them.</div>
+  <div class="hints">
+    <div class="hint"><b>Large slow rings</b> — T-Rex nearby</div>
+    <div class="hint"><b>Fast tight rings</b> — Raptor closing in</div>
+    <div class="hint"><b>Cyan pulses</b> — Insects to collect</div>
+    <div class="hint"><b>Hold anywhere</b> — Burrow underground</div>
+  </div>
+  <div class="tap">Tap anywhere to begin</div>
+</div>
+
+<!-- Dead screen -->
+<div class="screen screen-hidden" id="screen-dead">
+  <div class="dead-eyebrow">Species Extinct</div>
+  <div class="dead-title">EXTINCT</div>
+  <div class="dead-stats">
+    <div>
+      <span class="stat-v" id="dead-time">0:00</span>
+      <span class="stat-k">Survived</span>
+    </div>
+    <div>
+      <span class="stat-v" id="dead-score">0</span>
+      <span class="stat-k">Insects</span>
+    </div>
+  </div>
+  <div class="trait-card">
+    <div class="trait-eyebrow">Offspring inherit</div>
+    <div class="trait-name" id="trait-name">—</div>
+    <div class="trait-desc" id="trait-desc">—</div>
+  </div>
+  <div class="tap">Tap to try again</div>
+</div>
+
+<script>
+'use strict';
+
+// ── CANVAS ─────────────────────────────────────────────
+const canvas = document.getElementById('game');
+const ctx    = canvas.getContext('2d');
+let W = 0, H = 0;
+function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+window.addEventListener('resize', resize); resize();
+
+// ── AUDIO ──────────────────────────────────────────────
+let ac = null;
+function initAudio() { if (!ac) ac = new (window.AudioContext || window.webkitAudioContext)(); }
+function tone(freq, vol, dur, type = 'sine') {
+  if (!ac || vol < 0.004) return;
+  try {
+    const o = ac.createOscillator(), g = ac.createGain();
+    o.connect(g); g.connect(ac.destination);
+    o.type = type; o.frequency.value = freq;
+    const t = ac.currentTime;
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(vol, t + 0.015);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.start(); o.stop(t + dur + 0.05);
+  } catch(e) {}
+}
+
+// ── CONSTANTS ──────────────────────────────────────────
+const WW = 2600, WH = 2000;   // world size
+
+const TREX = {
+  r: 32, spd: 60,
+  pulseEvery: 2.0, pulseR: 420, pulseDur: 2.2,
+  rgb: [255,107,53], pw: 3.0,
+  visionR: 280, chaseR: 340,
+};
+const RAPT = {
+  r: 15, spd: 148,
+  pulseEvery: 0.65, pulseR: 145, pulseDur: 0.5,
+  rgb: [255,50,50], pw: 1.4,
+  visionR: 190, chaseR: 230,
+};
+const INS = { r: 3, pulseEvery: 1.1, pulseR: 58, pulseDur: 0.45, rgb: [0,212,255] };
+
+const TRAITS = [
+  { name: 'Swift Limbs',    desc: 'Offspring are 12% faster',                apply: e => { e.spd   *= 1.12; } },
+  { name: 'Keen Senses',    desc: 'Vibrations visible 25% further',          apply: e => { e.sense *= 1.25; } },
+  { name: 'Thick Hide',     desc: 'Start with an extra life',                apply: e => { e.lives += 1;    } },
+  { name: 'Shadow Step',    desc: 'Predators detect you 25% later',          apply: e => { e.stealth *= 0.75; } },
+  { name: 'Deep Breath',    desc: 'Burrow lasts 50% longer',                 apply: e => { e.burrow  *= 1.5; } },
+];
+
+// ── EVOLUTION STATE ────────────────────────────────────
+const evo = { spd: 1, sense: 1, lives: 0, stealth: 1, burrow: 1 };
+
+// ── GAME STATE ─────────────────────────────────────────
+let phase = 'start';  // start | playing | invincible | dead
+let P, preds, bugs, rings, cam;
+let score = 0, startMs = 0;
+let shakeAmt = 0;
+let holdMs = 0, burrowed = false, burrowLeft = 0, burrowCD = 0;
+const BURROW_DUR = 3.0, BURROW_CD = 8.0;
+let pointerActive = false;
+let lastTs = 0;
+
+function initGame() {
+  const lives = 3 + evo.lives;
+  P = { x: WW/2, y: WH/2, tx: WW/2, ty: WH/2, lives, maxLives: lives, invT: 0 };
+  cam = { x: WW/2, y: WH/2 };
+  preds = []; bugs = []; rings = [];
+  for (let i = 0; i < 3; i++) preds.push(mkPred(TREX));
+  for (let i = 0; i < 5; i++) preds.push(mkPred(RAPT));
+  for (let i = 0; i < 8; i++) bugs.push(mkBug());
+  score = 0; startMs = performance.now();
+  shakeAmt = 0; holdMs = 0; burrowed = false;
+  burrowLeft = BURROW_DUR * evo.burrow; burrowCD = 0;
+  hudUpdate();
+}
+
+function mkPred(cfg) {
+  let x, y;
+  do { x = rnd(WW); y = rnd(WH); }
+  while (Math.hypot(x - WW/2, y - WH/2) < 620);
+  const a = Math.random() * Math.PI * 2;
+  return {
+    cfg, x, y,
+    vx: Math.cos(a)*0.5, vy: Math.sin(a)*0.5,
+    pT: rnd(cfg.pulseEvery), wT: 0, wdx: 0, wdy: 0,
+  };
+}
+function mkBug() {
+  return { x: 60 + rnd(WW-120), y: 60 + rnd(WH-120), pT: rnd(INS.pulseEvery), alive: true };
+}
+function rnd(n) { return Math.random() * n; }
+function clamp(v,a,b) { return v<a?a:v>b?b:v; }
+
+// ── INPUT ──────────────────────────────────────────────
+function tapDown(cx, cy) {
+  initAudio();
+  if (phase === 'start') { startGame(); return; }
+  if (phase === 'dead')  { restartGame(); return; }
+  pointerActive = true; holdMs = 0;
+  setTarget(cx, cy);
+}
+function tapMove(cx, cy) { if (pointerActive) setTarget(cx, cy); }
+function tapUp()          { pointerActive = false; holdMs = 0; if (burrowed) unburrow(); }
+function setTarget(cx, cy) { P.tx = cx + cam.x - W/2; P.ty = cy + cam.y - H/2; }
+
+canvas.addEventListener('pointerdown', e => { e.preventDefault(); tapDown(e.clientX, e.clientY); }, {passive:false});
+canvas.addEventListener('pointermove', e => { e.preventDefault(); tapMove(e.clientX, e.clientY); }, {passive:false});
+canvas.addEventListener('pointerup',   e => { e.preventDefault(); tapUp(); }, {passive:false});
+canvas.addEventListener('pointercancel', e => { tapUp(); }, {passive:false});
+document.getElementById('screen-start').addEventListener('click', () => { if (phase==='start') startGame(); });
+document.getElementById('screen-dead').addEventListener('click',  () => { if (phase==='dead')  restartGame(); });
+
+// ── PHASE CONTROL ──────────────────────────────────────
+function startGame() {
+  document.getElementById('screen-start').classList.add('screen-hidden');
+  phase = 'playing'; initGame(); lastTs = performance.now();
+}
+function restartGame() {
+  document.getElementById('screen-dead').classList.add('screen-hidden');
+  phase = 'playing'; initGame(); lastTs = performance.now();
+}
+function endGame() {
+  phase = 'dead';
+  const secs = (performance.now() - startMs) / 1000;
+  const m = Math.floor(secs/60), s = Math.floor(secs%60).toString().padStart(2,'0');
+  document.getElementById('dead-time').textContent  = `${m}:${s}`;
+  document.getElementById('dead-score').textContent = score;
+  const trait = TRAITS[Math.floor(Math.random() * TRAITS.length)];
+  trait.apply(evo);
+  document.getElementById('trait-name').textContent = trait.name;
+  document.getElementById('trait-desc').textContent = trait.desc;
+  document.getElementById('screen-dead').classList.remove('screen-hidden');
+}
+
+// ── UPDATE ─────────────────────────────────────────────
+function update(dt) {
+  const maxBurrow = BURROW_DUR * evo.burrow;
+
+  // Burrow logic
+  if (pointerActive && !burrowed && burrowCD <= 0) {
+    holdMs += dt;
+    if (holdMs >= 0.45) burrow();
+  }
+  if (burrowed) {
+    burrowLeft -= dt;
+    if (burrowLeft <= 0) unburrow();
+  }
+  burrowCD = Math.max(0, burrowCD - dt);
+
+  // Burrow bar UI
+  const bFill  = document.getElementById('b-fill');
+  const bLabel = document.getElementById('b-label');
+  if (burrowed) {
+    bFill.style.width      = (burrowLeft / maxBurrow * 100) + '%';
+    bFill.style.background = 'linear-gradient(90deg,#00D4FF,#9B5CF6)';
+    bLabel.textContent     = 'Burrowing…';
+  } else if (burrowCD > 0) {
+    bFill.style.width      = ((1 - burrowCD/BURROW_CD) * 100) + '%';
+    bFill.style.background = 'rgba(255,255,255,0.13)';
+    bLabel.textContent     = 'Recharging';
+  } else {
+    bFill.style.width      = '100%';
+    bFill.style.background = 'linear-gradient(90deg,#7EFF50,#00D4FF)';
+    bLabel.textContent     = 'Hold to burrow';
+  }
+
+  // Invincibility
+  if (phase === 'invincible') {
+    P.invT -= dt;
+    if (P.invT <= 0) phase = 'playing';
+  }
+
+  // Player movement
+  if (!burrowed) {
+    const dx = P.tx - P.x, dy = P.ty - P.y;
+    const d  = Math.hypot(dx, dy);
+    if (d > 5) {
+      const spd  = 98 * evo.spd;
+      const step = Math.min(spd * dt, d);
+      P.x += (dx/d)*step; P.y += (dy/d)*step;
+    }
+    P.x = clamp(P.x, 10, WW-10); P.y = clamp(P.y, 10, WH-10);
+  }
+
+  // Camera lerp
+  cam.x += (P.x - cam.x) * Math.min(1, 8*dt);
+  cam.y += (P.y - cam.y) * Math.min(1, 8*dt);
+
+  // Screen shake decay
+  shakeAmt *= Math.pow(0.82, dt*60);
+
+  // Predators
+  preds.forEach(pred => updatePred(pred, dt));
+
+  // Rings fade
+  rings = rings.filter(r => { r.prog += dt/r.dur; return r.prog < 1.15; });
+
+  // Insects
+  bugs.forEach(b => {
+    if (!b.alive) return;
+    b.pT -= dt;
+    if (b.pT <= 0) {
+      b.pT = INS.pulseEvery + rnd(0.3);
+      addRing(b.x, b.y, INS.pulseR, INS.pulseDur, INS.rgb, 1.2, false);
+    }
+    if (Math.hypot(b.x - P.x, b.y - P.y) < 20) {
+      b.alive = false; score++;
+      tone(900, 0.1, 0.18);
+      setTimeout(() => {
+        b.x = 60+rnd(WW-120); b.y = 60+rnd(WH-120);
+        b.alive = true; b.pT = rnd(INS.pulseEvery);
+      }, 2500);
+      hudUpdate();
+    }
+  });
+}
+
+function updatePred(p, dt) {
+  const cfg = p.cfg;
+  const dxP = P.x - p.x, dyP = P.y - p.y;
+  const distP = Math.hypot(dxP, dyP);
+
+  // Pulse
+  p.pT -= dt;
+  if (p.pT <= 0) {
+    p.pT = cfg.pulseEvery + (Math.random()-0.5)*0.4;
+    const pr = cfg.pulseR * evo.sense;
+    addRing(p.x, p.y, pr, cfg.pulseDur, cfg.rgb, cfg.pw, true);
+    const scrDist = Math.hypot(p.x - cam.x, p.y - cam.y);
+    const vol = Math.max(0, 1 - scrDist/850) * 0.2;
+    if (cfg === TREX) tone(52 + rnd(12), vol, 0.38, 'sine');
+    else              tone(265 + rnd(50), vol*0.65, 0.07, 'square');
+  }
+
+  // AI
+  const detect = cfg.chaseR * evo.stealth;
+  if (distP < detect && !burrowed) {
+    // Chase player
+    const spd = cfg.spd;
+    p.x += (dxP/distP) * spd * dt;
+    p.y += (dyP/distP) * spd * dt;
+    if (cfg === TREX && distP < 300) {
+      shakeAmt = Math.max(shakeAmt, (1 - distP/300) * 9);
+    }
+  } else {
+    // Wander
+    p.wT -= dt;
+    if (p.wT <= 0) {
+      p.wT = 1.4 + rnd(2.2);
+      const a = rnd(Math.PI*2);
+      p.wdx = Math.cos(a)*cfg.spd*0.5*dt;
+      p.wdy = Math.sin(a)*cfg.spd*0.5*dt;
+    }
+    p.x += p.wdx; p.y += p.wdy;
+  }
+  p.x = clamp(p.x, cfg.r, WW-cfg.r);
+  p.y = clamp(p.y, cfg.r, WH-cfg.r);
+
+  // Hit player
+  if ((phase==='playing') && !burrowed) {
+    if (distP < cfg.r + 8 + 8) hitPlayer();
+  }
+}
+
+function addRing(x, y, maxR, dur, rgb, lw, isPred) {
+  rings.push({ x, y, maxR, dur, rgb, lw, prog: 0, isPred });
+}
+
+function hitPlayer() {
+  P.lives--;
+  tone(160, 0.22, 0.28, 'sawtooth');
+  shakeAmt = Math.max(shakeAmt, 15);
+  hudUpdate();
+  if (P.lives <= 0) { endGame(); }
+  else { phase = 'invincible'; P.invT = 1.8; }
+}
+
+function burrow() {
+  burrowed = true; burrowLeft = BURROW_DUR * evo.burrow;
+  document.getElementById('vignette').style.opacity = '1';
+  tone(100, 0.08, 0.6);
+}
+function unburrow() {
+  burrowed = false; burrowCD = BURROW_CD; holdMs = 0;
+  document.getElementById('vignette').style.opacity = '0';
+}
+
+function hudUpdate() {
+  document.getElementById('score-display').textContent = `INSECTS: ${score}`;
+  const h = Array.from({length: P.maxLives}, (_,i) => i < P.lives ? '💚' : '🖤').join('');
+  document.getElementById('lives-display').textContent = h;
+}
+
+// ── RENDER ─────────────────────────────────────────────
+function render(ts) {
+  ctx.clearRect(0, 0, W, H);
+  ctx.save();
+
+  // Shake
+  if (shakeAmt > 0.3) {
+    ctx.translate((Math.random()-0.5)*shakeAmt, (Math.random()-0.5)*shakeAmt);
+  }
+
+  const ox = Math.round(W/2  - cam.x);
+  const oy = Math.round(H/2  - cam.y);
+
+  // Background
+  ctx.fillStyle = '#06080D';
+  ctx.fillRect(-20, -20, W+40, H+40);
+
+  // Subtle ground grid
+  ctx.strokeStyle = 'rgba(126,255,80,0.018)';
+  ctx.lineWidth = 1;
+  const gs = 90;
+  for (let gx = ox%gs - gs; gx < W+gs; gx += gs) {
+    ctx.beginPath(); ctx.moveTo(gx,0); ctx.lineTo(gx,H); ctx.stroke();
+  }
+  for (let gy = oy%gs - gs; gy < H+gs; gy += gs) {
+    ctx.beginPath(); ctx.moveTo(0,gy); ctx.lineTo(W,gy); ctx.stroke();
+  }
+
+  // World border
+  ctx.strokeStyle = 'rgba(126,255,80,0.05)';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(ox, oy, WW, WH);
+
+  // Rings
+  rings.forEach(r => {
+    const sx = r.x + ox, sy = r.y + oy;
+    if (!onscr(sx, sy, r.maxR + 20)) return;
+    const ease = r.prog < 0.5
+      ? 2*r.prog*r.prog
+      : 1 - Math.pow(-2*r.prog+2,2)/2;
+    const rad   = clamp(ease * r.maxR, 0, r.maxR * 1.05);
+    const alpha = r.isPred
+      ? (1 - r.prog) * 0.42
+      : (1 - r.prog) * 0.65;
+    // Outer ring
+    ctx.beginPath(); ctx.arc(sx, sy, rad, 0, Math.PI*2);
+    ctx.strokeStyle = `rgba(${r.rgb},${alpha})`;
+    ctx.lineWidth = r.lw;
+    ctx.stroke();
+    // Inner glow at front of ring
+    if (r.prog < 0.35) {
+      ctx.beginPath(); ctx.arc(sx, sy, rad, 0, Math.PI*2);
+      ctx.strokeStyle = `rgba(${r.rgb},${(1 - r.prog/0.35)*0.18})`;
+      ctx.lineWidth = r.lw * 4;
+      ctx.stroke();
+    }
+  });
+
+  // Insects
+  bugs.forEach(b => {
+    if (!b.alive) return;
+    const sx = b.x + ox, sy = b.y + oy;
+    if (!onscr(sx, sy, 12)) return;
+    const pulse = 0.6 + 0.4 * Math.sin((ts / 700) + b.x);
+    ctx.beginPath(); ctx.arc(sx, sy, 3, 0, Math.PI*2);
+    ctx.fillStyle = `rgba(0,212,255,${0.7*pulse})`; ctx.fill();
+    ctx.beginPath(); ctx.arc(sx, sy, 8, 0, Math.PI*2);
+    ctx.fillStyle = `rgba(0,212,255,${0.1*pulse})`; ctx.fill();
+  });
+
+  // Predators — near-invisible silhouettes
+  preds.forEach(p => {
+    const sx = p.x + ox, sy = p.y + oy;
+    if (!onscr(sx, sy, p.cfg.r + 30)) return;
+    const scrD   = Math.hypot(sx - W/2, sy - H/2);
+    const close  = clamp(1 - scrD / 380, 0, 1);
+    const body   = 0.03 + close * 0.38;
+    const glow   = close * 0.12;
+    ctx.globalAlpha = body;
+    if (p.cfg === TREX) {
+      ctx.fillStyle = '#500800';
+      ctx.beginPath(); ctx.ellipse(sx, sy+4, p.cfg.r, p.cfg.r*0.78, 0, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(sx - p.cfg.r*0.55, sy - p.cfg.r*0.52, p.cfg.r*0.42, p.cfg.r*0.35, 0.3, 0, Math.PI*2); ctx.fill();
+    } else {
+      ctx.fillStyle = '#3C0A00';
+      ctx.beginPath(); ctx.ellipse(sx, sy, p.cfg.r*0.7, p.cfg.r*1.18, -0.25, 0, Math.PI*2); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+    if (glow > 0.015) {
+      ctx.beginPath(); ctx.arc(sx, sy, p.cfg.r*1.7, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(255,50,0,${glow*0.28})`; ctx.fill();
+    }
+  });
+
+  // Player
+  const px = P.x + ox, py = P.y + oy;
+  const inv = phase === 'invincible' && Math.floor(ts / 90) % 2 === 0;
+  if (!inv) {
+    if (burrowed) {
+      const pulse = 0.5 + 0.5 * Math.sin(ts / 350 * Math.PI * 2);
+      ctx.beginPath(); ctx.arc(px, py, 4 + pulse*1.5, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(0,212,255,${0.3+pulse*0.15})`; ctx.fill();
+      ctx.beginPath(); ctx.arc(px, py, 12 + pulse*3, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(0,212,255,${0.05+pulse*0.04})`; ctx.fill();
+    } else {
+      ctx.beginPath(); ctx.arc(px, py, 8, 0, Math.PI*2);
+      ctx.fillStyle = '#7EFF50'; ctx.fill();
+      ctx.beginPath(); ctx.arc(px, py, 14, 0, Math.PI*2);
+      ctx.fillStyle = 'rgba(126,255,80,0.15)'; ctx.fill();
+      ctx.beginPath(); ctx.arc(px, py, 22, 0, Math.PI*2);
+      ctx.fillStyle = 'rgba(126,255,80,0.05)'; ctx.fill();
+    }
+  }
+
+  // Move target hint (faint dashed line)
+  if (pointerActive && !burrowed) {
+    const tx = P.tx + ox, ty = P.ty + oy;
+    const td = Math.hypot(tx-px, ty-py);
+    if (td > 18) {
+      ctx.beginPath(); ctx.moveTo(px,py); ctx.lineTo(tx,ty);
+      ctx.strokeStyle = 'rgba(126,255,80,0.07)';
+      ctx.lineWidth = 1; ctx.setLineDash([3,9]); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.beginPath(); ctx.arc(tx, ty, 3, 0, Math.PI*2);
+      ctx.fillStyle = 'rgba(126,255,80,0.18)'; ctx.fill();
+    }
+  }
+
+  ctx.restore();
+}
+
+function onscr(sx, sy, pad=0) {
+  return sx > -pad && sx < W+pad && sy > -pad && sy < H+pad;
+}
+
+// ── MASTER LOOP ────────────────────────────────────────
+function loop(ts) {
+  const dt = Math.min((ts - lastTs) / 1000, 0.05);
+  lastTs = ts;
+
+  if (phase === 'start') {
+    renderAttract(ts);
+  } else if (phase === 'playing' || phase === 'invincible') {
+    update(dt);
+    render(ts);
+  } else if (phase === 'dead') {
+    render(ts); // freeze last frame
+  }
+  requestAnimationFrame(loop);
+}
+
+function renderAttract(ts) {
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#06080D'; ctx.fillRect(0, 0, W, H);
+  const cx = W/2, cy = H/2, t = ts/1000;
+  [
+    { speed:0.38, maxR:210, rgb:[255,107,53], lw:2.8 },
+    { speed:0.85, maxR:130, rgb:[255,55,55],  lw:1.3 },
+    { speed:0.22, maxR:300, rgb:[255,107,53], lw:2.0 },
+    { speed:1.3,  maxR:75,  rgb:[0,212,255],  lw:1.0 },
+    { speed:0.55, maxR:170, rgb:[155,92,246], lw:1.6 },
+  ].forEach((r, i) => {
+    const ph = (t * r.speed + i * 0.37) % 1;
+    const alpha = (1 - ph) * 0.38;
+    ctx.beginPath(); ctx.arc(cx, cy, ph * r.maxR, 0, Math.PI*2);
+    ctx.strokeStyle = `rgba(${r.rgb},${alpha})`;
+    ctx.lineWidth = r.lw; ctx.stroke();
+  });
+  ctx.beginPath(); ctx.arc(cx, cy, 5 + Math.sin(t*2)*1.5, 0, Math.PI*2);
+  ctx.fillStyle = 'rgba(126,255,80,0.45)'; ctx.fill();
+}
+
+// Start the loop
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
