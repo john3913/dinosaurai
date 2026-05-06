@@ -1,0 +1,67 @@
+/* ── API Gateway & Cost Tracker ──────────────────────────────────────────── */
+.gw-root { min-height: 100vh; background: #070A0F; color: #E8EAF0; display: flex; flex-direction: column; font-family: var(--font-inter-tight, sans-serif); }
+
+.gw-bar { height: 52px; display: flex; align-items: center; padding: 0 16px; border-bottom: 1px solid rgba(255,255,255,0.07); background: rgba(7,10,15,0.92); backdrop-filter: blur(12px); position: sticky; top: 0; z-index: 100; flex-shrink: 0; }
+.gw-bar-logo { text-decoration: none; }
+.gw-bar-sep { width: 1px; height: 24px; background: rgba(255,255,255,0.1); margin: 0 16px; }
+.gw-bar-title { font-size: 14px; font-weight: 500; color: rgba(232,234,240,0.7); }
+.gw-bar-space { flex: 1; }
+.gw-live-toggle { display: flex; align-items: center; gap: 6px; font-size: 12px; color: rgba(232,234,240,0.55); cursor: pointer; user-select: none; }
+.gw-live-toggle input { display: none; }
+.gw-live-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.2); transition: background 0.2s; }
+.gw-live-dot.on { background: #34D399; box-shadow: 0 0 6px #34D399; animation: gw-pulse 2s ease-in-out infinite; }
+@keyframes gw-pulse { 0%,100% { box-shadow: 0 0 4px #34D399; } 50% { box-shadow: 0 0 10px #34D399; } }
+
+.gw-summary { display: flex; align-items: stretch; gap: 0; border-bottom: 1px solid rgba(255,255,255,0.07); flex-shrink: 0; }
+.gw-summary-stat { flex: 1; padding: 14px 20px; border-right: 1px solid rgba(255,255,255,0.07); }
+.gw-summary-val { font-family: var(--font-jetbrains-mono, monospace); font-size: 22px; font-weight: 700; color: #E8EAF0; }
+.gw-summary-label { font-size: 11px; color: rgba(232,234,240,0.4); margin-top: 2px; }
+
+.gw-budget { flex: 2; padding: 10px 20px; display: flex; flex-direction: column; gap: 4px; justify-content: center; }
+.gw-budget-label { display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: rgba(232,234,240,0.4); }
+.gw-budget-input-wrap { display: flex; align-items: center; gap: 2px; font-family: var(--font-jetbrains-mono, monospace); font-size: 13px; color: rgba(232,234,240,0.7); }
+.gw-budget-input { font-family: var(--font-jetbrains-mono, monospace); font-size: 13px; background: transparent; border: none; outline: none; color: rgba(232,234,240,0.7); width: 60px; }
+.gw-budget-bar-bg { height: 6px; background: rgba(255,255,255,0.06); border-radius: 3px; overflow: hidden; }
+.gw-budget-bar { height: 100%; border-radius: 3px; transition: width 0.5s, background 0.5s; }
+.gw-budget-pct { font-size: 11px; font-family: var(--font-jetbrains-mono, monospace); transition: color 0.3s; }
+
+.gw-layout { flex: 1; display: flex; overflow: hidden; }
+
+.gw-feed-wrap { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.gw-feed-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 16px; border-bottom: 1px solid rgba(255,255,255,0.06); font-size: 12px; font-weight: 600; color: rgba(232,234,240,0.5); flex-shrink: 0; }
+.gw-feed-count { font-family: var(--font-jetbrains-mono, monospace); color: rgba(232,234,240,0.3); }
+.gw-feed { flex: 1; overflow-y: auto; padding: 8px 0; }
+
+.gw-req { display: flex; align-items: center; gap: 12px; padding: 8px 16px; border-bottom: 1px solid rgba(255,255,255,0.04); transition: background 0.15s; font-size: 12px; }
+.gw-req:hover { background: rgba(255,255,255,0.02); }
+.gw-req-new { animation: gw-new 0.4s ease; }
+@keyframes gw-new { from { background: rgba(255,255,255,0.06); } to { background: transparent; } }
+.gw-req-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.gw-req-model { font-family: var(--font-jetbrains-mono, monospace); font-size: 11px; color: rgba(232,234,240,0.7); flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.gw-req-toks { font-family: var(--font-jetbrains-mono, monospace); font-size: 11px; color: rgba(232,234,240,0.4); width: 72px; text-align: right; }
+.gw-req-cost { font-family: var(--font-jetbrains-mono, monospace); font-size: 11px; color: rgba(232,234,240,0.5); width: 72px; text-align: right; }
+.gw-req-ms { font-family: var(--font-jetbrains-mono, monospace); font-size: 11px; color: rgba(232,234,240,0.3); width: 52px; text-align: right; }
+.gw-req-status { font-size: 10px; font-weight: 700; padding: 1px 5px; border-radius: 3px; width: 32px; text-align: center; }
+.gw-req-status.ok { background: rgba(52,211,153,0.12); color: #34D399; }
+.gw-req-status.err { background: rgba(244,114,182,0.12); color: #F472B6; }
+
+.gw-aside { width: 280px; flex-shrink: 0; border-left: 1px solid rgba(255,255,255,0.07); padding: 16px; display: flex; flex-direction: column; gap: 16px; overflow-y: auto; }
+.gw-panel { display: flex; flex-direction: column; gap: 8px; }
+.gw-panel-title { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(232,234,240,0.35); margin-bottom: 4px; }
+
+.gw-provider-row { display: flex; align-items: center; gap: 8px; font-size: 12px; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+.gw-provider-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.gw-provider-name { flex: 1; color: rgba(232,234,240,0.7); font-weight: 500; }
+.gw-provider-count { font-family: var(--font-jetbrains-mono, monospace); font-size: 11px; color: rgba(232,234,240,0.35); }
+.gw-provider-cost { font-family: var(--font-jetbrains-mono, monospace); font-size: 11px; font-weight: 600; }
+
+.gw-chart { display: flex; align-items: flex-end; gap: 3px; height: 88px; padding: 4px 0; }
+.gw-chart-bar-wrap { flex: 1; display: flex; align-items: flex-end; }
+.gw-chart-bar { width: 100%; border-radius: 2px 2px 0 0; transition: height 0.5s; min-height: 3px; opacity: 0.85; }
+.gw-chart-labels { display: flex; justify-content: space-between; font-size: 10px; color: rgba(232,234,240,0.25); }
+
+.gw-model-row { display: flex; align-items: center; gap: 7px; font-size: 11px; padding: 4px 0; }
+.gw-model-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.gw-model-name { font-family: var(--font-jetbrains-mono, monospace); font-size: 10px; color: rgba(232,234,240,0.55); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gw-model-count { color: rgba(232,234,240,0.35); }
+.gw-model-cost { font-family: var(--font-jetbrains-mono, monospace); color: rgba(232,234,240,0.45); }
