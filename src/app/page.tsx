@@ -6,10 +6,8 @@ import './dino.css';
 function BgCanvas() {
   const ref = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
-    const canvas = ref.current;
-    if (!canvas) return;
+    const maybeCanvas = ref.current; if (!maybeCanvas) return; const canvas: HTMLCanvasElement = maybeCanvas;
     const ctx = canvas.getContext('2d')!;
-    if (!ctx) return;
 
     const COLORS = ['#7EFF50', '#00D4FF', '#FF6B35', '#9B5CF6'];
     type Pt = { x: number; y: number };
