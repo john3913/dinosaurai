@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dinosaurai — Games & Fun Apps</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦕</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,800&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg:     #07090F;
@@ -30,8 +33,7 @@
     #bg-canvas {
       position: fixed;
       inset: 0;
-      width: 100%;
-      height: 100%;
+      width: 100%; height: 100%;
       pointer-events: none;
       z-index: 0;
     }
@@ -47,8 +49,8 @@
       align-items: center;
       gap: 2rem;
       padding: 1.25rem 3rem;
-      background: linear-gradient(to bottom, rgba(7,9,15,0.85) 0%, transparent 100%);
-      backdrop-filter: blur(10px);
+      background: linear-gradient(to bottom, rgba(7,9,15,0.88) 0%, transparent 100%);
+      backdrop-filter: blur(12px);
     }
     .nav-logo {
       font-size: 1rem;
@@ -61,6 +63,13 @@
       background-clip: text;
       margin-right: auto;
       text-decoration: none;
+    }
+    .nav-logo .logo-ai {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-style: italic;
+      font-weight: 800;
+      letter-spacing: 0;
+      text-transform: none;
     }
     .nav-link {
       color: var(--dim);
@@ -108,32 +117,47 @@
       pointer-events: none;
     }
 
-    .dino-mark {
-      font-size: 3.5rem;
-      display: block;
-      margin-bottom: 1.5rem;
+    /* ─── GRADIENT DINO ───────────────────────────────── */
+    .dino-wrap {
+      position: relative;
+      display: inline-block;
+      margin-bottom: 1.75rem;
       animation: dino-float 3.5s ease-in-out infinite;
-      filter: drop-shadow(0 0 20px rgba(126,255,80,0.3));
+    }
+    /* ambient glow behind the dino */
+    .dino-wrap::before {
+      content: '';
+      position: absolute;
+      inset: -20px;
+      background: radial-gradient(ellipse at center,
+        rgba(126,255,80,0.18)  0%,
+        rgba(0,212,255,0.09)   40%,
+        rgba(155,92,246,0.05)  65%,
+        transparent            80%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    .dino-emoji {
+      font-size: 5rem;
+      display: block;
+      line-height: 1;
+      user-select: none;
+    }
+    /* gradient color wash — blends hue+saturation over the emoji */
+    .dino-tint {
+      position: absolute;
+      inset: -4px;
+      background: linear-gradient(135deg, var(--green) 0%, var(--blue) 50%, var(--purple) 100%);
+      mix-blend-mode: color;
+      border-radius: 30%;
+      pointer-events: none;
     }
     @keyframes dino-float {
       0%, 100% { transform: translateY(0) rotate(-2deg); }
-      50%       { transform: translateY(-10px) rotate(2deg); }
+      50%       { transform: translateY(-12px) rotate(2deg); }
     }
 
-    .wordmark {
-      font-size: clamp(4rem, 12vw, 10rem);
-      font-weight: 900;
-      letter-spacing: -0.03em;
-      line-height: 0.95;
-      background: linear-gradient(135deg, var(--green) 0%, #BBFF70 35%, var(--blue) 65%, var(--purple) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      margin-bottom: 1.5rem;
-      animation: fadeUp 0.9s ease both;
-      animation-delay: 0.1s;
-    }
-
+    /* ─── WORDMARK ────────────────────────────────────── */
     .hero-tag {
       display: inline-flex;
       align-items: center;
@@ -151,15 +175,50 @@
       animation: fadeUp 0.9s ease both;
     }
 
+    .wordmark {
+      font-size: clamp(4rem, 12vw, 10rem);
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      line-height: 0.95;
+      background: linear-gradient(
+        105deg,
+        var(--green)  0%,
+        #BBFF70       18%,
+        var(--blue)   36%,
+        #90F0FF       47%,
+        rgba(255,255,255,0.92) 52%,
+        #90F0FF       57%,
+        var(--blue)   65%,
+        var(--purple) 80%,
+        #CCAAFF       100%
+      );
+      background-size: 280% 100%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 1.5rem;
+      animation: shimmer 6s ease-in-out 1s infinite, fadeUp 0.9s ease 0.1s both;
+    }
+    .wordmark .serif-ai {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-style: italic;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+    }
+    @keyframes shimmer {
+      0%   { background-position: 120% center; }
+      50%  { background-position: -30% center; }
+      100% { background-position: 120% center; }
+    }
+
     .hero-sub {
-      font-size: clamp(1rem, 2.5vw, 1.3rem);
+      font-size: clamp(1rem, 2.5vw, 1.25rem);
       color: var(--dim);
       font-weight: 300;
-      line-height: 1.65;
-      max-width: 540px;
+      line-height: 1.7;
+      max-width: 520px;
       margin-bottom: 2.5rem;
-      animation: fadeUp 0.9s ease both;
-      animation-delay: 0.2s;
+      animation: fadeUp 0.9s ease 0.2s both;
     }
 
     .hero-cta {
@@ -167,8 +226,7 @@
       gap: 0.875rem;
       justify-content: center;
       flex-wrap: wrap;
-      animation: fadeUp 0.9s ease both;
-      animation-delay: 0.3s;
+      animation: fadeUp 0.9s ease 0.3s both;
     }
 
     .btn {
@@ -182,6 +240,7 @@
       border: none;
       letter-spacing: 0.02em;
       transition: all 0.25s ease;
+      display: inline-block;
     }
     .btn-solid {
       background: linear-gradient(135deg, var(--green), #A8FF60);
@@ -211,17 +270,15 @@
       align-items: center;
       gap: 0.5rem;
       opacity: 0.3;
-      animation: fadeUp 1s ease both;
-      animation-delay: 0.8s;
+      animation: fadeUp 1s ease 0.8s both;
     }
     .scroll-indicator span {
-      font-size: 0.65rem;
-      letter-spacing: 0.2em;
+      font-size: 0.62rem;
+      letter-spacing: 0.22em;
       text-transform: uppercase;
     }
     .scroll-line {
-      width: 1px;
-      height: 36px;
+      width: 1px; height: 36px;
       background: linear-gradient(to bottom, var(--green), transparent);
       animation: scroll-pulse 2s ease-in-out infinite;
     }
@@ -230,10 +287,84 @@
       50%       { opacity: 1;   transform: scaleY(1); }
     }
 
+    /* ─── STATS STRIP ─────────────────────────────────── */
+    .stats-strip {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 2.5rem;
+      padding: 2rem 3rem;
+      flex-wrap: wrap;
+    }
+    .stat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.25rem;
+    }
+    .stat-n {
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, var(--green), var(--blue));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .stat-l {
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--dim);
+    }
+    .stat-sep {
+      width: 1px; height: 36px;
+      background: rgba(255,255,255,0.08);
+    }
+
+    /* ─── MARQUEE ─────────────────────────────────────── */
+    .marquee-wrap {
+      overflow: hidden;
+      border-top:    1px solid rgba(255,255,255,0.05);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      padding: 0.875rem 0;
+      -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 8%, black 92%, transparent 100%);
+      mask-image:         linear-gradient(90deg, transparent 0%, black 8%, black 92%, transparent 100%);
+    }
+    .marquee-track {
+      display: flex;
+      width: max-content;
+      animation: marquee-scroll 28s linear infinite;
+      white-space: nowrap;
+      user-select: none;
+    }
+    .marquee-track:hover { animation-play-state: paused; }
+    .marquee-item {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      padding: 0 1.8rem;
+      color: rgba(242,242,243,0.28);
+      transition: color 0.2s;
+    }
+    .marquee-item:hover { color: var(--white); }
+    .marquee-sep {
+      font-size: 0.7rem;
+      padding: 0;
+      color: var(--green);
+      opacity: 0.45;
+    }
+    @keyframes marquee-scroll {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
     /* ─── DIVIDER ─────────────────────────────────────── */
     .rule {
       height: 1px;
-      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.07) 30%, rgba(255,255,255,0.07) 70%, transparent 100%);
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.07) 30%, rgba(255,255,255,0.07) 70%, transparent);
       margin: 0 3rem;
     }
 
@@ -243,7 +374,6 @@
       max-width: 1160px;
       margin: 0 auto;
     }
-
     .section-eyebrow {
       font-size: 0.72rem;
       font-weight: 700;
@@ -275,15 +405,36 @@
       margin-top: 3rem;
     }
 
+    /* scroll-in animation state */
     .card {
       background: rgba(255,255,255,0.03);
       border: 1px solid rgba(255,255,255,0.07);
       border-radius: 18px;
-      padding: 2rem 1.875rem;
+      padding: 2rem 1.875rem 2.5rem;
       position: relative;
       overflow: hidden;
-      transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+      opacity: 0;
+      transform: translateY(22px);
+      transition:
+        opacity 0.55s ease,
+        transform 0.55s ease,
+        border-color 0.3s ease,
+        box-shadow 0.3s ease;
     }
+    .card.in-view {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .card.in-view:hover {
+      transform: translateY(-5px);
+      border-color: rgba(255,255,255,0.13);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    }
+    .card-green.in-view:hover  { box-shadow: 0 20px 50px rgba(126,255,80,0.09); }
+    .card-orange.in-view:hover { box-shadow: 0 20px 50px rgba(255,107,53,0.09); }
+    .card-blue.in-view:hover   { box-shadow: 0 20px 50px rgba(0,212,255,0.09); }
+    .card-purple.in-view:hover { box-shadow: 0 20px 50px rgba(155,92,246,0.09); }
+
     .card::before {
       content: '';
       position: absolute;
@@ -296,19 +447,13 @@
     .card-blue::before   { background: linear-gradient(90deg, var(--blue), transparent); }
     .card-purple::before { background: linear-gradient(90deg, var(--purple), transparent); }
 
-    .card:hover { transform: translateY(-5px); border-color: rgba(255,255,255,0.13); box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
-    .card-green:hover  { box-shadow: 0 20px 50px rgba(126,255,80,0.08); }
-    .card-orange:hover { box-shadow: 0 20px 50px rgba(255,107,53,0.08); }
-    .card-blue:hover   { box-shadow: 0 20px 50px rgba(0,212,255,0.08); }
-    .card-purple:hover { box-shadow: 0 20px 50px rgba(155,92,246,0.08); }
-
     .card-icon {
       font-size: 2.6rem;
       display: block;
       margin-bottom: 1.25rem;
       transition: transform 0.3s ease;
     }
-    .card:hover .card-icon { transform: scale(1.12) rotate(3deg); }
+    .card.in-view:hover .card-icon { transform: scale(1.12) rotate(3deg); }
 
     .card-badge {
       display: inline-block;
@@ -336,6 +481,98 @@
       color: var(--dim);
       line-height: 1.6;
     }
+    .card-arrow {
+      position: absolute;
+      bottom: 1.4rem; right: 1.6rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      opacity: 0;
+      transform: translateX(-6px);
+      transition: all 0.25s ease;
+    }
+    .card-green  .card-arrow { color: var(--green); }
+    .card-orange .card-arrow { color: var(--orange); }
+    .card-blue   .card-arrow { color: var(--blue); }
+    .card-purple .card-arrow { color: var(--purple); }
+    .card.in-view:hover .card-arrow { opacity: 1; transform: translateX(0); }
+
+    /* ─── EMAIL SIGNUP ────────────────────────────────── */
+    .signup-section {
+      padding: 5rem 2rem;
+      background: linear-gradient(180deg, transparent, rgba(126,255,80,0.025) 50%, transparent);
+    }
+    .signup-inner {
+      max-width: 520px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .signup-eyebrow {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--green);
+      margin-bottom: 0.75rem;
+    }
+    .signup-h {
+      font-size: clamp(1.75rem, 3vw, 2.25rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.625rem;
+    }
+    .signup-sub {
+      color: var(--dim);
+      font-size: 0.95rem;
+      font-weight: 300;
+      line-height: 1.6;
+      margin-bottom: 2rem;
+    }
+    .signup-form {
+      display: flex;
+      gap: 0.5rem;
+      max-width: 420px;
+      margin: 0 auto;
+    }
+    .signup-input {
+      flex: 1;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 10px;
+      padding: 0.875rem 1.25rem;
+      color: var(--white);
+      font-size: 0.9rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .signup-input::placeholder { color: rgba(242,242,243,0.3); }
+    .signup-input:focus { border-color: rgba(126,255,80,0.4); }
+    .signup-btn {
+      background: linear-gradient(135deg, var(--green), #A8FF60);
+      color: #050A01;
+      border: none;
+      border-radius: 10px;
+      padding: 0.875rem 1.5rem;
+      font-size: 0.9rem;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .signup-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(126,255,80,0.3);
+    }
+    .signup-success {
+      display: none;
+      color: var(--green);
+      font-size: 1rem;
+      font-weight: 600;
+      margin-top: 1rem;
+      animation: fadeUp 0.4s ease both;
+    }
 
     /* ─── MANIFESTO ──────────────────────────────────── */
     .manifesto {
@@ -352,9 +589,9 @@
     .manifesto-quote {
       font-size: clamp(1.6rem, 3.5vw, 2.5rem);
       font-weight: 700;
-      line-height: 1.4;
+      line-height: 1.45;
       color: rgba(242,242,243,0.85);
-      margin-bottom: 2.5rem;
+      margin-bottom: 2.75rem;
     }
     .manifesto-quote em {
       font-style: normal;
@@ -378,7 +615,7 @@
       border-top: 1px solid rgba(255,255,255,0.05);
     }
     .footer-logo {
-      font-size: 1.3rem;
+      font-size: 1.4rem;
       font-weight: 900;
       letter-spacing: 0.06em;
       text-transform: uppercase;
@@ -388,6 +625,13 @@
       background-clip: text;
       margin-bottom: 0.5rem;
     }
+    .footer-logo .footer-ai {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-style: italic;
+      font-weight: 800;
+      text-transform: none;
+      letter-spacing: 0.02em;
+    }
     .footer-sub {
       font-size: 0.78rem;
       color: rgba(242,242,243,0.2);
@@ -396,28 +640,26 @@
 
     /* ─── FLOATING PIXELS ────────────────────────────── */
     .pixel-field {
-      position: fixed;
-      inset: 0;
+      position: fixed; inset: 0;
       pointer-events: none;
       z-index: 0;
       overflow: hidden;
     }
     .px {
       position: absolute;
-      width: 3px;
-      height: 3px;
+      width: 3px; height: 3px;
       border-radius: 1px;
       opacity: 0;
       animation: px-float linear infinite;
     }
     @keyframes px-float {
-      0%   { transform: translateY(0) rotate(0deg);   opacity: 0; }
+      0%   { transform: translateY(0) rotate(0deg);    opacity: 0; }
       8%   { opacity: 0.5; }
       92%  { opacity: 0.25; }
       100% { transform: translateY(-110vh) rotate(540deg); opacity: 0; }
     }
 
-    /* ─── SHARED ANIMATION ────────────────────────────── */
+    /* ─── SHARED ──────────────────────────────────────── */
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(18px); }
       to   { opacity: 1; transform: translateY(0); }
@@ -431,6 +673,10 @@
       .manifesto { padding: 5rem 1.5rem; }
       footer { padding: 2rem 1.5rem; }
       .rule { margin: 0 1.5rem; }
+      .stats-strip { gap: 1.5rem; padding: 1.5rem; }
+      .stat-sep { display: none; }
+      .signup-form { flex-direction: column; }
+      .signup-btn { width: 100%; }
     }
   </style>
 </head>
@@ -443,7 +689,7 @@
 
   <!-- NAV -->
   <nav>
-    <a class="nav-logo" href="#">🦕 Dinosaurai</a>
+    <a class="nav-logo" href="#">🦕 DINOSAUR<span class="logo-ai">AI</span></a>
     <a class="nav-link" href="#games">Games</a>
     <a class="nav-link" href="#apps">Apps</a>
     <button class="nav-btn">Early Access</button>
@@ -451,19 +697,71 @@
 
   <!-- HERO -->
   <section class="hero">
-    <span class="dino-mark">🦕</span>
-    <div class="hero-tag">🎮 Games &nbsp;&amp;&nbsp; Fun Apps Studio</div>
-    <h1 class="wordmark">DINOSAURAI</h1>
-    <p class="hero-sub">A studio building original games, fun apps, and weird digital experiences. Prehistoric imagination, modern execution.</p>
+
+    <!-- gradient dino: mix-blend-mode color wash over emoji -->
+    <div class="dino-wrap">
+      <span class="dino-emoji">🦕</span>
+      <div class="dino-tint"></div>
+    </div>
+
+    <div class="hero-tag">🎮 Games &amp; Fun Apps Studio</div>
+
+    <h1 class="wordmark">DINOSAUR<span class="serif-ai">AI</span></h1>
+
+    <p class="hero-sub">A studio building original games, fun apps, and weird digital experiments. Prehistoric imagination, modern execution.</p>
+
     <div class="hero-cta">
       <a href="#games" class="btn btn-solid">See What's Coming</a>
       <a href="https://github.com/john3913/dinosaurai" target="_blank" class="btn btn-ghost">GitHub →</a>
     </div>
+
     <div class="scroll-indicator">
       <span>Scroll</span>
       <div class="scroll-line"></div>
     </div>
+
   </section>
+
+  <!-- STATS -->
+  <div class="stats-strip">
+    <div class="stat">
+      <span class="stat-n">6</span>
+      <span class="stat-l">Games in Dev</span>
+    </div>
+    <div class="stat-sep"></div>
+    <div class="stat">
+      <span class="stat-n">2</span>
+      <span class="stat-l">Apps Building</span>
+    </div>
+    <div class="stat-sep"></div>
+    <div class="stat">
+      <span class="stat-n">∞</span>
+      <span class="stat-l">Wild Ideas</span>
+    </div>
+    <div class="stat-sep"></div>
+    <div class="stat">
+      <span class="stat-n">0</span>
+      <span class="stat-l">Boring Projects</span>
+    </div>
+  </div>
+
+  <!-- MARQUEE -->
+  <div class="marquee-wrap">
+    <div class="marquee-track" id="marquee-track">
+      <span class="marquee-item">Rex Run</span><span class="marquee-sep">·</span>
+      <span class="marquee-item">Fossil Hunt</span><span class="marquee-sep">·</span>
+      <span class="marquee-item">Dino Clash</span><span class="marquee-sep">·</span>
+      <span class="marquee-item">Pangaea</span><span class="marquee-sep">·</span>
+      <span class="marquee-item">Speed Type</span><span class="marquee-sep">·</span>
+      <span class="marquee-item">App-a-Day</span><span class="marquee-sep">·</span>
+      <span class="marquee-item">Rex Run</span><span class="marquee-sep">·</span>
+      <span class="marquee-item">Fossil Hunt</span><span class="marquee-sep">·</span>
+      <span class="marquee-item">Dino Clash</span><span class="marquee-sep">·</span>
+      <span class="marquee-item">Pangaea</span><span class="marquee-sep">·</span>
+      <span class="marquee-item">Speed Type</span><span class="marquee-sep">·</span>
+      <span class="marquee-item">App-a-Day</span><span class="marquee-sep">·</span>
+    </div>
+  </div>
 
   <div class="rule"></div>
 
@@ -471,7 +769,7 @@
   <div class="section" id="games">
     <div class="section-eyebrow">What We're Building</div>
     <h2 class="section-h">Games &amp; Apps</h2>
-    <p class="section-body">Original titles in development. Launching fast, iterating fast, keeping it fun.</p>
+    <p class="section-body">Original titles in development. Launching fast, iterating faster, keeping it fun.</p>
 
     <div class="games-grid">
 
@@ -480,6 +778,7 @@
         <span class="card-badge badge-green">Runner · Coming Soon</span>
         <div class="card-title">Rex Run</div>
         <p class="card-desc">Infinite dino runner through procedurally generated prehistoric worlds. Obstacles, power-ups, leaderboards.</p>
+        <div class="card-arrow">Play Soon →</div>
       </div>
 
       <div class="card card-orange">
@@ -487,27 +786,31 @@
         <span class="card-badge badge-orange">Puzzle · In Progress</span>
         <div class="card-title">Fossil Hunt</div>
         <p class="card-desc">Dig through layers of ancient earth. Uncover complete skeletons before time runs out. Zen but ruthless.</p>
+        <div class="card-arrow">Play Soon →</div>
       </div>
 
       <div class="card card-blue">
         <span class="card-icon">⚡</span>
         <span class="card-badge badge-blue">Battle · Coming Soon</span>
         <div class="card-title">Dino Clash</div>
-        <p class="card-desc">Real-time dino combat with a herd-building mechanic. Evolve traits, conquer territories.</p>
+        <p class="card-desc">Real-time dino combat with a herd-building mechanic. Evolve traits, conquer territories, dominate.</p>
+        <div class="card-arrow">Play Soon →</div>
       </div>
 
       <div class="card card-purple">
         <span class="card-icon">🌍</span>
         <span class="card-badge badge-purple">Strategy · Idea Stage</span>
         <div class="card-title">Pangaea</div>
-        <p class="card-desc">Guide a species through the age of dinosaurs. Survive extinction events, adapt, and dominate.</p>
+        <p class="card-desc">Guide a species through the age of dinosaurs. Survive extinction events, adapt, and dominate the planet.</p>
+        <div class="card-arrow">Play Soon →</div>
       </div>
 
       <div class="card card-green" id="apps">
         <span class="card-icon">⌨️</span>
         <span class="card-badge badge-green">App · In Progress</span>
         <div class="card-title">Speed Type</div>
-        <p class="card-desc">Typing game with real-time multiplayer. Themed word sets, custom races, global rankings.</p>
+        <p class="card-desc">Typing game with real-time multiplayer. Themed word sets, custom races, and global rankings.</p>
+        <div class="card-arrow">Try Soon →</div>
       </div>
 
       <div class="card card-orange">
@@ -515,12 +818,27 @@
         <span class="card-badge badge-orange">Fun Tool · Coming Soon</span>
         <div class="card-title">App-a-Day</div>
         <p class="card-desc">Spin the wheel, get a random micro-app idea, build it in 24 hrs. Weekly community drops.</p>
+        <div class="card-arrow">Try Soon →</div>
       </div>
 
     </div>
   </div>
 
   <div class="rule"></div>
+
+  <!-- EMAIL SIGNUP -->
+  <div class="signup-section">
+    <div class="signup-inner">
+      <div class="signup-eyebrow">Early Access</div>
+      <h3 class="signup-h">Be first to play.</h3>
+      <p class="signup-sub">No spam. Just a note when something launches — usually with a free beta invite.</p>
+      <form class="signup-form" onsubmit="handleSignup(event)">
+        <input type="email" class="signup-input" placeholder="your@email.com" required />
+        <button type="submit" class="signup-btn">Notify Me</button>
+      </form>
+      <div class="signup-success" id="signup-success">You're on the list. 🦕</div>
+    </div>
+  </div>
 
   <!-- MANIFESTO -->
   <div class="manifesto">
@@ -537,21 +855,24 @@
 
   <!-- FOOTER -->
   <footer>
-    <div class="footer-logo">🦕 Dinosaurai</div>
+    <div class="footer-logo">🦕 DINOSAUR<span class="footer-ai">AI</span></div>
     <p class="footer-sub">dinosaurai.vercel.app &nbsp;·&nbsp; 2026</p>
   </footer>
 
 </div><!-- /page -->
 
 <script>
-/* ─── CANVAS SPARK NETWORK ─────────────────────────── */
+/* ─── CANVAS: SPARK NETWORK + MOUSE GLOW ────────────── */
 (function() {
   const canvas = document.getElementById('bg-canvas');
-  const ctx = canvas.getContext('2d');
+  const ctx    = canvas.getContext('2d');
 
   const COLORS = ['#7EFF50','#00D4FF','#FF6B35','#9B5CF6'];
   let nodes = [], edges = [], sparks = [];
   let W, H;
+  let mouse = { x: -1, y: -1 };
+
+  window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
 
   function resize() {
     W = canvas.width  = window.innerWidth;
@@ -561,50 +882,54 @@
 
   function build() {
     nodes = []; edges = []; sparks = [];
-    const count = Math.max(18, Math.floor(W * H / 70000));
+    const count = Math.max(20, Math.floor(W * H / 65000));
 
     for (let i = 0; i < count; i++) {
       nodes.push({ x: Math.random() * W, y: Math.random() * H });
     }
 
-    // k-nearest neighbours (k=3)
     const edgeSet = new Set();
     for (let i = 0; i < nodes.length; i++) {
-      const ranked = nodes
+      nodes
         .map((n, j) => ({ j, d: Math.hypot(n.x - nodes[i].x, n.y - nodes[i].y) }))
         .filter(r => r.j !== i)
         .sort((a, b) => a.d - b.d)
-        .slice(0, 3);
-
-      ranked.forEach(r => {
-        const key = Math.min(i, r.j) + '_' + Math.max(i, r.j);
-        if (!edgeSet.has(key)) {
-          edgeSet.add(key);
-          edges.push({ a: nodes[i], b: nodes[r.j] });
-        }
-      });
+        .slice(0, 3)
+        .forEach(r => {
+          const key = Math.min(i, r.j) + '_' + Math.max(i, r.j);
+          if (!edgeSet.has(key)) {
+            edgeSet.add(key);
+            edges.push({ a: nodes[i], b: nodes[r.j] });
+          }
+        });
     }
 
-    // Seed sparks
     edges.forEach(e => {
-      if (Math.random() > 0.25) {
-        sparks.push(makeSpark(e));
-      }
+      if (Math.random() > 0.25) sparks.push(makeSpark(e));
     });
   }
 
   function makeSpark(edge) {
     return {
       edge,
-      t:      Math.random(),
-      speed:  0.0004 + Math.random() * 0.0006,
-      color:  COLORS[Math.floor(Math.random() * COLORS.length)],
-      trailLen: 0.07 + Math.random() * 0.08,
+      t:        Math.random(),
+      speed:    0.0003 + Math.random() * 0.0006,
+      color:    COLORS[Math.floor(Math.random() * COLORS.length)],
+      trailLen: 0.07 + Math.random() * 0.09,
     };
   }
 
   function draw() {
     ctx.clearRect(0, 0, W, H);
+
+    // Subtle mouse glow
+    if (mouse.x >= 0) {
+      const g = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, 180);
+      g.addColorStop(0, 'rgba(126,255,80,0.05)');
+      g.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, W, H);
+    }
 
     // Backbone lines
     ctx.lineWidth = 1;
@@ -628,13 +953,11 @@
     sparks.forEach(s => {
       s.t += s.speed;
       if (s.t > 1 + s.trailLen) {
-        // respawn on a random edge
-        const e = edges[Math.floor(Math.random() * edges.length)];
-        s.edge = e;
-        s.t = 0;
-        s.color = COLORS[Math.floor(Math.random() * COLORS.length)];
-        s.speed = 0.0004 + Math.random() * 0.0006;
-        s.trailLen = 0.07 + Math.random() * 0.08;
+        s.edge     = edges[Math.floor(Math.random() * edges.length)];
+        s.t        = 0;
+        s.color    = COLORS[Math.floor(Math.random() * COLORS.length)];
+        s.speed    = 0.0003 + Math.random() * 0.0006;
+        s.trailLen = 0.07 + Math.random() * 0.09;
       }
 
       const tHead = Math.min(1, s.t);
@@ -647,7 +970,6 @@
       const x2 = e.a.x + (e.b.x - e.a.x) * tHead;
       const y2 = e.a.y + (e.b.y - e.a.y) * tHead;
 
-      // Fade in/out
       const alpha = tHead < 0.1 ? tHead / 0.1 : (s.t > 0.9 ? (1 - (s.t - 0.9) / 0.1) : 1);
 
       ctx.save();
@@ -687,6 +1009,33 @@
     field.appendChild(el);
   }
 })();
+
+/* ─── SCROLL-IN CARD ANIMATIONS ────────────────────── */
+(function() {
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const delay = parseInt(entry.target.dataset.delay || 0);
+        setTimeout(() => entry.target.classList.add('in-view'), delay);
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+
+  document.querySelectorAll('.card').forEach((card, i) => {
+    card.dataset.delay = i * 90;
+    io.observe(card);
+  });
+})();
+
+/* ─── EMAIL SIGNUP ──────────────────────────────────── */
+function handleSignup(e) {
+  e.preventDefault();
+  const form    = e.target;
+  const success = document.getElementById('signup-success');
+  form.style.display    = 'none';
+  success.style.display = 'block';
+}
 </script>
 </body>
 </html>
