@@ -537,6 +537,19 @@ export default function AgenticStudioApp() {
     setLogLines([]);
   }, []);
 
+  // Load template from localStorage (set by Template Library)
+  useEffect(() => {
+    const saved = localStorage.getItem('agenticstudio-template');
+    if (saved) {
+      localStorage.removeItem('agenticstudio-template');
+      try {
+        const t = JSON.parse(saved);
+        if (t.nodes) setNodes(t.nodes);
+        if (t.edges) setEdges(t.edges);
+      } catch { /* ignore malformed data */ }
+    }
+  }, []);
+
   // Keyboard delete
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
