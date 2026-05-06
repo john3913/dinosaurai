@@ -73,7 +73,7 @@ const HIT_R    = 13;     // bird hitbox radius
 
 // ── STATE ──────────────────────────────────────────────
 let phase = 'idle';      // idle | playing | dead
-let bird, cols, sparks;
+let bird, cols = [], sparks = [];
 let score, hiScore, scrollX, speed;
 let flapA = 0, wingP = 0;
 let deadT = 0, deathRot = 0, scoreFx = 0;
