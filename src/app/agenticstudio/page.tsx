@@ -234,84 +234,18 @@ const MODELS = [
 ];
 
 const FEATURES = [
-  {
-    num: '01',
-    title: 'Agent Builder',
-    desc: 'Design multi-step agentic workflows with a visual node editor. Wire tools, memory, sub-agents, and decision branches without writing orchestration boilerplate.',
-    tags: ['tool-use', 'orchestration', 'visual'],
-    color: '#FF6B35',
-  },
-  {
-    num: '02',
-    title: 'Tool Use Studio',
-    desc: 'Build, validate, and test JSON tool schemas interactively. Live sandbox runs actual Claude API calls so you see exact tool_use blocks before shipping.',
-    tags: ['tool-use', 'JSON schema', 'sandbox'],
-    color: '#F59E0B',
-  },
-  {
-    num: '03',
-    title: 'MCP Server Builder',
-    desc: 'Scaffold Model Context Protocol servers from a template library. Define resources, tools, and prompts then deploy to Vercel or Docker with one click.',
-    tags: ['MCP', 'server', 'deploy'],
-    color: '#06B6D4',
-  },
-  {
-    num: '04',
-    title: 'Multi-Agent Orchestration',
-    desc: 'Chain specialized sub-agents with typed state handoffs, retry logic, and parallel fan-out. Visualize execution graphs and inspect every message passed between agents.',
-    tags: ['parallel', 'state', 'sub-agents'],
-    color: '#A78BFA',
-  },
-  {
-    num: '05',
-    title: 'Prompt Engineering Lab',
-    desc: 'A/B test prompts across multiple models simultaneously. Score outputs with custom rubrics or model-as-judge, track regressions, and export winning variants.',
-    tags: ['eval', 'A/B test', 'multi-model'],
-    color: '#34D399',
-  },
-  {
-    num: '06',
-    title: 'Memory & Context Manager',
-    desc: 'Connect vector stores, summarize long contexts automatically, and manage episodic memory across sessions. Supports Pinecone, pgvector, and in-memory backends.',
-    tags: ['RAG', 'vector', 'context'],
-    color: '#F472B6',
-  },
-  {
-    num: '07',
-    title: 'Evaluation Framework',
-    desc: 'Define evals as code: expected outputs, rubric graders, factual-consistency checks, and latency SLOs. Run in CI/CD to catch regressions before every release.',
-    tags: ['evals', 'CI/CD', 'grading'],
-    color: '#FB923C',
-  },
-  {
-    num: '08',
-    title: 'API Gateway & Cost Tracker',
-    desc: 'Unified API key management across providers. Route requests by cost, latency, or capability. Real-time token burn dashboards with per-project budgets and alerts.',
-    tags: ['routing', 'cost', 'observability'],
-    color: '#818CF8',
-  },
-  {
-    num: '09',
-    title: 'Streaming Console',
-    desc: 'Visualize token-by-token streaming output from any model. See latency waterfall, time-to-first-token, and throughput — live, not in post-run analytics.',
-    tags: ['streaming', 'latency', 'real-time'],
-    color: '#22D3EE',
-  },
-  {
-    num: '10',
-    title: 'Debug Trace',
-    desc: 'Step through agent execution one action at a time. Set breakpoints on tool calls, inspect state at every node, replay any sub-sequence with modified inputs.',
-    tags: ['debugger', 'breakpoints', 'replay'],
-    color: '#FB923C',
-  },
-  {
-    num: '11',
-    title: 'Template Library',
-    desc: '60+ production-ready agent templates — research bots, data extractors, code reviewers, support agents. Fork, customize, and deploy in minutes.',
-    tags: ['templates', 'quickstart', 'community'],
-    color: '#A3E635',
-  },
-] as const;
+  { num: '01', title: 'Agent Builder',           href: '/agenticstudio/app',         desc: 'Design multi-step agentic workflows with a visual node editor. Wire tools, memory, sub-agents, and decision branches without writing orchestration boilerplate.', tags: ['tool-use', 'orchestration', 'visual'],   color: '#FF6B35' },
+  { num: '02', title: 'Tool Use Studio',          href: '/agenticstudio/tools',        desc: 'Build, validate, and test JSON tool schemas interactively. Live sandbox shows you exact tool_use and tool_result blocks in a full API trace before you ship.', tags: ['tool-use', 'JSON schema', 'sandbox'],    color: '#F59E0B' },
+  { num: '03', title: 'MCP Server Builder',       href: '/agenticstudio/mcp-builder',  desc: 'Scaffold Model Context Protocol servers visually. Define tools and parameters, choose stdio or HTTP transport, and get production-ready TypeScript or Python instantly.', tags: ['MCP', 'server', 'codegen'],             color: '#06B6D4' },
+  { num: '04', title: 'Multi-Agent Orchestration', href: '',                           desc: 'Chain specialized sub-agents with typed state handoffs, retry logic, and parallel fan-out. Visualize execution graphs and inspect every message passed between agents.', tags: ['parallel', 'state', 'sub-agents'],      color: '#A78BFA' },
+  { num: '05', title: 'Prompt Engineering Lab',   href: '/agenticstudio/prompt-lab',   desc: 'A/B test prompts across multiple models simultaneously. Watch two system prompts stream responses side-by-side with token counts, latency, and word-count diffs.', tags: ['eval', 'A/B test', 'multi-model'],      color: '#34D399' },
+  { num: '06', title: 'Memory & Context Manager', href: '/agenticstudio/memory',       desc: 'Visualize your entire context window as a proportional token bar. Inspect every message, see per-role token breakdowns, and get optimization suggestions before you hit limits.', tags: ['context', 'tokens', 'visualization'], color: '#F472B6' },
+  { num: '07', title: 'Evaluation Framework',     href: '',                            desc: 'Define evals as code: expected outputs, rubric graders, factual-consistency checks, and latency SLOs. Run in CI/CD to catch regressions before every release.', tags: ['evals', 'CI/CD', 'grading'],            color: '#FB923C' },
+  { num: '08', title: 'API Gateway & Cost Tracker', href: '',                          desc: 'Unified API key management across providers. Route requests by cost, latency, or capability. Real-time token burn dashboards with per-project budgets and alerts.', tags: ['routing', 'cost', 'observability'],     color: '#818CF8' },
+  { num: '09', title: 'Streaming Console',        href: '/agenticstudio/streaming',    desc: 'Visualize token-by-token streaming output from any model. See latency, time-to-first-token, tokens-per-second, and estimated cost — live, in real time.', tags: ['streaming', 'latency', 'real-time'],    color: '#22D3EE' },
+  { num: '10', title: 'Debug Trace',              href: '',                            desc: 'Step through agent execution one action at a time. Set breakpoints on tool calls, inspect state at every node, replay any sub-sequence with modified inputs.', tags: ['debugger', 'breakpoints', 'replay'],    color: '#FB923C' },
+  { num: '11', title: 'Template Library',         href: '',                            desc: '60+ production-ready agent templates — research bots, data extractors, code reviewers, support agents. Fork, customize, and deploy in minutes.', tags: ['templates', 'quickstart', 'community'], color: '#A3E635' },
+];
 
 const STEPS = [
   {
@@ -447,18 +381,24 @@ export default function AgenticStudioPage() {
           </p>
         </div>
         <div className="as-feature-grid">
-          {FEATURES.map((f) => (
-            <div key={f.num} className="as-feature-card">
-              <div className="as-feature-num">{f.num}</div>
-              <h3 className="as-feature-title">{f.title}</h3>
-              <p className="as-feature-desc">{f.desc}</p>
-              <div className="as-feature-tags">
-                {f.tags.map((t) => (
-                  <span key={t} className="as-tag">{t}</span>
-                ))}
-              </div>
-            </div>
-          ))}
+          {FEATURES.map((f) => {
+            const inner = (
+              <>
+                <div className="as-feature-num" style={{ color: f.color }}>{f.num}</div>
+                <h3 className="as-feature-title">{f.title}</h3>
+                <p className="as-feature-desc">{f.desc}</p>
+                <div className="as-feature-tags">
+                  {f.tags.map((t) => (
+                    <span key={t} className="as-tag">{t}</span>
+                  ))}
+                </div>
+                {f.href && <span className="as-feature-open" style={{ color: f.color }}>Open →</span>}
+              </>
+            );
+            return f.href
+              ? <Link key={f.num} href={f.href} className="as-feature-card as-feature-card-link" style={{ ['--fc' as string]: f.color }}>{inner}</Link>
+              : <div key={f.num} className="as-feature-card">{inner}</div>;
+          })}
         </div>
       </section>
 
