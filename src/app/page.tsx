@@ -8,7 +8,7 @@ function BgCanvas() {
   useEffect(() => {
     const canvas = ref.current;
     if (!canvas) return;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d')!;
     if (!ctx) return;
 
     const COLORS = ['#7EFF50', '#00D4FF', '#FF6B35', '#9B5CF6'];
