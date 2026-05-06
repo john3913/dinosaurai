@@ -1,6 +1,7 @@
 'use client';
 import Link from 'next/link';
 import './landing.css';
+import { AgenticWordmark } from './Wordmark';
 
 // ── Graph data ────────────────────────────────────────────────────────────────
 const GN = [
@@ -375,7 +376,7 @@ export default function AgenticStudioPage() {
       {/* Nav */}
       <nav className="as-nav">
         <Link href="/agenticstudio" className="as-nav-logo">
-          AgenticStudio
+          <AgenticWordmark />
         </Link>
         <ul className="as-nav-links">
           <li><a href="#features">Features</a></li>
