@@ -245,12 +245,12 @@ export default function HermesPage() {
         </Link>
         <div className="hm-nav-links">
           <Link href="/agenticstudio">AgenticStudio</Link>
-          <a href="https://github.com/john3913/hermes" target="_blank" rel="noopener noreferrer">
+          <a href="https://hermes-mu-lime.vercel.app" target="_blank" rel="noopener noreferrer">
             GitHub
           </a>
         </div>
         <a
-          href="https://github.com/john3913/hermes"
+          href="https://hermes-mu-lime.vercel.app"
           target="_blank"
           rel="noopener noreferrer"
           className="hm-nav-cta"
@@ -272,7 +272,7 @@ export default function HermesPage() {
           </p>
           <div className="hm-actions">
             <a
-              href="https://github.com/john3913/hermes"
+              href="https://hermes-mu-lime.vercel.app"
               target="_blank"
               rel="noopener noreferrer"
               className="hm-btn-primary"
