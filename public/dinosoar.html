@@ -77,6 +77,12 @@ const SPD_MAX  = 375;
 const HIT_R    = 13;
 const MILESTONES = { 5:'#00D4FF', 10:'#7EFF50', 25:'#FF6B35', 50:'#9B5CF6', 100:'#FFD060' };
 
+// precomputed speed lines (y ratio + phase offset per lane)
+const SPEEDLINES = Array.from({length:7}, (_,i) => ({
+  yRatio: 0.08 + i*0.115 + (i*53%17)*0.004,
+  phase: i * 0.618 // golden ratio spread
+}));
+
 // ── STATE ──────────────────────────────────────────────
 let phase = 'idle';
 let bird, cols = [], sparks = [];
@@ -84,6 +90,8 @@ let score, hiScore, scrollX, speed;
 let flapA = 0, wingP = 0;
 let deadT = 0, deathRot = 0, scoreFx = 0, newBestFx = 0;
 let milestoneFx = { alpha: 0, color: '#7EFF50' };
+let shakeT = 0, shakeAmt = 0;
+let frameN = 0;
 let lastTs = 0;
 
 hiScore = parseInt(localStorage.getItem('ds-hi') || '0');
@@ -97,7 +105,7 @@ function reset() {
   cols = []; sparks = [];
   score = 0; scrollX = 0; speed = SPD0;
   flapA = 0; deathRot = 0; scoreFx = 0; newBestFx = 0;
-  milestoneFx.alpha = 0;
+  milestoneFx.alpha = 0; shakeT = 0; frameN = 0;
   addCol(W + 70);
 }
 
@@ -144,12 +152,14 @@ function update(dt, ts) {
     deathRot += dt * 5.8;
     bird.vy   = Math.min(bird.vy + GRV * dt * 0.6, V_MAX);
     bird.y    = Math.min(bird.y + bird.vy * dt, H - GNDH - 8);
+    shakeT    = Math.max(0, shakeT - dt * 3.5);
     milestoneFx.alpha = Math.max(0, milestoneFx.alpha - dt * 2);
     updSparks(dt);
     return;
   }
 
   // playing ─────────────────────────────────────────────
+  frameN++;
   scrollX += speed * dt;
   speed    = Math.min(SPD_MAX, SPD0 + score * 5.2);
   scoreFx  = Math.max(0, scoreFx - dt * 5);
@@ -162,7 +172,22 @@ function update(dt, ts) {
   flapA = Math.max(0, flapA - dt * 5.5);
   wingP = flapA > 0 ? flapA : 0.5 + Math.sin(ts / 500) * 0.5;
 
-  // move columns + oscillation
+  // wing trail particles
+  if (frameN % 2 === 0) {
+    const bx = W * 0.22;
+    for (let i = 0; i < 2; i++) {
+      sparks.push({
+        x: bx - 38 + Math.random()*10,
+        y: bird.y + (i===0 ? -14 : 14) + Math.random()*8,
+        vx: -55 - Math.random()*45, vy: (Math.random()-0.5)*25,
+        life: 1, decay: 5 + Math.random()*3,
+        r: 0.8 + Math.random()*1.6,
+        c: i===0 ? '#3ABB20' : '#2E8A1A',
+      });
+    }
+  }
+
+  // columns + oscillation
   cols.forEach(c => {
     c.x -= speed * dt;
     c.flashT = Math.max(0, c.flashT - dt * 3.5);
@@ -172,9 +197,7 @@ function update(dt, ts) {
   cols = cols.filter(c => c.x > -PIPE_W - 20);
 
   const bx = W * 0.22;
-
   cols.forEach(c => {
-    // passage score + near-miss
     if (!c.scored && c.x + PIPE_W < bx) {
       c.scored = true; score++; scoreFx = 1;
       sfxScore();
@@ -183,29 +206,20 @@ function update(dt, ts) {
       const clearance = Math.min(Math.abs(bird.y - topEdge), Math.abs(bird.y - botEdge));
       if (clearance < 26) { c.flashT = 1; sfxNear(); }
       if (MILESTONES[score]) milestoneFx = { alpha: 1, color: MILESTONES[score] };
-      if (score > hiScore) {
-        hiScore = score; localStorage.setItem('ds-hi', hiScore); newBestFx = 1;
-      }
+      if (score > hiScore) { hiScore = score; localStorage.setItem('ds-hi', hiScore); newBestFx = 1; }
     }
-    // coin collection
     if (c.hasCoin && c.coinAlive) {
       const coinX = c.x + PIPE_W / 2;
       if (Math.abs(coinX - bx) < 20 && Math.abs(bird.y - c.mid) < 20) {
         c.coinAlive = false;
-        score++; scoreFx = 1;
-        sfxCoin();
+        score++; scoreFx = 1; sfxCoin();
         spawnCoinSparks(coinX, c.mid);
-        if (score > hiScore) {
-          hiScore = score; localStorage.setItem('ds-hi', hiScore); newBestFx = 1;
-        }
+        if (score > hiScore) { hiScore = score; localStorage.setItem('ds-hi', hiScore); newBestFx = 1; }
       }
     }
   });
 
-  // bounds
   if (bird.y - HIT_R < 0 || bird.y + HIT_R > H - GNDH) { die(); return; }
-
-  // column collision
   for (const c of cols) {
     if (bx + HIT_R > c.x + 5 && bx - HIT_R < c.x + PIPE_W - 5) {
       if (bird.y - HIT_R < c.mid - c.gapH/2 || bird.y + HIT_R > c.mid + c.gapH/2) {
@@ -219,6 +233,7 @@ function update(dt, ts) {
 function die() {
   if (phase !== 'playing') return;
   phase = 'dead'; deadT = 0;
+  shakeT = 0.36; shakeAmt = 11;
   spawnSparks(W * 0.22, bird.y);
   sfxDeath();
   if (score > hiScore) { hiScore = score; localStorage.setItem('ds-hi', hiScore); }
@@ -249,44 +264,47 @@ function updSparks(dt) {
 
 // ── RENDER ─────────────────────────────────────────────
 function render(ts) {
+  // Screen shake
+  ctx.save();
+  if (shakeT > 0) {
+    const s = shakeT * shakeAmt;
+    ctx.translate((Math.random()-0.5)*s, (Math.random()-0.5)*s*0.55);
+  }
+
   // Sky
   const sky = ctx.createLinearGradient(0,0,0,H);
   sky.addColorStop(0,'#040507'); sky.addColorStop(0.6,'#060C0E'); sky.addColorStop(1,'#07100A');
   ctx.fillStyle = sky; ctx.fillRect(0,0,W,H);
 
   // Moon
-  ctx.beginPath(); ctx.arc(W*0.8, H*0.2, 54, 0, Math.PI*2);
-  ctx.fillStyle = '#0C1C10'; ctx.fill();
-  ctx.beginPath(); ctx.arc(W*0.8, H*0.2, 58, 0, Math.PI*2);
-  ctx.strokeStyle = 'rgba(126,255,80,0.07)'; ctx.lineWidth = 5; ctx.stroke();
+  ctx.beginPath(); ctx.arc(W*0.8,H*0.2,54,0,Math.PI*2); ctx.fillStyle='#0C1C10'; ctx.fill();
+  ctx.beginPath(); ctx.arc(W*0.8,H*0.2,58,0,Math.PI*2);
+  ctx.strokeStyle='rgba(126,255,80,0.07)'; ctx.lineWidth=5; ctx.stroke();
 
   // Stars
-  for (let i = 0; i < 58; i++) {
-    const sx = ((i*137.5 + scrollX*0.022) % (W+20))-10;
-    const sy = (i*71.3) % (H*0.63);
-    ctx.beginPath(); ctx.arc(sx, sy, i%5===0?1.2:0.65, 0, Math.PI*2);
-    ctx.fillStyle = `rgba(242,242,243,${0.18+i%3*0.12})`; ctx.fill();
+  for (let i=0;i<58;i++) {
+    const sx=((i*137.5+scrollX*0.022)%(W+20))-10, sy=(i*71.3)%(H*0.63);
+    ctx.beginPath(); ctx.arc(sx,sy,i%5===0?1.2:0.65,0,Math.PI*2);
+    ctx.fillStyle=`rgba(242,242,243,${0.18+i%3*0.12})`; ctx.fill();
   }
 
   // Far mountains
-  const mf = scrollX * 0.1;
-  ctx.fillStyle = '#080E0A'; ctx.beginPath(); ctx.moveTo(0,H);
-  for (let x=0;x<=W;x+=3) ctx.lineTo(x, H*0.5+Math.sin((x+mf)*0.0033)*60+Math.sin((x+mf)*0.008+1)*30);
+  const mf=scrollX*0.1;
+  ctx.fillStyle='#080E0A'; ctx.beginPath(); ctx.moveTo(0,H);
+  for (let x=0;x<=W;x+=3) ctx.lineTo(x,H*0.5+Math.sin((x+mf)*0.0033)*60+Math.sin((x+mf)*0.008+1)*30);
   ctx.lineTo(W,H); ctx.closePath(); ctx.fill();
 
   // Near hills
-  const mn = scrollX * 0.28;
-  ctx.fillStyle = '#060C07'; ctx.beginPath(); ctx.moveTo(0,H);
-  for (let x=0;x<=W;x+=3) ctx.lineTo(x, H*0.67+Math.sin((x+mn)*0.005)*40+Math.sin((x+mn)*0.013+2)*18);
+  const mn=scrollX*0.28;
+  ctx.fillStyle='#060C07'; ctx.beginPath(); ctx.moveTo(0,H);
+  for (let x=0;x<=W;x+=3) ctx.lineTo(x,H*0.67+Math.sin((x+mn)*0.005)*40+Math.sin((x+mn)*0.013+2)*18);
   ctx.lineTo(W,H); ctx.closePath(); ctx.fill();
 
-  // Tree silhouettes
-  const tf = scrollX * 0.52;
-  ctx.fillStyle = '#050A06';
+  // Trees
+  const tf=scrollX*0.52; ctx.fillStyle='#050A06';
   for (let i=0;i<16;i++) {
     const tx=((i*136+18-tf)%(W+160))-80, th=28+(i*41%34), tw=13+(i*23%15);
-    ctx.beginPath(); ctx.moveTo(tx-tw,H-GNDH+2);
-    ctx.quadraticCurveTo(tx,H-GNDH-th,tx+tw,H-GNDH+2); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(tx-tw,H-GNDH+2); ctx.quadraticCurveTo(tx,H-GNDH-th,tx+tw,H-GNDH+2); ctx.fill();
   }
 
   // Ground
@@ -294,8 +312,27 @@ function render(ts) {
   ctx.fillStyle='#0A180A'; ctx.fillRect(0,H-GNDH,W,4);
   ctx.fillStyle='rgba(126,255,80,0.07)'; ctx.fillRect(0,H-GNDH,W,2);
   ctx.fillStyle='rgba(0,0,0,0.18)';
-  const goff = scrollX % 82;
+  const goff=scrollX%82;
   for (let gx=-goff;gx<W+82;gx+=82) ctx.fillRect(gx,H-GNDH+5,36,2);
+
+  // Speed lines
+  if (phase === 'playing') {
+    const spFrac = clamp((speed - 240) / (SPD_MAX - 240), 0, 1);
+    if (spFrac > 0) {
+      SPEEDLINES.forEach((sl, i) => {
+        const len = (70 + i*22) * (0.4 + spFrac*0.6);
+        const sx = W - ((scrollX * 2.4 + sl.phase * W * 1.3) % (W + len + 60));
+        const gr = ctx.createLinearGradient(sx, 0, sx+len, 0);
+        gr.addColorStop(0,'rgba(180,255,180,0)');
+        gr.addColorStop(0.25,'rgba(180,255,180,1)');
+        gr.addColorStop(1,'rgba(180,255,180,0)');
+        ctx.fillStyle = gr;
+        ctx.globalAlpha = spFrac * 0.2;
+        ctx.fillRect(sx, sl.yRatio * H, len, 1.4);
+      });
+      ctx.globalAlpha = 1;
+    }
+  }
 
   // Columns + coins
   if (phase !== 'idle') cols.forEach(c => { drawCol(c); drawCoin(c, ts); });
@@ -321,10 +358,10 @@ function render(ts) {
 
   // Score display
   if (phase==='playing' || (phase==='dead' && deadT<0.5)) {
-    const sz = clamp(H*0.09,36,68);
+    const sz=clamp(H*0.09,36,68);
     ctx.font=`900 ${sz}px -apple-system,system-ui,sans-serif`; ctx.textAlign='center';
     ctx.fillStyle='rgba(0,0,0,0.3)'; ctx.fillText(score,W/2+2,H*0.1+sz*0.35+2);
-    ctx.fillStyle = scoreFx>0 ? `rgba(200,255,120,${0.85+scoreFx*0.15})` : 'rgba(242,242,243,0.88)';
+    ctx.fillStyle=scoreFx>0?`rgba(200,255,120,${0.85+scoreFx*0.15})`:'rgba(242,242,243,0.88)';
     ctx.fillText(score,W/2,H*0.1+sz*0.35);
     if (newBestFx>0) {
       ctx.font=`700 ${clamp(H*0.025,10,14)}px -apple-system,system-ui,sans-serif`;
@@ -335,27 +372,40 @@ function render(ts) {
   // ── IDLE SCREEN ───────────────────────────────────────
   if (phase === 'idle') {
     const tsz = clamp(H*0.12, 48, 92);
+    ctx.textAlign = 'left';
+
     ctx.font = `900 ${tsz}px -apple-system,system-ui,sans-serif`;
     const dinoW = ctx.measureText('DINO ').width;
     ctx.font = `italic 800 ${Math.round(tsz*1.06)}px 'Playfair Display',Georgia,serif`;
     const soarW = ctx.measureText('SOAR').width;
-    const startX = W/2 - (dinoW+soarW)/2;
+    const totalW = dinoW + soarW;
+    const startX = W/2 - totalW/2;
     const titleY = H*0.28 + tsz*0.35;
 
-    // shadow
-    ctx.fillStyle = 'rgba(0,0,0,0.28)';
-    ctx.textAlign = 'left';
+    // Animated flowing gradient across both words
+    const shift = ((ts / 7000) % 1) * totalW * 2;
+    const gW    = totalW * 3;
+    const tg    = ctx.createLinearGradient(startX - shift, 0, startX - shift + gW, 0);
+    tg.addColorStop(0,    '#7EFF50');
+    tg.addColorStop(0.18, '#00D4FF');
+    tg.addColorStop(0.38, '#FF6B35');
+    tg.addColorStop(0.56, '#9B5CF6');
+    tg.addColorStop(0.74, '#7EFF50');
+    tg.addColorStop(0.88, '#00D4FF');
+    tg.addColorStop(1,    '#FF6B35');
+
+    // Shadow
+    ctx.fillStyle = 'rgba(0,0,0,0.26)';
     ctx.font = `900 ${tsz}px -apple-system,system-ui,sans-serif`;
     ctx.fillText('DINO ', startX+3, titleY+3);
     ctx.font = `italic 800 ${Math.round(tsz*1.06)}px 'Playfair Display',Georgia,serif`;
     ctx.fillText('SOAR', startX+dinoW+3, titleY+3);
 
-    // main
+    // Gradient text
+    ctx.fillStyle = tg;
     ctx.font = `900 ${tsz}px -apple-system,system-ui,sans-serif`;
-    ctx.fillStyle = '#F2F2F3';
     ctx.fillText('DINO ', startX, titleY);
     ctx.font = `italic 800 ${Math.round(tsz*1.06)}px 'Playfair Display',Georgia,serif`;
-    ctx.fillStyle = '#7EFF50';
     ctx.fillText('SOAR', startX+dinoW, titleY);
 
     ctx.textAlign = 'center';
@@ -374,7 +424,7 @@ function render(ts) {
 
   // ── DEAD SCREEN ───────────────────────────────────────
   if (phase==='dead' && deadT>0.55) {
-    const a = Math.min(1,(deadT-0.55)/0.45);
+    const a=Math.min(1,(deadT-0.55)/0.45);
     ctx.fillStyle=`rgba(4,5,8,${a*0.74})`; ctx.fillRect(0,0,W,H);
     ctx.globalAlpha=a; ctx.textAlign='center';
     const dsz=clamp(H*0.14,58,104);
@@ -395,21 +445,21 @@ function render(ts) {
     ctx.fillText('TAP TO TRY AGAIN',W/2,H*0.8);
     ctx.globalAlpha=1;
   }
+
+  ctx.restore(); // end screen shake
 }
 
 // ── DRAW COLUMN ───────────────────────────────────────
 function drawCol(c) {
   const x=c.x, w=PIPE_W, topH=c.mid-c.gapH/2, botY=c.mid+c.gapH/2, cw=w+14, ch=18, cx=c.x-7;
-  const fl = c.flashT;
+  const fl=c.flashT;
 
-  const bg = ctx.createLinearGradient(x,0,x+w,0);
+  const bg=ctx.createLinearGradient(x,0,x+w,0);
   bg.addColorStop(0,'#091408'); bg.addColorStop(0.38,'#132011');
   bg.addColorStop(0.62,'#132011'); bg.addColorStop(1,'#091408');
   ctx.fillStyle=bg; ctx.fillRect(x,0,w,topH); ctx.fillRect(x,botY,w,H-botY);
 
-  ctx.fillStyle = fl>0
-    ? `rgb(${~~lerp(25,160,fl)},${~~lerp(44,255,fl)},${~~lerp(22,120,fl)})`
-    : '#192C16';
+  ctx.fillStyle=fl>0?`rgb(${~~lerp(25,155,fl)},${~~lerp(44,255,fl)},${~~lerp(22,115,fl)})`:'#192C16';
   ctx.fillRect(cx,topH-ch,cw,ch); ctx.fillRect(cx,botY,cw,ch);
 
   const ga=0.26+fl*0.55;
@@ -440,73 +490,40 @@ function drawCoin(c, ts) {
   ctx.beginPath(); ctx.arc(cx-1.4,cy-1.8,2.2,0,Math.PI*2); ctx.fill();
 }
 
-// ── DRAW BRONTOSAURUS WITH WINGS ──────────────────────
+// ── DRAW 🦕 WITH WINGS ────────────────────────────────
 function drawBird(x, y, rot, wp) {
   ctx.save();
   ctx.translate(x, y);
   ctx.rotate(rot);
 
-  const G='#7EFF50', GD='#4EC030', GDD='#2E8A1A';
-  const wa=(wp-0.5)*44*Math.PI/180;
+  const GD='#4EC030', GDD='#2A8018';
+  const wa = (wp - 0.5) * 46 * Math.PI / 180;
 
-  // Wings behind body
+  // Wings extend toward –x (left in local = behind the bird when emoji is flipped right)
   ctx.save(); ctx.rotate(-wa);
-  ctx.fillStyle=GD;
+  ctx.fillStyle = GD;
   ctx.beginPath();
-  ctx.moveTo(2,-7); ctx.quadraticCurveTo(-9,-31,-44,-19); ctx.quadraticCurveTo(-24,-7,2,-3);
+  ctx.moveTo(0, -8); ctx.quadraticCurveTo(-12, -30, -48, -19); ctx.quadraticCurveTo(-27, -7, 0, -3);
   ctx.closePath(); ctx.fill();
-  ctx.strokeStyle=GDD; ctx.lineWidth=0.9;
-  ctx.beginPath(); ctx.moveTo(0,-8); ctx.quadraticCurveTo(-19,-22,-39,-17); ctx.stroke();
+  ctx.strokeStyle=GDD; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(-1,-9); ctx.quadraticCurveTo(-20,-23,-43,-17); ctx.stroke();
   ctx.restore();
 
   ctx.save(); ctx.rotate(wa);
-  ctx.fillStyle=GD;
+  ctx.fillStyle = GD;
   ctx.beginPath();
-  ctx.moveTo(2,7); ctx.quadraticCurveTo(-9,31,-44,19); ctx.quadraticCurveTo(-24,7,2,3);
+  ctx.moveTo(0, 8); ctx.quadraticCurveTo(-12, 30, -48, 19); ctx.quadraticCurveTo(-27, 7, 0, 3);
   ctx.closePath(); ctx.fill();
-  ctx.strokeStyle=GDD; ctx.lineWidth=0.9;
-  ctx.beginPath(); ctx.moveTo(0,8); ctx.quadraticCurveTo(-19,22,-39,17); ctx.stroke();
+  ctx.strokeStyle=GDD; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(-1,9); ctx.quadraticCurveTo(-20,23,-43,17); ctx.stroke();
   ctx.restore();
 
-  // Body
-  ctx.fillStyle=G;
-  ctx.beginPath(); ctx.ellipse(0,0,17,11,0,0,Math.PI*2); ctx.fill();
-  ctx.fillStyle='rgba(200,255,160,0.14)';
-  ctx.beginPath(); ctx.ellipse(-1,-4,8,4,-0.2,0,Math.PI*2); ctx.fill();
-
-  // Neck — tapered bezier shape
-  ctx.fillStyle=G;
-  ctx.beginPath();
-  ctx.moveTo(11,-8);
-  ctx.quadraticCurveTo(20,-20,26,-24);
-  ctx.lineTo(22,-21);
-  ctx.quadraticCurveTo(16,-13,8,-2);
-  ctx.closePath(); ctx.fill();
-
-  // Head
-  ctx.fillStyle=G;
-  ctx.beginPath(); ctx.ellipse(27,-26,10,7,-0.22,0,Math.PI*2); ctx.fill();
-
-  // Snout
-  ctx.fillStyle=GD;
-  ctx.beginPath(); ctx.ellipse(35,-27,5,3.5,-0.1,0,Math.PI*2); ctx.fill();
-
-  // Nostril
-  ctx.fillStyle=GDD;
-  ctx.beginPath(); ctx.arc(37,-28,1.2,0,Math.PI*2); ctx.fill();
-
-  // Eye
-  ctx.fillStyle='#06080D';
-  ctx.beginPath(); ctx.arc(29,-28,2.8,0,Math.PI*2); ctx.fill();
-  ctx.fillStyle='rgba(255,255,255,0.55)';
-  ctx.beginPath(); ctx.arc(29.8,-28.8,1.1,0,Math.PI*2); ctx.fill();
-
-  // Tail
-  ctx.fillStyle=GD;
-  ctx.beginPath();
-  ctx.moveTo(-13,3); ctx.quadraticCurveTo(-25,9,-36,16);
-  ctx.lineTo(-34,19); ctx.quadraticCurveTo(-22,12,-11,7);
-  ctx.closePath(); ctx.fill();
+  // 🦕 emoji, flipped to face right
+  ctx.font = '36px serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.scale(-1, 1);
+  ctx.fillText('🦕', 0, 3);
 
   ctx.restore();
 }
