@@ -329,6 +329,32 @@
 }
 .as-feature-card:hover::before { opacity: 1; }
 
+.as-feature-card-link {
+  text-decoration: none;
+  display: block;
+  cursor: pointer;
+}
+.as-feature-card-link:hover {
+  border-color: var(--fc, rgba(255,107,53,0.5));
+  transform: translateY(-3px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+.as-feature-card-link:hover::before {
+  opacity: 1;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--fc, #FF6B35) 8%, transparent) 0%, transparent 60%);
+}
+.as-feature-open {
+  display: inline-block;
+  margin-top: 14px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity 0.2s, transform 0.2s;
+}
+.as-feature-card-link:hover .as-feature-open { opacity: 1; transform: translateX(0); }
+
 .as-feature-icon {
   width: 40px; height: 40px;
   border-radius: 10px;
