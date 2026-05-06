@@ -1,0 +1,43 @@
+/* ── Multi-Agent Orchestration ───────────────────────────────────────────── */
+.orc-root { min-height: 100vh; background: #070A0F; color: #E8EAF0; display: flex; flex-direction: column; font-family: var(--font-inter-tight, sans-serif); }
+
+.orc-bar { height: 52px; display: flex; align-items: center; padding: 0 16px; border-bottom: 1px solid rgba(255,255,255,0.07); background: rgba(7,10,15,0.92); backdrop-filter: blur(12px); position: sticky; top: 0; z-index: 100; flex-shrink: 0; }
+.orc-bar-logo { text-decoration: none; }
+.orc-bar-sep { width: 1px; height: 24px; background: rgba(255,255,255,0.1); margin: 0 16px; }
+.orc-bar-title { font-size: 14px; font-weight: 500; color: rgba(232,234,240,0.7); }
+.orc-bar-space { flex: 1; }
+.orc-phase-badge { font-size: 12px; font-family: var(--font-jetbrains-mono, monospace); color: rgba(232,234,240,0.45); padding: 3px 10px; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; }
+
+.orc-controls { display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-bottom: 1px solid rgba(255,255,255,0.07); background: rgba(255,255,255,0.02); flex-shrink: 0; flex-wrap: wrap; }
+.orc-run { padding: 9px 20px; background: #FF6B35; color: #000; font-weight: 700; font-size: 13px; border: none; border-radius: 7px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: background 0.15s; }
+.orc-run:hover:not(:disabled) { background: #FF7A48; }
+.orc-run:disabled { opacity: 0.65; cursor: not-allowed; }
+.orc-reset { padding: 9px 14px; background: transparent; border: 1px solid rgba(255,255,255,0.1); border-radius: 7px; color: rgba(232,234,240,0.5); font-size: 13px; cursor: pointer; }
+.orc-spin { width: 12px; height: 12px; border: 2px solid rgba(0,0,0,0.2); border-top-color: #000; border-radius: 50%; animation: orc-spin 0.7s linear infinite; }
+@keyframes orc-spin { to { transform: rotate(360deg); } }
+
+.orc-phase-track { display: flex; align-items: center; gap: 0; flex: 1; overflow-x: auto; }
+.orc-phase-step { display: flex; align-items: center; gap: 6px; padding: 4px 12px; font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: rgba(232,234,240,0.25); position: relative; }
+.orc-phase-step::after { content: '→'; position: absolute; right: -2px; color: rgba(255,255,255,0.15); font-size: 10px; }
+.orc-phase-step:last-child::after { display: none; }
+.orc-phase-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.15); transition: all 0.3s; }
+.orc-phase-active { color: #FF6B35; }
+.orc-phase-active .orc-phase-dot { background: #FF6B35; box-shadow: 0 0 6px #FF6B35; animation: orc-dot-pulse 1s ease-in-out infinite; }
+@keyframes orc-dot-pulse { 0%,100% { box-shadow: 0 0 4px #FF6B35; } 50% { box-shadow: 0 0 12px #FF6B35; } }
+.orc-phase-done { color: rgba(52,211,153,0.7); }
+.orc-phase-done .orc-phase-dot { background: #34D399; }
+
+.orc-layout { flex: 1; display: flex; overflow: hidden; }
+
+.orc-graph-wrap { flex: 1; display: flex; align-items: center; justify-content: center; padding: 20px; overflow: hidden; }
+.orc-svg { width: 100%; height: 100%; max-width: 870px; max-height: 660px; }
+
+.orc-log-panel { width: 300px; flex-shrink: 0; border-left: 1px solid rgba(255,255,255,0.07); display: flex; flex-direction: column; }
+.orc-log-title { padding: 12px 16px; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(232,234,240,0.35); border-bottom: 1px solid rgba(255,255,255,0.06); flex-shrink: 0; }
+.orc-log { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 4px; }
+.orc-log-empty { font-size: 12px; color: rgba(232,234,240,0.25); text-align: center; padding: 20px 0; }
+.orc-log-line { font-size: 11.5px; font-family: var(--font-jetbrains-mono, monospace); line-height: 1.55; display: flex; gap: 8px; animation: orc-log-in 0.25s ease; }
+@keyframes orc-log-in { from { opacity: 0; transform: translateX(6px); } to { opacity: 1; transform: translateX(0); } }
+.orc-log-time { color: rgba(232,234,240,0.2); flex-shrink: 0; }
+.orc-log-cursor { width: 8px; height: 14px; background: #FF6B35; opacity: 0.7; animation: orc-blink 1s step-end infinite; margin-top: 2px; }
+@keyframes orc-blink { 50% { opacity: 0; } }
