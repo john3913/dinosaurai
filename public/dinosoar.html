@@ -49,12 +49,12 @@ let PIPE_W,GAP0,GAP_MIN,GNDH,PIPE_SEP,HIT_R,BIRD_SZ,SPD0,SPD_MAX;
 function computeScale(){
   BIRD_SZ=clamp(Math.min(W,H)*.072,22,46);
   PIPE_W=clamp(W*.07,36,80);
-  GAP0=clamp(H*.215,126,198);
+  GAP0=clamp(H*.265,155,228);
   GAP_MIN=clamp(H*.145,94,136);
   GNDH=clamp(H*.076,44,78);
   PIPE_SEP=clamp(W*.275,188,360);
   HIT_R=BIRD_SZ*.33;
-  SPD0=clamp(W*.163,155,215);
+  SPD0=clamp(W*.128,122,162);
   SPD_MAX=clamp(W*.325,295,425);
 }
 function resize(){
@@ -108,7 +108,7 @@ let deadT=0,deathRot=0,scoreFx=0,newBestFx=0,scorePulse=0;
 let milestoneFx={alpha:0,color:'#7EFF50'};
 let shakeT=0,shakeAmt=0;
 let frameN=0,lastTs=0;
-let streak=0,streakFx=0,pausedPhase=null;
+let streak=0,streakFx=0,pausedPhase=null,lastLevel=1,levelUpFx=0;
 
 hiScore=parseInt(localStorage.getItem('ds-hi')||'0');
 function initBird(){bird={y:H*.44,vy:0};}
@@ -141,17 +141,17 @@ function reset(){
   score=0;scrollX=0;speed=SPD0;
   flapA=0;deathRot=0;scoreFx=0;newBestFx=0;scorePulse=0;
   milestoneFx.alpha=0;shakeT=0;frameN=0;
-  streak=0;streakFx=0;
+  streak=0;streakFx=0;lastLevel=1;levelUpFx=0;
   addCol(W+70);
 }
 function addCol(x){
-  const gapH=Math.max(GAP_MIN,GAP0-score*1.4);
+  const gapH=Math.max(GAP_MIN,GAP0-score*0.9);
   const pad=clamp(H*.06,24,58);
   const lo=GNDH+gapH/2+pad,hi=H-GNDH-gapH/2-pad;
   const mid=lo+Math.random()*(hi-lo);
   const col={x,mid,baseMid:mid,gapH,scored:false,hasCoin:Math.random()<.62,coinAlive:true,flashT:0};
   if(!col.hasCoin)col.coinAlive=false;
-  if(score>=10&&Math.random()<.44)
+  if(score>=15&&Math.random()<.44)
     col.osc={amp:20+Math.random()*28,freq:.55+Math.random()*.55,phase:Math.random()*Math.PI*2};
   cols.push(col);
 }
@@ -189,6 +189,7 @@ function update(dt,ts){
     shakeT=Math.max(0,shakeT-dt*3.5);
     milestoneFx.alpha=Math.max(0,milestoneFx.alpha-dt*2);
     streakFx=Math.max(0,streakFx-dt*2.5);
+    levelUpFx=Math.max(0,levelUpFx-dt*1.6);
     shockwaves.forEach(s=>{s.r+=dt*420;s.life=Math.max(0,1-s.r/s.maxR);});
     shockwaves=shockwaves.filter(s=>s.life>0);
     updSparks(dt);return;
@@ -196,11 +197,12 @@ function update(dt,ts){
 
   frameN++;
   scrollX+=speed*dt;
-  speed=Math.min(SPD_MAX,SPD0+score*5.2);
+  speed=Math.min(SPD_MAX,SPD0+score*4.0);
   scoreFx=Math.max(0,scoreFx-dt*5);
   newBestFx=Math.max(0,newBestFx-dt*1.5);
   scorePulse=Math.max(0,scorePulse-dt*6);
   streakFx=Math.max(0,streakFx-dt*2.5);
+  levelUpFx=Math.max(0,levelUpFx-dt*1.6);
   milestoneFx.alpha=Math.max(0,milestoneFx.alpha-dt*2.2);
 
   bird.vy=Math.min(bird.vy+GRV*dt,V_MAX);bird.y+=bird.vy*dt;
@@ -233,6 +235,8 @@ function update(dt,ts){
         streak++;streakFx=1;
         if(streak>=3&&streak%5===0){sfxStreak();haptic([10,5,10]);}
       }
+      const curLevel=Math.floor(score/10)+1;
+      if(curLevel>lastLevel){lastLevel=curLevel;levelUpFx=1;sfxStreak();haptic([20,10,20,10,20]);}
       if(MILESTONES[score])milestoneFx={alpha:1,color:MILESTONES[score]};
       if(score>hiScore){hiScore=score;localStorage.setItem('ds-hi',hiScore);newBestFx=1;}
     }
@@ -428,10 +432,12 @@ function render(ts){
     ctx.fillStyle='rgba(8,16,32,.78)';ctx.fill();
     rrect(px,py,pw,ph2,pr);
     ctx.strokeStyle=`rgba(0,200,255,${.14+scorePulse*.45})`;ctx.lineWidth=1;ctx.stroke();
+    const level=Math.floor(score/10)+1;
     ctx.font=`600 ${clamp(H*.018,7,11)}px 'SF Mono','Consolas','Courier New',monospace`;
     ctx.textAlign='center';
-    ctx.fillStyle=`rgba(0,200,255,${.32+scorePulse*.3})`;
-    ctx.fillText('SCORE',cx,py+ph2*.3);
+    const lvlAlpha=levelUpFx>.5?.55+levelUpFx*.4:.32+scorePulse*.3;
+    ctx.fillStyle=levelUpFx>.5?`rgba(0,255,180,${lvlAlpha})`:`rgba(0,200,255,${lvlAlpha})`;
+    ctx.fillText(`LV.${level}`,cx,py+ph2*.3);
     ctx.font=`700 ${sz}px -apple-system,BlinkMacSystemFont,sans-serif`;
     ctx.fillStyle=scoreFx>0?`rgba(150,255,110,${.92+scoreFx*.08})`:'rgba(230,242,255,.95)';
     ctx.fillText(score,cx,py+ph2*.72);
@@ -453,6 +459,12 @@ function render(ts){
       ctx.font=`700 ${clamp(H*.024,9,14)}px -apple-system,BlinkMacSystemFont,sans-serif`;
       ctx.fillStyle=`rgba(0,220,180,${newBestFx})`;
       ctx.fillText('NEW BEST!',cx,py+ph2+clamp(H*.055,22,34));
+    }
+    if(levelUpFx>0){
+      const lusz=clamp(H*.028,10,16);
+      ctx.font=`700 ${lusz}px -apple-system,BlinkMacSystemFont,sans-serif`;
+      ctx.fillStyle=`rgba(0,255,180,${levelUpFx*.9})`;
+      ctx.fillText(`LEVEL ${level}  UNLOCKED`,cx,py-clamp(H*.022,8,14));
     }
 
     // ── STREAK BADGE ─────────────────────────────────
@@ -531,9 +543,12 @@ function render(ts){
     rrect(scx-spw/2,scy-sph*.65,spw,sph,sph/2);
     ctx.strokeStyle='rgba(0,200,255,.2)';ctx.lineWidth=1;ctx.stroke();
     ctx.font=`700 ${ssz}px -apple-system,BlinkMacSystemFont,sans-serif`;
-    ctx.fillStyle='#7EFF50';ctx.fillText(score,scx,scy+ssz*.25);
-    ctx.font=`500 ${clamp(H*.025,9,14)}px 'SF Mono','Consolas','Courier New',monospace`;
-    ctx.fillStyle='rgba(0,200,255,.45)';ctx.fillText('SCORE',scx,scy+ssz*.55);
+    ctx.fillStyle='#7EFF50';ctx.fillText(score,scx,scy+ssz*.18);
+    ctx.font=`500 ${clamp(H*.022,8,13)}px 'SF Mono','Consolas','Courier New',monospace`;
+    ctx.fillStyle='rgba(0,200,255,.45)';ctx.fillText('SCORE',scx,scy+ssz*.44);
+    const deadLevel=Math.floor(score/10)+1;
+    ctx.font=`600 ${clamp(H*.02,8,12)}px 'SF Mono','Consolas','Courier New',monospace`;
+    ctx.fillStyle='rgba(0,220,160,.6)';ctx.fillText(`LV.${deadLevel}`,scx,scy+ssz*.68);
     if(hiScore>0){
       ctx.font=`600 ${clamp(H*.03,11,18)}px 'SF Mono','Consolas','Courier New',monospace`;
       ctx.fillStyle='rgba(0,180,255,.6)';ctx.fillText(`BEST  ${hiScore}`,W/2,H*.73);
