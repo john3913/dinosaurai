@@ -39,7 +39,7 @@ export default function DebugTrace() {
   const [breakpoints, setBreakpoints] = useState<Set<number>>(new Set());
   const [selected, setSelected] = useState<number | null>(null);
   const [speed, setSpeed] = useState(1);
-  const timerRef = useRef<ReturnType<typeof setTimeout>>();
+  const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>();
   const listRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
