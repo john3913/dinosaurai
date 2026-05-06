@@ -618,32 +618,43 @@ function drawCoin(c,ts){
 function drawBird(x,y,rot,wp){
   ctx.save();ctx.translate(x,y);ctx.rotate(rot);
   const ws=BIRD_SZ/36;
-  const GD='#4EC030',GDD='#2A8018';
   const wa=(wp-.5)*46*Math.PI/180;
 
-  const aura=ctx.createRadialGradient(0,2*ws,0,0,2*ws,30*ws);
-  aura.addColorStop(0,'rgba(126,255,80,.34)');
-  aura.addColorStop(.55,'rgba(100,200,60,.12)');
-  aura.addColorStop(1,'rgba(0,0,0,0)');
-  ctx.fillStyle=aura;ctx.beginPath();ctx.arc(0,2*ws,30*ws,0,Math.PI*2);ctx.fill();
+  // Outer wide glow
+  const outerAura=ctx.createRadialGradient(0,0,0,0,0,58*ws);
+  outerAura.addColorStop(0,'rgba(126,255,80,.22)');
+  outerAura.addColorStop(.5,'rgba(80,200,40,.08)');
+  outerAura.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=outerAura;ctx.beginPath();ctx.arc(0,0,58*ws,0,Math.PI*2);ctx.fill();
 
+  // Inner bright core halo
+  const innerAura=ctx.createRadialGradient(0,0,0,0,0,22*ws);
+  innerAura.addColorStop(0,'rgba(200,255,140,.72)');
+  innerAura.addColorStop(.5,'rgba(126,255,80,.38)');
+  innerAura.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=innerAura;ctx.beginPath();ctx.arc(0,0,22*ws,0,Math.PI*2);ctx.fill();
+
+  // Wings — bright lime with glow
+  ctx.shadowColor='rgba(126,255,80,.7)';ctx.shadowBlur=10*ws;
   ctx.save();ctx.rotate(-wa);
-  ctx.fillStyle=GD;
+  ctx.fillStyle='#8FFF55';
   ctx.beginPath();ctx.moveTo(0,-8*ws);ctx.quadraticCurveTo(-12*ws,-30*ws,-48*ws,-19*ws);ctx.quadraticCurveTo(-27*ws,-7*ws,0,-3*ws);
   ctx.closePath();ctx.fill();
-  ctx.strokeStyle=GDD;ctx.lineWidth=1;
+  ctx.strokeStyle='rgba(180,255,100,.6)';ctx.lineWidth=1.5;
   ctx.beginPath();ctx.moveTo(-1*ws,-9*ws);ctx.quadraticCurveTo(-20*ws,-23*ws,-43*ws,-17*ws);ctx.stroke();
   ctx.restore();
 
   ctx.save();ctx.rotate(wa);
-  ctx.fillStyle=GD;
+  ctx.fillStyle='#8FFF55';
   ctx.beginPath();ctx.moveTo(0,8*ws);ctx.quadraticCurveTo(-12*ws,30*ws,-48*ws,19*ws);ctx.quadraticCurveTo(-27*ws,7*ws,0,3*ws);
   ctx.closePath();ctx.fill();
-  ctx.strokeStyle=GDD;ctx.lineWidth=1;
+  ctx.strokeStyle='rgba(180,255,100,.6)';ctx.lineWidth=1.5;
   ctx.beginPath();ctx.moveTo(-1*ws,9*ws);ctx.quadraticCurveTo(-20*ws,23*ws,-43*ws,17*ws);ctx.stroke();
   ctx.restore();
+  ctx.shadowBlur=0;ctx.shadowColor='transparent';
 
-  ctx.shadowColor='rgba(160,255,90,.82)';ctx.shadowBlur=BIRD_SZ*.6;
+  // 🦕 with strong glow
+  ctx.shadowColor='rgba(180,255,100,.95)';ctx.shadowBlur=BIRD_SZ*1.1;
   ctx.font=`${BIRD_SZ}px serif`;ctx.textAlign='center';ctx.textBaseline='middle';
   ctx.scale(-1,1);ctx.fillText('🦕',0,3*ws);
   ctx.shadowBlur=0;ctx.shadowColor='transparent';
