@@ -51,7 +51,7 @@ export default function StreamingConsole() {
   const threadRef = useRef<HTMLDivElement>(null);
   const t0 = useRef(0);
   const tokCount = useRef(0);
-  const tpsTick = useRef<ReturnType<typeof setInterval>>();
+  const tpsTick = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
 
   const model = MODELS.find(m => m.id === modelId) ?? MODELS[0];
 
