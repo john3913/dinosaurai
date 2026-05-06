@@ -1,0 +1,73 @@
+/* ── Semantic Diff ────────────────────────────────────────────────────────── */
+.sd-root { min-height: 100vh; background: #070A0F; color: #E8EAF0; display: flex; flex-direction: column; font-family: var(--font-inter-tight, sans-serif); }
+
+/* Nav */
+.sd-bar { height: 52px; display: flex; align-items: center; padding: 0 16px; border-bottom: 1px solid rgba(255,255,255,0.07); background: rgba(7,10,15,0.92); backdrop-filter: blur(12px); position: sticky; top: 0; z-index: 100; flex-shrink: 0; }
+.sd-bar-logo { text-decoration: none; }
+.sd-bar-sep { width: 1px; height: 24px; background: rgba(255,255,255,0.1); margin: 0 16px; }
+.sd-bar-title { font-size: 14px; font-weight: 500; color: rgba(232,234,240,0.7); }
+
+/* Body */
+.sd-body { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding: 20px; gap: 20px; }
+
+/* Top inputs */
+.sd-inputs { display: grid; grid-template-columns: 1fr auto 1fr; gap: 16px; align-items: start; }
+.sd-col { display: flex; flex-direction: column; gap: 8px; }
+.sd-col-label { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(232,234,240,0.4); }
+.sd-model-sel { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 6px 10px; font-size: 12px; color: #E8EAF0; font-family: var(--font-jetbrains-mono, monospace); outline: none; cursor: pointer; }
+.sd-textarea { width: 100%; min-height: 160px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 12px; font-size: 12px; font-family: var(--font-jetbrains-mono, monospace); color: #E8EAF0; resize: vertical; outline: none; line-height: 1.7; transition: border-color 0.15s; box-sizing: border-box; }
+.sd-textarea:focus { border-color: rgba(139,92,246,0.45); }
+
+.sd-center-col { display: flex; flex-direction: column; gap: 10px; align-items: center; padding-top: 24px; }
+.sd-example-btn { padding: 8px 14px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 7px; color: rgba(232,234,240,0.6); font-size: 12px; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+.sd-example-btn:hover { background: rgba(255,255,255,0.1); color: #E8EAF0; }
+.sd-analyze-btn { padding: 10px 20px; background: #8B5CF6; color: #fff; font-weight: 700; font-size: 13px; border: none; border-radius: 8px; cursor: pointer; transition: filter 0.15s; white-space: nowrap; }
+.sd-analyze-btn:hover { filter: brightness(1.15); }
+.sd-analyze-btn:disabled { opacity: 0.5; cursor: not-allowed; filter: none; }
+
+/* Analysis sections */
+.sd-section { background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 24px; animation: sd-fade-in 0.4s ease both; }
+@keyframes sd-fade-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.sd-section-title { font-size: 13px; font-weight: 700; letter-spacing: -0.01em; margin-bottom: 20px; color: rgba(232,234,240,0.8); }
+
+/* Similarity ring */
+.sd-sim-wrap { display: flex; align-items: center; gap: 32px; }
+.sd-sim-ring-wrap { position: relative; width: 120px; height: 120px; flex-shrink: 0; }
+.sd-sim-ring-svg { width: 120px; height: 120px; transform: rotate(-90deg); }
+.sd-sim-track { fill: none; stroke: rgba(255,255,255,0.07); stroke-width: 8; }
+.sd-sim-fill { fill: none; stroke: #8B5CF6; stroke-width: 8; stroke-linecap: round; transition: stroke-dashoffset 1.2s cubic-bezier(0.4,0,0.2,1); }
+.sd-sim-pct { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: 800; color: #8B5CF6; font-family: var(--font-jetbrains-mono, monospace); }
+.sd-sim-desc { font-size: 13px; color: rgba(232,234,240,0.5); line-height: 1.6; }
+.sd-sim-desc strong { color: #E8EAF0; font-size: 14px; }
+
+/* Topic coverage bars */
+.sd-topics { display: flex; flex-direction: column; gap: 14px; }
+.sd-topic-row { display: flex; flex-direction: column; gap: 5px; }
+.sd-topic-name { font-size: 12px; color: rgba(232,234,240,0.6); font-weight: 500; }
+.sd-topic-bars { display: flex; flex-direction: column; gap: 3px; }
+.sd-bar-row { display: flex; align-items: center; gap: 8px; }
+.sd-bar-label { font-family: var(--font-jetbrains-mono, monospace); font-size: 10px; color: rgba(232,234,240,0.4); width: 14px; flex-shrink: 0; }
+.sd-bar-track { flex: 1; height: 6px; background: rgba(255,255,255,0.07); border-radius: 3px; overflow: hidden; }
+.sd-bar-fill { height: 100%; border-radius: 3px; transition: width 1s cubic-bezier(0.4,0,0.2,1); }
+.sd-bar-pct { font-family: var(--font-jetbrains-mono, monospace); font-size: 10px; color: rgba(232,234,240,0.35); width: 32px; text-align: right; flex-shrink: 0; }
+
+/* Radar chart */
+.sd-radar-wrap { display: flex; align-items: center; gap: 32px; flex-wrap: wrap; }
+.sd-radar-svg { flex-shrink: 0; }
+.sd-radar-legend { display: flex; flex-direction: column; gap: 10px; }
+.sd-legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; color: rgba(232,234,240,0.6); }
+.sd-legend-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+
+/* Key differences table */
+.sd-diff-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.sd-diff-table th { text-align: left; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(232,234,240,0.3); padding: 6px 12px; border-bottom: 1px solid rgba(255,255,255,0.07); }
+.sd-diff-table td { padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); color: rgba(232,234,240,0.7); vertical-align: top; }
+.sd-diff-table tr:last-child td { border-bottom: none; }
+.sd-diff-badge { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 4px; white-space: nowrap; }
+.sd-diff-badge.diverge { background: rgba(239,68,68,0.15); color: #EF4444; border: 1px solid rgba(239,68,68,0.25); }
+.sd-diff-badge.partial { background: rgba(245,158,11,0.12); color: #F59E0B; border: 1px solid rgba(245,158,11,0.25); }
+.sd-diff-badge.aonly { background: rgba(255,107,53,0.12); color: #FF6B35; border: 1px solid rgba(255,107,53,0.25); }
+.sd-a-val { color: #FF6B35; }
+.sd-b-val { color: #06B6D4; }
+
+.sd-placeholder { color: rgba(232,234,240,0.2); font-size: 13px; text-align: center; padding: 60px 20px; }
