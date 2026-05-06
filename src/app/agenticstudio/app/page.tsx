@@ -2,6 +2,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import Link from 'next/link';
 import './app.css';
+import { AgenticWordmark } from '../Wordmark';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 type NodeType = 'input' | 'prompt' | 'tool' | 'condition' | 'subagent' | 'output';
@@ -556,8 +557,7 @@ export default function AgenticStudioApp() {
       {/* Toolbar */}
       <header className="ags-toolbar">
         <Link href="/agenticstudio" className="ags-toolbar-logo">
-          <span className="ags-toolbar-logo-mark">AS</span>
-          AgenticStudio
+          <AgenticWordmark />
         </Link>
         <div className="ags-toolbar-divider" />
         <span className="ags-toolbar-project">
