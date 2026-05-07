@@ -508,21 +508,21 @@ function spawnFlapSparks(x,y){
 function spawnGemSparks(x,y){
   const pal=['#FFFFFF','#80E8FF','#38D4FF','#00AAFF','#C0F0FF','#0060FF','#A0D0FF'];
   const prism=['#FF44AA','#FF8800','#FFE000','#00FF88','#00DDFF','#9955FF','#FF44DD'];
-  // Wave 1 — t=0: 60 radial beams + 30 crystal chunks + 35 white flash
+  // Wave 1 — t=0: 60 radial needle beams + 30 crystal shards + 35 white flash
   for(let i=0;i<60;i++){
     const a=(i/60)*Math.PI*2+(Math.random()-.5)*.15,s=140+Math.random()*300;
     sparks.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,
-      life:1,decay:.8+Math.random()*.6,r:1.5+Math.random()*5.5,c:pal[i%7]});
+      life:1,decay:.8+Math.random()*.6,r:.5+Math.random()*1.2,c:pal[i%7]});
   }
   for(let i=0;i<30;i++){
     const a=Math.random()*Math.PI*2,s=90+Math.random()*180;
     sparks.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-65,
-      life:1,decay:.5+Math.random()*.35,r:7+Math.random()*11,c:['#80E8FF','#38D4FF','#FFFFFF','#C0F0FF'][i%4]});
+      life:1,decay:.5+Math.random()*.35,r:.8+Math.random()*1.8,c:['#80E8FF','#38D4FF','#FFFFFF','#C0F0FF'][i%4]});
   }
   for(let i=0;i<35;i++){
     const a=(i/35)*Math.PI*2;
     sparks.push({x,y,vx:Math.cos(a)*400,vy:Math.sin(a)*400,
-      life:1,decay:5+Math.random()*4,r:.6+Math.random()*1.8,c:'#FFFFFF'});
+      life:1,decay:5+Math.random()*4,r:.3+Math.random()*.7,c:'#FFFFFF'});
   }
   // Wave 2 — t=55ms: 55 crystal shards
   setTimeout(()=>{
@@ -530,7 +530,7 @@ function spawnGemSparks(x,y){
       const a=Math.random()*Math.PI*2,s=70+Math.random()*220;
       sparks.push({x:x+(Math.random()-.5)*44,y:y+(Math.random()-.5)*30,
         vx:Math.cos(a)*s,vy:Math.sin(a)*s-45,
-        life:1,decay:.55+Math.random()*.45,r:2.5+Math.random()*8,c:pal[Math.floor(Math.random()*7)]});
+        life:1,decay:.55+Math.random()*.45,r:.5+Math.random()*1.5,c:pal[Math.floor(Math.random()*7)]});
     }
   },55);
   // Wave 3 — t=110ms: 45 prismatic fragments
@@ -539,7 +539,7 @@ function spawnGemSparks(x,y){
       const a=Math.random()*Math.PI*2,s=55+Math.random()*170;
       sparks.push({x:x+(Math.random()-.5)*60,y:y+(Math.random()-.5)*44,
         vx:Math.cos(a)*s,vy:Math.sin(a)*s-35,
-        life:1,decay:.38+Math.random()*.32,r:3.5+Math.random()*9,c:prism[Math.floor(Math.random()*7)]});
+        life:1,decay:.38+Math.random()*.32,r:.5+Math.random()*1.5,c:prism[Math.floor(Math.random()*7)]});
     }
   },110);
   // Wave 4 — t=190ms: 30 slow-drift motes
@@ -547,22 +547,21 @@ function spawnGemSparks(x,y){
     for(let i=0;i<30;i++)
       sparks.push({x:x+(Math.random()-.5)*70,y,
         vx:(Math.random()-.5)*50,vy:-30-Math.random()*80,grav:1,
-        life:1,decay:.22+Math.random()*.22,r:2.5+Math.random()*5.5,c:pal[3+Math.floor(Math.random()*4)]});
+        life:1,decay:.22+Math.random()*.22,r:.6+Math.random()*1.4,c:pal[3+Math.floor(Math.random()*4)]});
   },190);
-  // Wave 5 — t=260ms: 20 large slow glowing chunks
+  // Wave 5 — t=260ms: 20 slow glowing specks
   setTimeout(()=>{
     for(let i=0;i<20;i++){
       const a=Math.random()*Math.PI*2,s=30+Math.random()*90;
       sparks.push({x:x+(Math.random()-.5)*50,y,
         vx:Math.cos(a)*s,vy:Math.sin(a)*s-50,
-        life:1,decay:.14+Math.random()*.16,r:8+Math.random()*12,c:prism[i%7]});
+        life:1,decay:.14+Math.random()*.16,r:.8+Math.random()*1.6,c:prism[i%7]});
     }
   },260);
-  // 3 shockwave rings
+  // 2 shockwave rings
   shockwaves.push(
-    {x,y,r:0,maxR:clamp(W*.07,50,90),life:1,rgb:'255,255,255'},
-    {x,y,r:0,maxR:clamp(W*.16,110,200),life:.8,rgb:'56,212,255'},
-    {x,y,r:0,maxR:clamp(W*.28,180,320),life:.45,rgb:'0,100,255'}
+    {x,y,r:0,maxR:clamp(W*.13,90,170),life:.85,rgb:'56,212,255'},
+    {x,y,r:0,maxR:clamp(W*.24,160,280),life:.42,rgb:'0,100,255'}
   );
 }
 function updSparks(dt){
@@ -982,7 +981,7 @@ function drawGem(c,ts){
   ctx.restore();
 }
 
-// ── DRAW DINO WITH WINGS ─────────────────────────────
+// ── DRAW 🦕 WITH WINGS ────────────────────────────────
 function drawBird(x,y,rot,wp){
   ctx.save();ctx.translate(x,y);ctx.rotate(rot);
   const ws=BIRD_SZ/36;
@@ -1006,45 +1005,20 @@ function drawBird(x,y,rot,wp){
   ctx.restore();
   ctx.shadowBlur=0;ctx.shadowColor='transparent';
 
-  // Canvas-drawn sauropod body (origin = shoulder/wing root; body faces right)
-  const dG=ctx.createLinearGradient(-2*ws,-9*ws,22*ws,9*ws);
-  dG.addColorStop(0,'#90EEFF');dG.addColorStop(.45,'#38D4FF');dG.addColorStop(1,'#0050C8');
-  ctx.fillStyle=dG;
-  ctx.shadowColor='rgba(0,180,255,.75)';ctx.shadowBlur=9*ws;
+  // Wing-root glow — subtle connection between wings and body
+  const bodyG=ctx.createRadialGradient(0,0,0,0,0,7*ws);
+  bodyG.addColorStop(0,'rgba(56,212,255,.38)');bodyG.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=bodyG;ctx.beginPath();ctx.arc(0,0,7*ws,0,Math.PI*2);ctx.fill();
 
-  // Tail
-  ctx.beginPath();ctx.moveTo(-2*ws,2*ws);
-  ctx.bezierCurveTo(-8*ws,7*ws,-16*ws,9*ws,-22*ws,5*ws);
-  ctx.bezierCurveTo(-16*ws,3*ws,-8*ws,2*ws,-2*ws,3*ws);
-  ctx.closePath();ctx.fill();
-
-  // Body oval (center at 9*ws,0; wings emerge naturally from its left half)
-  ctx.beginPath();ctx.ellipse(9*ws,0,14*ws,9*ws,.07,0,Math.PI*2);ctx.fill();
-
-  // Neck
-  ctx.beginPath();ctx.moveTo(17*ws,-5*ws);
-  ctx.bezierCurveTo(22*ws,-11*ws,24*ws,-19*ws,20*ws,-23*ws);
-  ctx.bezierCurveTo(18*ws,-24*ws,16*ws,-19*ws,15*ws,-11*ws);
-  ctx.bezierCurveTo(14*ws,-6*ws,14*ws,-3*ws,15*ws,-2*ws);
-  ctx.closePath();ctx.fill();
-
-  // Head
-  ctx.beginPath();ctx.ellipse(19*ws,-25*ws,5.5*ws,3.5*ws,-.2,0,Math.PI*2);ctx.fill();
-  ctx.shadowBlur=0;
-
-  // Legs
-  ctx.fillStyle='#28B8E0';
-  ctx.beginPath();ctx.ellipse(14*ws,8*ws,2.8*ws,1.6*ws,.15,0,Math.PI*2);ctx.fill();
-  ctx.beginPath();ctx.ellipse(4*ws,9*ws,2.8*ws,1.6*ws,-.1,0,Math.PI*2);ctx.fill();
-
-  // Body highlight
-  const hG=ctx.createRadialGradient(5*ws,-2*ws,0,5*ws,-1*ws,9*ws);
-  hG.addColorStop(0,'rgba(255,255,255,.32)');hG.addColorStop(1,'rgba(255,255,255,0)');
-  ctx.fillStyle=hG;ctx.beginPath();ctx.ellipse(5*ws,-1*ws,9*ws,5*ws,0,0,Math.PI*2);ctx.fill();
-
-  // Eye
-  ctx.fillStyle='#001040';ctx.beginPath();ctx.arc(20*ws,-26*ws,2.2*ws,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='rgba(255,255,255,.9)';ctx.beginPath();ctx.arc(20.8*ws,-26.6*ws,.9*ws,0,Math.PI*2);ctx.fill();
+  // 🦕 — shifted up so visual body center aligns with wing roots
+  // textBaseline='middle' anchors the em-box midpoint; the sauropod's visual
+  // body sits ~18% of font-size below that midpoint, so we compensate upward.
+  ctx.save();ctx.scale(-1,1);
+  ctx.font=`${BIRD_SZ}px serif`;ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.shadowColor='rgba(0,210,255,.95)';ctx.shadowBlur=BIRD_SZ*.72;
+  ctx.fillText('🦕',0,-BIRD_SZ*.18);
+  ctx.shadowBlur=0;ctx.shadowColor='transparent';
+  ctx.restore();
 
   ctx.restore();
 }
