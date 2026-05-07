@@ -178,6 +178,7 @@ function tap(){
     btnPause.style.display='none';btnPause.textContent='⏸';
   } else if(phase==='playing'){
     bird.vy=FLAP_V;flapA=1;sfxFlap();haptic(8);
+    spawnFlapSparks(W*.22,bird.y);
   }
 }
 cvs.addEventListener('pointerdown',e=>{e.preventDefault();tap();},{passive:false});
@@ -218,12 +219,29 @@ function update(dt,ts){
   flapA=Math.max(0,flapA-dt*5.5);
   wingP=flapA>0?flapA:.5+Math.sin(ts/500)*.5;
 
-  if(frameN%2===0){
+  // Wing trail — every frame, 3 stream particles
+  {
     const bx=W*.22,ws=BIRD_SZ/36;
-    for(let i=0;i<2;i++)
-      sparks.push({x:bx-38*ws+Math.random()*10,y:bird.y+(i?14:-14)*ws+Math.random()*8,
-        vx:-55-Math.random()*45,vy:(Math.random()-.5)*25,
-        life:1,decay:5+Math.random()*3,r:.8+Math.random()*1.6,c:i?'#40CC10':'#60EE30'});
+    for(let i=0;i<3;i++)
+      sparks.push({x:bx-38*ws+Math.random()*14,y:bird.y+(i===0?-16:i===1?16:0)*ws+Math.random()*10,
+        vx:-60-Math.random()*55,vy:(Math.random()-.5)*30,
+        life:1,decay:4+Math.random()*3,r:1+Math.random()*2,c:i===0?'#40CC10':i===1?'#60EE30':'#9FFF60'});
+  }
+  // Larger wing puff every 3 frames
+  if(frameN%3===0){
+    const bx=W*.22,ws=BIRD_SZ/36;
+    sparks.push({x:bx-44*ws+Math.random()*10,y:bird.y+(Math.random()-.5)*24*ws,
+      vx:-38-Math.random()*28,vy:(Math.random()-.5)*18,
+      life:1,decay:1.8+Math.random()*1.4,r:3+Math.random()*4,c:'#7EFF50'});
+  }
+  // Energy pulse ring every 10 frames
+  if(frameN%10===0){
+    const bx=W*.22;
+    for(let i=0;i<5;i++){
+      const a=(i/5)*Math.PI*2;
+      sparks.push({x:bx,y:bird.y,vx:Math.cos(a)*42,vy:Math.sin(a)*42,
+        life:1,decay:3.5+Math.random()*2,r:.8+Math.random()*1.4,c:'#00FFCC'});
+    }
   }
 
   cols.forEach(c=>{
@@ -280,11 +298,35 @@ function die(){
 
 // ── SPARKS ─────────────────────────────────────────────
 function spawnSparks(x,y){
-  const pal=['#7EFF50','#00D4FF','#FF8C30','#9B5CF6','#FFD060','#BBFFEE'];
-  for(let i=0;i<24;i++){
-    const a=(i/24)*Math.PI*2+(Math.random()-.5)*.7,s=180+Math.random()*360;
-    sparks.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-90,
-      life:1,decay:.6+Math.random()*.7,r:2.5+Math.random()*4,c:pal[i%pal.length]});
+  const pal=['#7EFF50','#00D4FF','#FF8C30','#9B5CF6','#FFD060','#BBFFEE','#FF60A0','#FFFFFF'];
+  // Fast primary burst — 50 particles, full 360°
+  for(let i=0;i<50;i++){
+    const a=(i/50)*Math.PI*2+(Math.random()-.5)*.5,s=250+Math.random()*580;
+    sparks.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-110,
+      life:1,decay:.42+Math.random()*.5,r:2+Math.random()*5.5,c:pal[i%pal.length]});
+  }
+  // Slow upward shower — 26 particles
+  for(let i=0;i<26;i++){
+    const a=(Math.random()-.5)*Math.PI*1.6-Math.PI/2,s=70+Math.random()*200;
+    sparks.push({x:x+(Math.random()-.5)*28,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,
+      life:1,decay:.28+Math.random()*.38,r:1.5+Math.random()*4,c:pal[Math.floor(Math.random()*pal.length)]});
+  }
+  // Drifting embers — 22 long-lived tiny sparks
+  for(let i=0;i<22;i++){
+    const a=Math.random()*Math.PI*2,s=25+Math.random()*70;
+    sparks.push({x:x+(Math.random()-.5)*44,y:y+(Math.random()-.5)*22,
+      vx:Math.cos(a)*s,vy:Math.sin(a)*s-35,
+      life:1,decay:.15+Math.random()*.2,r:.7+Math.random()*2,c:'#FFFFFF'});
+  }
+}
+function spawnFlapSparks(x,y){
+  // Downward/backward burst on each flap — quick and punchy
+  const pal=['#9FFF60','#00FFCC','#FFFFFF','#7EFF50','#00D4FF'];
+  for(let i=0;i<11;i++){
+    const a=Math.PI/2+(Math.random()-.5)*Math.PI*.9;
+    const s=90+Math.random()*200;
+    sparks.push({x:x+(Math.random()-.5)*18,y,vx:Math.cos(a)*s-38,vy:Math.sin(a)*s,
+      life:1,decay:2.8+Math.random()*2.2,r:1.2+Math.random()*2.6,c:pal[i%pal.length]});
   }
 }
 function spawnCoinSparks(x,y){
@@ -305,22 +347,22 @@ function render(ts){
   ctx.scale(dpr,dpr);
   if(shakeT>0&&phase!=='paused'){const s=shakeT*shakeAmt;ctx.translate((Math.random()-.5)*s,(Math.random()-.5)*s*.55);}
 
-  // DEEP NAVY SKY
+  // ROYAL NAVY SKY — bright enough to contrast with lime dino
   const sky=ctx.createLinearGradient(0,0,0,H);
-  sky.addColorStop(0,'#080F24');sky.addColorStop(.3,'#0E1C38');
-  sky.addColorStop(.65,'#0C1630');sky.addColorStop(1,'#09112A');
+  sky.addColorStop(0,'#121F42');sky.addColorStop(.3,'#1B2E5A');
+  sky.addColorStop(.65,'#172650');sky.addColorStop(1,'#101D40');
   ctx.fillStyle=sky;ctx.fillRect(0,0,W,H);
 
-  // Teal nebula — top right
+  // Teal nebula — top right (boosted for lighter bg)
   const nxA=W*.76+Math.sin(ts/10000)*.18*W,nyA=H*.12+Math.cos(ts/12000)*12;
   const ngA=ctx.createRadialGradient(nxA,nyA,0,nxA,nyA,W*.38);
-  ngA.addColorStop(0,'rgba(0,160,255,.07)');ngA.addColorStop(.45,'rgba(0,120,200,.03)');ngA.addColorStop(1,'rgba(0,0,0,0)');
+  ngA.addColorStop(0,'rgba(0,160,255,.12)');ngA.addColorStop(.45,'rgba(0,120,200,.05)');ngA.addColorStop(1,'rgba(0,0,0,0)');
   ctx.fillStyle=ngA;ctx.beginPath();ctx.arc(nxA,nyA,W*.38,0,Math.PI*2);ctx.fill();
 
   // Warm nebula — left mid
   const nxB=W*.18+Math.sin(ts/9000+2)*12,nyB=H*.28+Math.cos(ts/11000+1)*10;
   const ngB=ctx.createRadialGradient(nxB,nyB,0,nxB,nyB,W*.24);
-  ngB.addColorStop(0,'rgba(60,40,180,.06)');ngB.addColorStop(1,'rgba(0,0,0,0)');
+  ngB.addColorStop(0,'rgba(60,40,180,.09)');ngB.addColorStop(1,'rgba(0,0,0,0)');
   ctx.fillStyle=ngB;ctx.beginPath();ctx.arc(nxB,nyB,W*.24,0,Math.PI*2);ctx.fill();
 
   // Palantir dot grid
