@@ -865,13 +865,6 @@ function drawBird(x,y,rot,wp){
   outerG.addColorStop(1,'rgba(0,0,0,0)');
   ctx.fillStyle=outerG;ctx.beginPath();ctx.arc(0,0,62*ws,0,Math.PI*2);ctx.fill();
 
-  // Bright backing disc — high-opacity halo that works on all browsers/devices
-  const discG=ctx.createRadialGradient(0,0,0,0,0,21*ws);
-  discG.addColorStop(0,'rgba(120,220,255,.72)');
-  discG.addColorStop(.45,'rgba(0,160,255,.44)');
-  discG.addColorStop(1,'rgba(0,0,0,0)');
-  ctx.fillStyle=discG;ctx.beginPath();ctx.arc(0,0,21*ws,0,Math.PI*2);ctx.fill();
-
   // Wings with glow
   ctx.shadowColor='rgba(0,180,255,.9)';ctx.shadowBlur=14*ws;
   ctx.save();ctx.rotate(-wa);
@@ -895,7 +888,7 @@ function drawBird(x,y,rot,wp){
   ctx.save();ctx.scale(-1,1);
   ctx.font=`${BIRD_SZ}px serif`;ctx.textAlign='center';ctx.textBaseline='middle';
   ctx.shadowColor='rgba(0,210,255,.98)';ctx.shadowBlur=BIRD_SZ*1.4;
-  ctx.fillText('🦕',0,3*ws);
+  ctx.fillText('🦕',0,0);
   ctx.shadowBlur=0;ctx.shadowColor='transparent';
   ctx.restore();
 
