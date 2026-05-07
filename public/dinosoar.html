@@ -959,13 +959,6 @@ function drawBird(x,y,rot,wp){
   const ws=BIRD_SZ/36;
   const wa=(wp-.5)*46*Math.PI/180;
 
-  // Outer diffuse glow
-  const outerG=ctx.createRadialGradient(0,0,0,0,0,62*ws);
-  outerG.addColorStop(0,'rgba(0,180,255,.24)');
-  outerG.addColorStop(.55,'rgba(0,130,220,.09)');
-  outerG.addColorStop(1,'rgba(0,0,0,0)');
-  ctx.fillStyle=outerG;ctx.beginPath();ctx.arc(0,0,62*ws,0,Math.PI*2);ctx.fill();
-
   // Wings with glow
   ctx.shadowColor='rgba(0,180,255,.9)';ctx.shadowBlur=14*ws;
   ctx.save();ctx.rotate(-wa);
