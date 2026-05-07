@@ -298,35 +298,73 @@ function die(){
 
 // ── SPARKS ─────────────────────────────────────────────
 function spawnSparks(x,y){
-  const pal=['#7EFF50','#00D4FF','#FF8C30','#9B5CF6','#FFD060','#BBFFEE','#FF60A0','#FFFFFF'];
-  // Fast primary burst — 50 particles, full 360°
-  for(let i=0;i<50;i++){
-    const a=(i/50)*Math.PI*2+(Math.random()-.5)*.5,s=250+Math.random()*580;
-    sparks.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-110,
-      life:1,decay:.42+Math.random()*.5,r:2+Math.random()*5.5,c:pal[i%pal.length]});
+  const pal=['#7EFF50','#00D4FF','#FF8C30','#9B5CF6','#FFD060','#BBFFEE','#FF60A0','#FFFFFF','#00FF99','#FF4466'];
+  // Wave 1 — immediate: 200 fast primary blast, full 360°
+  for(let i=0;i<200;i++){
+    const a=(i/200)*Math.PI*2+(Math.random()-.5)*.4,s=260+Math.random()*680;
+    sparks.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-120,
+      life:1,decay:.34+Math.random()*.48,r:1.5+Math.random()*6,c:pal[i%10]});
   }
-  // Slow upward shower — 26 particles
-  for(let i=0;i<26;i++){
-    const a=(Math.random()-.5)*Math.PI*1.6-Math.PI/2,s=70+Math.random()*200;
-    sparks.push({x:x+(Math.random()-.5)*28,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,
-      life:1,decay:.28+Math.random()*.38,r:1.5+Math.random()*4,c:pal[Math.floor(Math.random()*pal.length)]});
-  }
-  // Drifting embers — 22 long-lived tiny sparks
-  for(let i=0;i<22;i++){
-    const a=Math.random()*Math.PI*2,s=25+Math.random()*70;
-    sparks.push({x:x+(Math.random()-.5)*44,y:y+(Math.random()-.5)*22,
-      vx:Math.cos(a)*s,vy:Math.sin(a)*s-35,
-      life:1,decay:.15+Math.random()*.2,r:.7+Math.random()*2,c:'#FFFFFF'});
-  }
+  // Wave 2 — t=80ms: 100 secondary upward shower
+  setTimeout(()=>{
+    for(let i=0;i<100;i++){
+      const a=(Math.random()-.5)*Math.PI*1.9-Math.PI/2,s=90+Math.random()*290;
+      sparks.push({x:x+(Math.random()-.5)*55,y:y+(Math.random()-.5)*20,
+        vx:Math.cos(a)*s,vy:Math.sin(a)*s,
+        life:1,decay:.20+Math.random()*.32,r:2+Math.random()*5,c:pal[Math.floor(Math.random()*10)]});
+    }
+  },80);
+  // Wave 3 — t=160ms: 80 wide scatter cloud
+  setTimeout(()=>{
+    for(let i=0;i<80;i++){
+      const a=Math.random()*Math.PI*2,s=70+Math.random()*220;
+      sparks.push({x:x+(Math.random()-.5)*90,y:y+(Math.random()-.5)*45,
+        vx:Math.cos(a)*s,vy:Math.sin(a)*s-55,
+        life:1,decay:.16+Math.random()*.24,r:1+Math.random()*3.5,c:pal[Math.floor(Math.random()*10)]});
+    }
+  },160);
+  // Wave 4 — t=250ms: 60 low-gravity floating embers
+  setTimeout(()=>{
+    for(let i=0;i<60;i++){
+      const a=Math.random()*Math.PI*2,s=14+Math.random()*55;
+      sparks.push({x:x+(Math.random()-.5)*115,y:y+(Math.random()-.5)*55,
+        vx:Math.cos(a)*s,vy:Math.sin(a)*s-22,grav:110,
+        life:1,decay:.09+Math.random()*.14,r:.5+Math.random()*1.8,c:'#FFFFFF'});
+    }
+  },250);
+  // Wave 5 — t=330ms: 50 large slow colorful debris chunks
+  setTimeout(()=>{
+    for(let i=0;i<50;i++){
+      const a=Math.random()*Math.PI*2,s=35+Math.random()*130;
+      sparks.push({x:x+(Math.random()-.5)*70,y,
+        vx:Math.cos(a)*s,vy:Math.sin(a)*s-65,
+        life:1,decay:.11+Math.random()*.19,r:5+Math.random()*9,c:pal[i%10]});
+    }
+  },330);
 }
 function spawnFlapSparks(x,y){
-  // Downward/backward burst on each flap — quick and punchy
-  const pal=['#9FFF60','#00FFCC','#FFFFFF','#7EFF50','#00D4FF'];
-  for(let i=0;i<11;i++){
-    const a=Math.PI/2+(Math.random()-.5)*Math.PI*.9;
-    const s=90+Math.random()*200;
-    sparks.push({x:x+(Math.random()-.5)*18,y,vx:Math.cos(a)*s-38,vy:Math.sin(a)*s,
-      life:1,decay:2.8+Math.random()*2.2,r:1.2+Math.random()*2.6,c:pal[i%pal.length]});
+  const pal=['#9FFF60','#00FFCC','#FFFFFF','#7EFF50','#00D4FF','#C0FF80'];
+  // Downward pressure blast — 35 particles
+  for(let i=0;i<35;i++){
+    const a=Math.PI/2+(Math.random()-.5)*Math.PI*1.1,s=110+Math.random()*310;
+    sparks.push({x:x+(Math.random()-.5)*28,y,
+      vx:Math.cos(a)*s-45,vy:Math.sin(a)*s,
+      life:1,decay:2.4+Math.random()*2.4,r:1+Math.random()*3.5,c:pal[i%6]});
+  }
+  // Lateral wing-tip scatter — 8 each side
+  for(let side=-1;side<=1;side+=2){
+    for(let i=0;i<8;i++){
+      const a=side*(Math.PI/2+(Math.random()*.9));
+      sparks.push({x:x+side*(18+Math.random()*28),y:y+(Math.random()-.5)*22,
+        vx:Math.cos(a)*(70+Math.random()*185),vy:Math.sin(a)*(70+Math.random()*185)+25,
+        life:1,decay:2.8+Math.random()*2.5,r:.9+Math.random()*2.6,c:pal[i%6]});
+    }
+  }
+  // Quick sparkle cloud — 10 tiny fast sparkles in all directions
+  for(let i=0;i<10;i++){
+    const a=Math.random()*Math.PI*2;
+    sparks.push({x,y,vx:Math.cos(a)*225,vy:Math.sin(a)*225,
+      life:1,decay:4.5+Math.random()*4,r:.5+Math.random()*1.4,c:'#FFFFFF'});
   }
 }
 function spawnCoinSparks(x,y){
@@ -337,7 +375,7 @@ function spawnCoinSparks(x,y){
   }
 }
 function updSparks(dt){
-  sparks.forEach(p=>{p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=720*dt;p.life-=p.decay*dt;});
+  sparks.forEach(p=>{p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=(p.grav||720)*dt;p.life-=p.decay*dt;});
   sparks=sparks.filter(p=>p.life>0);
 }
 
