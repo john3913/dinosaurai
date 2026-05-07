@@ -463,28 +463,18 @@ function spawnSparks(x,y){
   },320);
 }
 function spawnFlapSparks(x,y){
-  const pal=['#40D4FF','#00AAFF','#FFFFFF','#38D0FF','#80E8FF','#00D4FF'];
-  // Downward pressure blast — 60 particles
-  for(let i=0;i<60;i++){
-    const a=Math.PI/2+(Math.random()-.5)*Math.PI*1.15,s=100+Math.random()*340;
-    sparks.push({x:x+(Math.random()-.5)*32,y,
-      vx:Math.cos(a)*s-50,vy:Math.sin(a)*s,
-      life:1,decay:2.2+Math.random()*2.5,r:1+Math.random()*4,c:pal[i%6]});
-  }
-  // Lateral wing-tip scatter — 12 each side
-  for(let side=-1;side<=1;side+=2){
-    for(let i=0;i<12;i++){
-      const a=side*(Math.PI/2+(Math.random()*1.0));
-      sparks.push({x:x+side*(16+Math.random()*32),y:y+(Math.random()-.5)*24,
-        vx:Math.cos(a)*(60+Math.random()*200),vy:Math.sin(a)*(60+Math.random()*200)+28,
-        life:1,decay:2.6+Math.random()*2.8,r:.8+Math.random()*3,c:pal[i%6]});
-    }
-  }
-  // Radial sparkle cloud — 16 tiny fast sparkles in all directions
-  for(let i=0;i<16;i++){
-    const a=(i/16)*Math.PI*2;
-    sparks.push({x,y,vx:Math.cos(a)*260,vy:Math.sin(a)*260,
-      life:1,decay:4+Math.random()*4.5,r:.5+Math.random()*1.6,c:'#FFFFFF'});
+  // Echo wave — 3 rings below bird, staggered to create upward-push feel
+  shockwaves.push({x,y:y+10,r:0,maxR:clamp(W*.06,40,70),life:1,rgb:'56,212,255'});
+  setTimeout(()=>shockwaves.push({x,y:y+18,r:0,maxR:clamp(W*.10,65,100),life:.8,rgb:'80,210,255'}),60);
+  setTimeout(()=>shockwaves.push({x,y:y+26,r:0,maxR:clamp(W*.14,90,140),life:.6,rgb:'0,160,255'}),120);
+  // Small upward thrust burst
+  for(let i=0;i<18;i++){
+    const a=-Math.PI/2+(Math.random()-.5)*Math.PI*.9;
+    const s=70+Math.random()*170;
+    sparks.push({x:x+(Math.random()-.5)*24,y:y+6,
+      vx:Math.cos(a)*s,vy:Math.sin(a)*s,
+      life:1,decay:3+Math.random()*2,r:.5+Math.random()*1.2,
+      c:['#38D4FF','#80E8FF','#FFFFFF'][Math.floor(Math.random()*3)]});
   }
 }
 function spawnGemSparks(x,y){
@@ -979,28 +969,45 @@ function drawBird(x,y,rot,wp){
   // W(c,r): pixel in local wing space (after translate+rotate)
   const W=(c,r)=>ctx.fillRect(c*ps,r*ps,ps,ps);
 
-  // Wings — pivot from upper-left of body; root pixels overlap B(-3,±) cols
+  // Wings — thick filled shape, pivot from upper-left of body
   ctx.save();ctx.translate(-3.5*ps,-1*ps);ctx.rotate(-wa);
-  [[0,-1],[0,0],[-1,-1],[-2,-1],[-2,-2],[-3,-2],[-4,-3],
-   [-5,-3],[-6,-3],[-7,-2],[-8,-2],[-9,-1],[-10,-1]
+  [[0,-1],[0,0],
+   [-1,-1],[-1,0],
+   [-2,-2],[-2,-1],
+   [-3,-2],[-3,-1],
+   [-4,-3],[-4,-2],[-4,-1],
+   [-5,-3],[-5,-2],[-5,-1],
+   [-6,-3],[-6,-2],[-6,-1],
+   [-7,-2],[-7,-1],
+   [-8,-2],[-8,-1],
+   [-9,-1],[-10,-1]
   ].forEach(([c,r])=>W(c,r));
   ctx.restore();
   ctx.save();ctx.translate(-3.5*ps,-1*ps);ctx.rotate(wa);
-  [[0,0],[0,1],[-1,1],[-2,1],[-2,2],[-3,2],[-4,3],
-   [-5,3],[-6,3],[-7,2],[-8,2],[-9,1],[-10,1]
+  [[0,0],[0,1],
+   [-1,0],[-1,1],
+   [-2,1],[-2,2],
+   [-3,1],[-3,2],
+   [-4,1],[-4,2],[-4,3],
+   [-5,1],[-5,2],[-5,3],
+   [-6,1],[-6,2],[-6,3],
+   [-7,1],[-7,2],
+   [-8,1],[-8,2],
+   [-9,1],[-10,1]
   ].forEach(([c,r])=>W(c,r));
   ctx.restore();
 
   // Brontosaurus body
-  [// Oval body (9 wide × 5 tall)
+  [// Oval body with shoulder hump at top-right for neck attachment
    [-3,-2],[-2,-2],[-1,-2],[0,-2],[1,-2],[2,-2],[3,-2],
+   [4,-2],[5,-2],  // shoulder hump
    [-4,-1],[-3,-1],[-2,-1],[-1,-1],[0,-1],[1,-1],[2,-1],[3,-1],[4,-1],
    [-4,0], [-3,0], [-2,0], [-1,0], [0,0], [1,0], [2,0], [3,0], [4,0],
    [-4,1], [-3,1], [-2,1], [-1,1], [0,1], [1,1], [2,1], [3,1], [4,1],
    [-3,2], [-2,2], [-1,2], [0,2],  [1,2], [2,2], [3,2],
-   // Long neck — S-curve rising up-right from front of body
-   [4,-3],[5,-3],
-   [4,-4],[5,-4],
+   // Long neck — 3-wide base tapering to 2-wide as it rises
+   [3,-3],[4,-3],[5,-3],
+   [3,-4],[4,-4],[5,-4],
    [3,-5],[4,-5],
    [3,-6],[4,-6],
    [3,-7],[4,-7],
@@ -1008,12 +1015,13 @@ function drawBird(x,y,rot,wp){
    [3,-8],[4,-8],[5,-8],[6,-8],
    [4,-9],[5,-9],[6,-9],
    // Tapering tail extending left from body
-   [-5,-1],[-6,-1],
+   [-5,-1],[-6,-1],[-7,-1],
    [-5,0], [-6,0], [-7,0],
    [-7,1], [-8,1],
    [-9,2],
-   // Short legs
-   [-1,3],[0,3],[2,3],[3,3],
+   // Two pairs of legs
+   [-1,3],[0,3],
+   [2,3],[3,3],
   ].forEach(([c,r])=>B(c,r));
 
   // Eye — single dark pixel near front of head (sauropod eye is high and forward)
