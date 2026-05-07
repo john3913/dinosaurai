@@ -73,7 +73,7 @@ export default function LatencyProfiler() {
   const [showPercentiles, setShowPercentiles] = useState(true);
   const [animatedPhases, setAnimatedPhases] = useState<Set<number>>(new Set());
   const [running, setRunning] = useState(false);
-  const timeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const timeoutsRef = useRef<ReturnType<typeof setTimeout>[] | undefined>([]);
 
   const scenario = SCENARIOS[scenarioKey];
   const maxMs = scenario.totalMs;

@@ -68,7 +68,7 @@ export default function ApiGateway() {
   const [requests, setRequests] = useState<ApiRequest[]>(INITIAL);
   const [live, setLive] = useState(true);
   const [budget, setBudget] = useState('10.00');
-  const timerRef = useRef<ReturnType<typeof setInterval>>();
+  const timerRef = useRef<ReturnType<typeof setInterval> | undefined>();
 
   useEffect(() => {
     if (live) {

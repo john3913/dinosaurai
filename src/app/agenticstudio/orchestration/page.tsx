@@ -87,7 +87,7 @@ export default function Orchestration() {
   const [log, setLog] = useState<string[]>([]);
   const [running, setRunning] = useState(false);
   const logRef = useRef<HTMLDivElement>(null);
-  const timerRefs = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const timerRefs = useRef<ReturnType<typeof setTimeout>[] | undefined>([]);
 
   useEffect(() => {
     if (logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight;
