@@ -183,19 +183,19 @@ function sfxRoar(){
   if(!ac||muted)return;
   try{
     const t=ac.currentTime;
-    // 8-bit Mario-death style: two ascending blips then chromatic descent
-    [[1318.51,0,.06],[1046.50,.06,.06],
-     [987.77,.12,.09],[932.33,.21,.09],
-     [880.00,.30,.09],[830.61,.39,.09],
-     [783.99,.48,.09],[739.99,.57,.09],
-     [698.46,.66,.09],[659.26,.75,.09],
-     [622.25,.84,.14]
+    // 8-bit death jingle — two octaves lower (all freqs ÷4); gain up for equal loudness
+    [[329.63,0,.06],[261.63,.06,.06],
+     [246.94,.12,.09],[233.08,.21,.09],
+     [220.00,.30,.09],[207.65,.39,.09],
+     [196.00,.48,.09],[185.00,.57,.09],
+     [174.61,.66,.09],[164.81,.75,.09],
+     [155.56,.84,.14]
     ].forEach(([hz,d,dur])=>{
       const o=ac.createOscillator(),g=ac.createGain();
       o.type='square';o.frequency.value=hz;
       g.gain.setValueAtTime(0,t+d);
-      g.gain.linearRampToValueAtTime(.11,t+d+.005);
-      g.gain.setValueAtTime(.11,t+d+dur-.01);
+      g.gain.linearRampToValueAtTime(.15,t+d+.005);
+      g.gain.setValueAtTime(.15,t+d+dur-.01);
       g.gain.linearRampToValueAtTime(0,t+d+dur);
       o.connect(g);g.connect(ac.destination);
       o.start(t+d);o.stop(t+d+dur+.02);
@@ -963,60 +963,62 @@ function drawGem(c,ts){
   ctx.restore();
 }
 
-// ── DRAW 8-BIT DINO WITH WINGS ───────────────────────
-// Single-color pixel art: body + wings share #38D4FF so they read as one unit.
-// Wings rotate around their attachment point (left-center of body) —
-// no separate entities, no text-rendering quirks.
+// ── DRAW 8-BIT BRONTOSAURUS WITH WINGS ───────────────
+// Brontosaurus silhouette: long neck rising up-right, oval body,
+// tapering tail extending left. Wings pivot from upper-left of body.
+// All pixels same #38D4FF — wings and body read as one unified character.
 function drawBird(x,y,rot,wp){
   ctx.save();ctx.translate(x,y);ctx.rotate(rot);
-  const ps=clamp(Math.round(BIRD_SZ/20),2,4); // pixel block size
+  const ps=clamp(Math.round(BIRD_SZ/20),2,4);
   const wa=(wp-.5)*52*Math.PI/180;
   ctx.shadowColor='rgba(0,200,255,.88)';ctx.shadowBlur=ps*3.5;
   ctx.fillStyle='#38D4FF';
 
-  // B(c,r): pixel block centered at (c*ps, r*ps) — body coordinate space
+  // B(c,r): pixel centered at (c*ps, r*ps) in body space (origin = body center)
   const B=(c,r)=>ctx.fillRect(c*ps-ps*.5,r*ps-ps*.5,ps,ps);
-  // W(c,r): pixel block in local wing coordinate space (after translate/rotate)
+  // W(c,r): pixel in local wing space (after translate+rotate)
   const W=(c,r)=>ctx.fillRect(c*ps,r*ps,ps,ps);
 
-  // Upper wing — pivots from left-center of body at (-3.5*ps, 0)
-  ctx.save();ctx.translate(-3.5*ps,0);ctx.rotate(-wa);
+  // Wings — pivot from upper-left of body; root pixels overlap B(-3,±) cols
+  ctx.save();ctx.translate(-3.5*ps,-1*ps);ctx.rotate(-wa);
   [[0,-1],[0,0],[-1,-1],[-2,-1],[-2,-2],[-3,-2],[-4,-3],
    [-5,-3],[-6,-3],[-7,-2],[-8,-2],[-9,-1],[-10,-1]
   ].forEach(([c,r])=>W(c,r));
   ctx.restore();
-
-  // Lower wing (mirror of upper)
-  ctx.save();ctx.translate(-3.5*ps,0);ctx.rotate(wa);
+  ctx.save();ctx.translate(-3.5*ps,-1*ps);ctx.rotate(wa);
   [[0,0],[0,1],[-1,1],[-2,1],[-2,2],[-3,2],[-4,3],
    [-5,3],[-6,3],[-7,2],[-8,2],[-9,1],[-10,1]
   ].forEach(([c,r])=>W(c,r));
   ctx.restore();
 
-  // Body (facing right; origin ≈ center of mass)
-  [// Tail
-   [-5,0],[-4,-1],[-4,0],
-   // Core block
-   [-3,-2],[-3,-1],[-3,0],[-3,1],
-   [-2,-2],[-2,-1],[-2,0],[-2,1],
-   [-1,-2],[-1,-1],[-1,0],[-1,1],
-   [0,-2],[0,-1],[0,0],[0,1],
-   [1,-2],[1,-1],[1,0],[1,1],
-   [2,-2],[2,-1],[2,0],[2,1],
-   [3,-2],[3,-1],[3,0],
-   // Neck (stepped diagonal)
-   [4,-2],[4,-1],[5,-3],[5,-2],[6,-4],[6,-3],
-   // Head
-   [7,-5],[7,-4],[7,-3],
-   [8,-5],[8,-4],[8,-3],
-   [9,-4],[9,-3],
-   // Legs
-   [-1,2],[0,2],[1,2],
+  // Brontosaurus body
+  [// Oval body (9 wide × 5 tall)
+   [-3,-2],[-2,-2],[-1,-2],[0,-2],[1,-2],[2,-2],[3,-2],
+   [-4,-1],[-3,-1],[-2,-1],[-1,-1],[0,-1],[1,-1],[2,-1],[3,-1],[4,-1],
+   [-4,0], [-3,0], [-2,0], [-1,0], [0,0], [1,0], [2,0], [3,0], [4,0],
+   [-4,1], [-3,1], [-2,1], [-1,1], [0,1], [1,1], [2,1], [3,1], [4,1],
+   [-3,2], [-2,2], [-1,2], [0,2],  [1,2], [2,2], [3,2],
+   // Long neck — S-curve rising up-right from front of body
+   [4,-3],[5,-3],
+   [4,-4],[5,-4],
+   [3,-5],[4,-5],
+   [3,-6],[4,-6],
+   [3,-7],[4,-7],
+   // Small brontosaurus head at top of neck
+   [3,-8],[4,-8],[5,-8],[6,-8],
+   [4,-9],[5,-9],[6,-9],
+   // Tapering tail extending left from body
+   [-5,-1],[-6,-1],
+   [-5,0], [-6,0], [-7,0],
+   [-7,1], [-8,1],
+   [-9,2],
+   // Short legs
+   [-1,3],[0,3],[2,3],[3,3],
   ].forEach(([c,r])=>B(c,r));
 
-  // Eye — dark pixel inside head
+  // Eye — single dark pixel near front of head (sauropod eye is high and forward)
   ctx.shadowBlur=0;ctx.fillStyle='#001848';
-  B(8,-4);
+  B(5,-9);
 
   ctx.restore();
 }
