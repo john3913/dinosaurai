@@ -183,41 +183,23 @@ function sfxRoar(){
   if(!ac||muted)return;
   try{
     const t=ac.currentTime;
-    // Primary roar: sawtooth through LPF — rise then sweep down
-    const o1=ac.createOscillator(),g1=ac.createGain(),lpf=ac.createBiquadFilter();
-    o1.type='sawtooth';
-    o1.frequency.setValueAtTime(440,t);
-    o1.frequency.linearRampToValueAtTime(700,t+0.055); // quick charge-up rise
-    o1.frequency.exponentialRampToValueAtTime(88,t+0.62); // roar sweeps down
-    lpf.type='lowpass';
-    lpf.frequency.setValueAtTime(2200,t);
-    lpf.frequency.exponentialRampToValueAtTime(260,t+0.6);
-    lpf.Q.value=5;
-    g1.gain.setValueAtTime(0,t);
-    g1.gain.linearRampToValueAtTime(0.26,t+0.04);
-    g1.gain.setTargetAtTime(0.001,t+0.38,0.10);
-    o1.connect(lpf);lpf.connect(g1);g1.connect(ac.destination);
-    o1.start(t);o1.stop(t+0.85);
-    // Sub-body rumble: triangle sweeping from mid to low
-    const o2=ac.createOscillator(),g2=ac.createGain();
-    o2.type='triangle';
-    o2.frequency.setValueAtTime(260,t);
-    o2.frequency.exponentialRampToValueAtTime(42,t+0.68);
-    g2.gain.setValueAtTime(0,t);
-    g2.gain.linearRampToValueAtTime(0.18,t+0.05);
-    g2.gain.setTargetAtTime(0.001,t+0.42,0.13);
-    o2.connect(g2);g2.connect(ac.destination);
-    o2.start(t);o2.stop(t+0.92);
-    // Tail-off exhale
-    const o3=ac.createOscillator(),g3=ac.createGain();
-    o3.type='sine';
-    o3.frequency.setValueAtTime(155,t+0.32);
-    o3.frequency.exponentialRampToValueAtTime(55,t+0.78);
-    g3.gain.setValueAtTime(0,t+0.30);
-    g3.gain.linearRampToValueAtTime(0.08,t+0.38);
-    g3.gain.setTargetAtTime(0.001,t+0.56,0.09);
-    o3.connect(g3);g3.connect(ac.destination);
-    o3.start(t+0.30);o3.stop(t+0.95);
+    // 8-bit Mario-death style: two ascending blips then chromatic descent
+    [[1318.51,0,.06],[1046.50,.06,.06],
+     [987.77,.12,.09],[932.33,.21,.09],
+     [880.00,.30,.09],[830.61,.39,.09],
+     [783.99,.48,.09],[739.99,.57,.09],
+     [698.46,.66,.09],[659.26,.75,.09],
+     [622.25,.84,.14]
+    ].forEach(([hz,d,dur])=>{
+      const o=ac.createOscillator(),g=ac.createGain();
+      o.type='square';o.frequency.value=hz;
+      g.gain.setValueAtTime(0,t+d);
+      g.gain.linearRampToValueAtTime(.11,t+d+.005);
+      g.gain.setValueAtTime(.11,t+d+dur-.01);
+      g.gain.linearRampToValueAtTime(0,t+d+dur);
+      o.connect(g);g.connect(ac.destination);
+      o.start(t+d);o.stop(t+d+dur+.02);
+    });
   }catch(e){}
 }
 function sfxStreak(){tone(960,.06,.06,'sine');setTimeout(()=>tone(1280,.05,.1,'sine'),65);}
@@ -981,44 +963,60 @@ function drawGem(c,ts){
   ctx.restore();
 }
 
-// ── DRAW 🦕 WITH WINGS ────────────────────────────────
+// ── DRAW 8-BIT DINO WITH WINGS ───────────────────────
+// Single-color pixel art: body + wings share #38D4FF so they read as one unit.
+// Wings rotate around their attachment point (left-center of body) —
+// no separate entities, no text-rendering quirks.
 function drawBird(x,y,rot,wp){
   ctx.save();ctx.translate(x,y);ctx.rotate(rot);
-  const ws=BIRD_SZ/36;
-  const wa=(wp-.5)*46*Math.PI/180;
-
-  // Wings
-  ctx.shadowColor='rgba(0,180,255,.9)';ctx.shadowBlur=14*ws;
-  ctx.save();ctx.rotate(-wa);
+  const ps=clamp(Math.round(BIRD_SZ/20),2,4); // pixel block size
+  const wa=(wp-.5)*52*Math.PI/180;
+  ctx.shadowColor='rgba(0,200,255,.88)';ctx.shadowBlur=ps*3.5;
   ctx.fillStyle='#38D4FF';
-  ctx.beginPath();ctx.moveTo(0,-6*ws);ctx.quadraticCurveTo(-7*ws,-18*ws,-30*ws,-12*ws);ctx.quadraticCurveTo(-17*ws,-4*ws,0,-2*ws);
-  ctx.closePath();ctx.fill();
-  ctx.strokeStyle='rgba(160,230,255,.8)';ctx.lineWidth=1.5;
-  ctx.beginPath();ctx.moveTo(-1*ws,-7*ws);ctx.quadraticCurveTo(-12*ws,-14*ws,-27*ws,-10*ws);ctx.stroke();
-  ctx.restore();
-  ctx.save();ctx.rotate(wa);
-  ctx.fillStyle='#38D4FF';
-  ctx.beginPath();ctx.moveTo(0,6*ws);ctx.quadraticCurveTo(-7*ws,18*ws,-30*ws,12*ws);ctx.quadraticCurveTo(-17*ws,4*ws,0,2*ws);
-  ctx.closePath();ctx.fill();
-  ctx.strokeStyle='rgba(160,230,255,.8)';ctx.lineWidth=1.5;
-  ctx.beginPath();ctx.moveTo(-1*ws,7*ws);ctx.quadraticCurveTo(-12*ws,14*ws,-27*ws,10*ws);ctx.stroke();
-  ctx.restore();
-  ctx.shadowBlur=0;ctx.shadowColor='transparent';
 
-  // Wing-root glow — subtle connection between wings and body
-  const bodyG=ctx.createRadialGradient(0,0,0,0,0,7*ws);
-  bodyG.addColorStop(0,'rgba(56,212,255,.38)');bodyG.addColorStop(1,'rgba(0,0,0,0)');
-  ctx.fillStyle=bodyG;ctx.beginPath();ctx.arc(0,0,7*ws,0,Math.PI*2);ctx.fill();
+  // B(c,r): pixel block centered at (c*ps, r*ps) — body coordinate space
+  const B=(c,r)=>ctx.fillRect(c*ps-ps*.5,r*ps-ps*.5,ps,ps);
+  // W(c,r): pixel block in local wing coordinate space (after translate/rotate)
+  const W=(c,r)=>ctx.fillRect(c*ps,r*ps,ps,ps);
 
-  // 🦕 — shifted up so visual body center aligns with wing roots
-  // textBaseline='middle' anchors the em-box midpoint; the sauropod's visual
-  // body sits ~18% of font-size below that midpoint, so we compensate upward.
-  ctx.save();ctx.scale(-1,1);
-  ctx.font=`${BIRD_SZ}px serif`;ctx.textAlign='center';ctx.textBaseline='middle';
-  ctx.shadowColor='rgba(0,210,255,.95)';ctx.shadowBlur=BIRD_SZ*.72;
-  ctx.fillText('🦕',0,-BIRD_SZ*.18);
-  ctx.shadowBlur=0;ctx.shadowColor='transparent';
+  // Upper wing — pivots from left-center of body at (-3.5*ps, 0)
+  ctx.save();ctx.translate(-3.5*ps,0);ctx.rotate(-wa);
+  [[0,-1],[0,0],[-1,-1],[-2,-1],[-2,-2],[-3,-2],[-4,-3],
+   [-5,-3],[-6,-3],[-7,-2],[-8,-2],[-9,-1],[-10,-1]
+  ].forEach(([c,r])=>W(c,r));
   ctx.restore();
+
+  // Lower wing (mirror of upper)
+  ctx.save();ctx.translate(-3.5*ps,0);ctx.rotate(wa);
+  [[0,0],[0,1],[-1,1],[-2,1],[-2,2],[-3,2],[-4,3],
+   [-5,3],[-6,3],[-7,2],[-8,2],[-9,1],[-10,1]
+  ].forEach(([c,r])=>W(c,r));
+  ctx.restore();
+
+  // Body (facing right; origin ≈ center of mass)
+  [// Tail
+   [-5,0],[-4,-1],[-4,0],
+   // Core block
+   [-3,-2],[-3,-1],[-3,0],[-3,1],
+   [-2,-2],[-2,-1],[-2,0],[-2,1],
+   [-1,-2],[-1,-1],[-1,0],[-1,1],
+   [0,-2],[0,-1],[0,0],[0,1],
+   [1,-2],[1,-1],[1,0],[1,1],
+   [2,-2],[2,-1],[2,0],[2,1],
+   [3,-2],[3,-1],[3,0],
+   // Neck (stepped diagonal)
+   [4,-2],[4,-1],[5,-3],[5,-2],[6,-4],[6,-3],
+   // Head
+   [7,-5],[7,-4],[7,-3],
+   [8,-5],[8,-4],[8,-3],
+   [9,-4],[9,-3],
+   // Legs
+   [-1,2],[0,2],[1,2],
+  ].forEach(([c,r])=>B(c,r));
+
+  // Eye — dark pixel inside head
+  ctx.shadowBlur=0;ctx.fillStyle='#001848';
+  B(8,-4);
 
   ctx.restore();
 }
