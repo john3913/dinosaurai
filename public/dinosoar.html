@@ -206,7 +206,7 @@ function haptic(p){try{navigator.vibrate&&navigator.vibrate(p);}catch(e){}}
 // ── CONFIG ─────────────────────────────────────────────
 const GRV=1700,FLAP_V=-530,V_MAX=810;
 const SPEEDLINES=Array.from({length:7},(_,i)=>({yR:.08+i*.115+(i*53%17)*.004,ph:i*.618}));
-const MILESTONES={5:'#00CFFF',10:'#7EFF50',25:'#FF8C30',50:'#9B5CF6',100:'#FFD060'};
+const MILESTONES={5:'#00CFFF',10:'#38D4FF',25:'#FF8C30',50:'#9B5CF6',100:'#FFD060'};
 
 // ── STATE ──────────────────────────────────────────────
 let phase='idle';
@@ -214,7 +214,7 @@ let bird,cols=[],sparks=[],shockwaves=[];
 let score,hiScore,scrollX,speed;
 let flapA=0,wingP=0;
 let deadT=0,deathRot=0,scoreFx=0,newBestFx=0,scorePulse=0;
-let milestoneFx={alpha:0,color:'#7EFF50'};
+let milestoneFx={alpha:0,color:'#38D4FF'};
 let shakeT=0,shakeAmt=0;
 let frameN=0,lastTs=0;
 let streak=0,streakFx=0,pausedPhase=null,lastLevel=1,levelUpFx=0;
@@ -306,7 +306,7 @@ function update(dt,ts){
       vx:(Math.random()-.5)*12,vy:-16-Math.random()*22,grav:2,
       life:.85+Math.random()*.15,decay:.10+Math.random()*.06,
       r:1.1+Math.random()*2.2,
-      c:['#00D4FF','#7EFF50','#9B5CF6','#00FFAA','#60A0FF'][Math.floor(Math.random()*5)],a:.24});
+      c:['#00D4FF','#38D4FF','#9B5CF6','#00AAFF','#60A0FF'][Math.floor(Math.random()*5)],a:.24});
   if(phase==='paused')return;
   if(phase==='idle'){bird.y=H*.44+Math.sin(ts/520)*9;wingP=(Math.sin(ts/300)+1)/2;return;}
   if(phase==='dead'){
@@ -342,14 +342,14 @@ function update(dt,ts){
     for(let i=0;i<3;i++)
       sparks.push({x:bx-38*ws+Math.random()*14,y:bird.y+(i===0?-16:i===1?16:0)*ws+Math.random()*10,
         vx:-60-Math.random()*55,vy:(Math.random()-.5)*30,
-        life:1,decay:4+Math.random()*3,r:1+Math.random()*2,c:i===0?'#40CC10':i===1?'#60EE30':'#9FFF60'});
+        life:1,decay:4+Math.random()*3,r:1+Math.random()*2,c:i===0?'#0090E0':i===1?'#00AAFF':'#40D4FF'});
   }
   // Larger wing puff every 3 frames
   if(frameN%3===0){
     const bx=W*.22,ws=BIRD_SZ/36;
     sparks.push({x:bx-44*ws+Math.random()*10,y:bird.y+(Math.random()-.5)*24*ws,
       vx:-38-Math.random()*28,vy:(Math.random()-.5)*18,
-      life:1,decay:1.8+Math.random()*1.4,r:3+Math.random()*4,c:'#7EFF50'});
+      life:1,decay:1.8+Math.random()*1.4,r:3+Math.random()*4,c:'#38D4FF'});
   }
   // Energy pulse ring every 10 frames
   if(frameN%10===0){
@@ -357,7 +357,7 @@ function update(dt,ts){
     for(let i=0;i<5;i++){
       const a=(i/5)*Math.PI*2;
       sparks.push({x:bx,y:bird.y,vx:Math.cos(a)*42,vy:Math.sin(a)*42,
-        life:1,decay:3.5+Math.random()*2,r:.8+Math.random()*1.4,c:'#00FFCC'});
+        life:1,decay:3.5+Math.random()*2,r:.8+Math.random()*1.4,c:'#0088FF'});
     }
   }
 
@@ -407,7 +407,7 @@ function die(){
   phase='dead';deadT=0;shakeT=.72;shakeAmt=22;streak=0;
   spawnSparks(W*.22,bird.y);sfxRoar();haptic([80,30,80,30,40]);
   shockwaves=[
-    {x:W*.22,y:bird.y,r:0,maxR:clamp(W*.18,120,200),life:1,rgb:'126,255,80'},
+    {x:W*.22,y:bird.y,r:0,maxR:clamp(W*.18,120,200),life:1,rgb:'0,160,255'},
     {x:W*.22,y:bird.y,r:0,maxR:clamp(W*.3,190,330),life:.7,rgb:'0,200,255'},
     {x:W*.22,y:bird.y,r:0,maxR:clamp(W*.44,260,480),life:.45,rgb:'255,200,80'},
   ];
@@ -416,7 +416,7 @@ function die(){
 
 // ── SPARKS ─────────────────────────────────────────────
 function spawnSparks(x,y){
-  const pal=['#7EFF50','#00D4FF','#FF8C30','#9B5CF6','#FFD060','#BBFFEE','#FF60A0','#FFFFFF','#00FF99','#FF4466'];
+  const pal=['#40D4FF','#00AAFF','#FF8C30','#9B5CF6','#FFD060','#80E8FF','#FF60A0','#FFFFFF','#38D4FF','#FF4466'];
   // Wave 1 — t=0ms: 300 fast primary blast, full 360°
   for(let i=0;i<300;i++){
     const a=(i/300)*Math.PI*2+(Math.random()-.5)*.4,s=260+Math.random()*720;
@@ -461,7 +461,7 @@ function spawnSparks(x,y){
   },320);
 }
 function spawnFlapSparks(x,y){
-  const pal=['#9FFF60','#00FFCC','#FFFFFF','#7EFF50','#00D4FF','#C0FF80'];
+  const pal=['#40D4FF','#00AAFF','#FFFFFF','#38D0FF','#80E8FF','#00D4FF'];
   // Downward pressure blast — 60 particles
   for(let i=0;i<60;i++){
     const a=Math.PI/2+(Math.random()-.5)*Math.PI*1.15,s=100+Math.random()*340;
@@ -860,33 +860,33 @@ function drawBird(x,y,rot,wp){
 
   // Outer diffuse glow
   const outerG=ctx.createRadialGradient(0,0,0,0,0,62*ws);
-  outerG.addColorStop(0,'rgba(126,255,80,.18)');
-  outerG.addColorStop(.55,'rgba(80,200,40,.06)');
+  outerG.addColorStop(0,'rgba(0,180,255,.24)');
+  outerG.addColorStop(.55,'rgba(0,130,220,.09)');
   outerG.addColorStop(1,'rgba(0,0,0,0)');
   ctx.fillStyle=outerG;ctx.beginPath();ctx.arc(0,0,62*ws,0,Math.PI*2);ctx.fill();
 
   // Bright backing disc — high-opacity halo that works on all browsers/devices
   const discG=ctx.createRadialGradient(0,0,0,0,0,21*ws);
-  discG.addColorStop(0,'rgba(210,255,150,.70)');
-  discG.addColorStop(.45,'rgba(140,255,80,.42)');
+  discG.addColorStop(0,'rgba(120,220,255,.72)');
+  discG.addColorStop(.45,'rgba(0,160,255,.44)');
   discG.addColorStop(1,'rgba(0,0,0,0)');
   ctx.fillStyle=discG;ctx.beginPath();ctx.arc(0,0,21*ws,0,Math.PI*2);ctx.fill();
 
   // Wings with glow
-  ctx.shadowColor='rgba(140,255,80,.8)';ctx.shadowBlur=14*ws;
+  ctx.shadowColor='rgba(0,180,255,.9)';ctx.shadowBlur=14*ws;
   ctx.save();ctx.rotate(-wa);
-  ctx.fillStyle='#9FFF60';
+  ctx.fillStyle='#38D4FF';
   ctx.beginPath();ctx.moveTo(0,-6*ws);ctx.quadraticCurveTo(-7*ws,-18*ws,-30*ws,-12*ws);ctx.quadraticCurveTo(-17*ws,-4*ws,0,-2*ws);
   ctx.closePath();ctx.fill();
-  ctx.strokeStyle='rgba(210,255,130,.7)';ctx.lineWidth=1.5;
+  ctx.strokeStyle='rgba(160,230,255,.8)';ctx.lineWidth=1.5;
   ctx.beginPath();ctx.moveTo(-1*ws,-7*ws);ctx.quadraticCurveTo(-12*ws,-14*ws,-27*ws,-10*ws);ctx.stroke();
   ctx.restore();
 
   ctx.save();ctx.rotate(wa);
-  ctx.fillStyle='#9FFF60';
+  ctx.fillStyle='#38D4FF';
   ctx.beginPath();ctx.moveTo(0,6*ws);ctx.quadraticCurveTo(-7*ws,18*ws,-30*ws,12*ws);ctx.quadraticCurveTo(-17*ws,4*ws,0,2*ws);
   ctx.closePath();ctx.fill();
-  ctx.strokeStyle='rgba(210,255,130,.7)';ctx.lineWidth=1.5;
+  ctx.strokeStyle='rgba(160,230,255,.8)';ctx.lineWidth=1.5;
   ctx.beginPath();ctx.moveTo(-1*ws,7*ws);ctx.quadraticCurveTo(-12*ws,14*ws,-27*ws,10*ws);ctx.stroke();
   ctx.restore();
   ctx.shadowBlur=0;ctx.shadowColor='transparent';
@@ -894,7 +894,7 @@ function drawBird(x,y,rot,wp){
   // 🦕 — exactly one emoji; glow comes from backing disc above + shadowBlur
   ctx.save();ctx.scale(-1,1);
   ctx.font=`${BIRD_SZ}px serif`;ctx.textAlign='center';ctx.textBaseline='middle';
-  ctx.shadowColor='rgba(180,255,100,.98)';ctx.shadowBlur=BIRD_SZ*1.4;
+  ctx.shadowColor='rgba(0,210,255,.98)';ctx.shadowBlur=BIRD_SZ*1.4;
   ctx.fillText('🦕',0,3*ws);
   ctx.shadowBlur=0;ctx.shadowColor='transparent';
   ctx.restore();
