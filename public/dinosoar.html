@@ -47,7 +47,7 @@ function rrect(x,y,w,h,r){
 // ── RESPONSIVE SCALE ───────────────────────────────────
 let PIPE_W,GAP0,GAP_MIN,GNDH,PIPE_SEP,HIT_R,BIRD_SZ,SPD0,SPD_MAX;
 function computeScale(){
-  BIRD_SZ=clamp(Math.min(W,H)*.12,42,72);
+  BIRD_SZ=clamp(Math.min(W,H)*.15,52,88);
   PIPE_W=clamp(W*.07,36,80);
   GAP0=clamp(H*.30,170,250);
   GAP_MIN=clamp(H*.145,94,136);
@@ -69,7 +69,75 @@ resize();
 
 // ── AUDIO ──────────────────────────────────────────────
 let ac=null,muted=false;
-function initAudio(){if(!ac)ac=new(window.AudioContext||window.webkitAudioContext)();}
+function initAudio(){
+  if(!ac){ac=new(window.AudioContext||window.webkitAudioContext)();startMusic();}
+  else if(ac.state==='suspended')ac.resume();
+}
+
+// ── AMBIENT MUSIC ─────────────────────────────────────
+// C major pentatonic (C D E G A), two octaves
+const M_SCALE=[261.63,293.66,329.63,392.00,440.00,523.25,587.33,659.25,784.00,880.00];
+// CMaj7 chord layers for pad drone
+const M_PAD=[[32.70,.20,.3],[65.41,.16,.8],[130.81,.052,1.3],[164.81,.038,1.8],[196.00,.033,2.3],[246.94,.025,2.8],[261.63,.018,3.3]];
+let musicMaster=null,musicReverb=null,musicActive=false,melodyIdx=4,melodyTimer=null;
+
+function buildReverb(){
+  const input=ac.createGain();
+  const wet=ac.createGain();wet.gain.value=1;wet.connect(musicMaster);
+  // Multi-tap delay — early reflections + reverb tail
+  const taps=[0.0157,0.0293,0.0431,0.0617,0.0891,0.1213,0.1637,0.2143];
+  const vols=[0.40,0.32,0.26,0.20,0.15,0.10,0.07,0.04];
+  taps.forEach((t,i)=>{
+    const d=ac.createDelay(t+.01);d.delayTime.value=t;
+    const gd=ac.createGain();gd.gain.value=vols[i]*.16;
+    input.connect(d);d.connect(gd);gd.connect(wet);
+  });
+  musicReverb=input;
+}
+
+function padNote(hz,vol,fadeIn){
+  const o=ac.createOscillator(),gn=ac.createGain();
+  o.type='sine';o.frequency.value=hz;
+  gn.gain.setValueAtTime(0,ac.currentTime);
+  gn.gain.linearRampToValueAtTime(muted?0:vol,ac.currentTime+fadeIn+2.2);
+  o.connect(gn);gn.connect(musicMaster);
+  if(musicReverb){const rs=ac.createGain();rs.gain.value=0.55;gn.connect(rs);rs.connect(musicReverb);}
+  o.start();
+}
+
+function melodyTick(){
+  if(!ac||!musicActive)return;
+  const step=(Math.random()<0.55?1:-1)*(Math.floor(Math.random()*3)+1);
+  melodyIdx=Math.max(0,Math.min(M_SCALE.length-1,melodyIdx+step));
+  if(Math.random()<0.14)melodyIdx=Math.floor(Math.random()<0.6?0:4); // return to C root
+  const hz=M_SCALE[melodyIdx];
+  const dur=0.9+Math.random()*2.2;
+  const vol=0.038+Math.random()*0.028;
+  try{
+    const o=ac.createOscillator(),gn=ac.createGain();
+    o.type='triangle';o.frequency.value=hz;
+    const t=ac.currentTime;
+    gn.gain.setValueAtTime(0,t);
+    gn.gain.linearRampToValueAtTime(muted?0:vol,t+0.032);
+    gn.gain.setTargetAtTime(0.0001,t+0.2,dur*.30);
+    o.connect(gn);gn.connect(musicMaster);
+    if(musicReverb){const rs=ac.createGain();rs.gain.value=1.5;gn.connect(rs);rs.connect(musicReverb);}
+    o.start(t);o.stop(t+dur+0.7);
+  }catch(e){}
+  melodyTimer=setTimeout(melodyTick,(dur*0.52+0.55+Math.random()*1.9)*1000);
+}
+
+function startMusic(){
+  if(!ac||musicActive)return;
+  musicActive=true;
+  musicMaster=ac.createGain();
+  musicMaster.gain.setValueAtTime(0,ac.currentTime);
+  musicMaster.gain.linearRampToValueAtTime(muted?0:0.15,ac.currentTime+3.2);
+  musicMaster.connect(ac.destination);
+  buildReverb();
+  M_PAD.forEach(([hz,vol,fi])=>padNote(hz,vol,fi));
+  melodyTimer=setTimeout(melodyTick,3500);
+}
 function tone(hz,vol,dur,type='sine'){
   if(!ac||vol<.003||muted)return;
   try{
@@ -132,6 +200,7 @@ btnPause.addEventListener('pointerdown',e=>{e.stopPropagation();e.preventDefault
 btnMute.addEventListener('pointerdown',e=>{
   e.stopPropagation();e.preventDefault();
   initAudio();muted=!muted;btnMute.textContent=muted?'🔇':'🔊';
+  if(musicMaster)musicMaster.gain.linearRampToValueAtTime(muted?0:0.15,ac.currentTime+0.4);
 });
 
 // ── RESET ──────────────────────────────────────────────
@@ -190,6 +259,13 @@ document.addEventListener('keydown',e=>{
 
 // ── UPDATE ─────────────────────────────────────────────
 function update(dt,ts){
+  // Ambient wisps — soft ethereal particles always drifting upward
+  if((phase==='idle'||phase==='playing')&&Math.random()<0.018&&sparks.length<300)
+    sparks.push({x:Math.random()*W,y:H*(.2+Math.random()*.65),
+      vx:(Math.random()-.5)*12,vy:-16-Math.random()*22,grav:2,
+      life:.85+Math.random()*.15,decay:.10+Math.random()*.06,
+      r:1.1+Math.random()*2.2,
+      c:['#00D4FF','#7EFF50','#9B5CF6','#00FFAA','#60A0FF'][Math.floor(Math.random()*5)],a:.24});
   if(phase==='paused')return;
   if(phase==='idle'){bird.y=H*.44+Math.sin(ts/520)*9;wingP=(Math.sin(ts/300)+1)/2;return;}
   if(phase==='dead'){
@@ -481,6 +557,18 @@ function render(ts){
   // Columns + coins
   if(phase!=='idle')cols.forEach(c=>{drawCol(c);drawCoin(c,ts);});
 
+  // Bird ground shadow — grows as dino approaches ground
+  if(phase==='playing'||phase==='dead'){
+    const gdist=H-GNDH-bird.y;
+    const gsa=Math.max(0,1-gdist/(H*.45))*.26;
+    if(gsa>0){
+      const sw=BIRD_SZ*(.42+Math.min(.46,1-gdist/(H*.5)));
+      const shadG=ctx.createRadialGradient(W*.22,H-GNDH-1,0,W*.22,H-GNDH-1,sw);
+      shadG.addColorStop(0,`rgba(0,0,0,${gsa})`);shadG.addColorStop(1,'rgba(0,0,0,0)');
+      ctx.fillStyle=shadG;ctx.beginPath();
+      ctx.ellipse(W*.22,H-GNDH-2,sw,sw*.16,0,0,Math.PI*2);ctx.fill();
+    }
+  }
   // Bird
   const bRot=phase==='dead'?deathRot:clamp(bird.vy/1280,-.46,.92);
   drawBird(W*.22,bird.y,bRot,wingP);
@@ -502,7 +590,7 @@ function render(ts){
   ctx.save();
   ctx.globalCompositeOperation='lighter';
   sparks.forEach(p=>{
-    ctx.globalAlpha=Math.max(0,p.life*p.life)*.82;
+    ctx.globalAlpha=Math.max(0,p.life*p.life)*(p.a||.82);
     ctx.beginPath();ctx.arc(p.x,p.y,p.r*Math.max(.1,p.life),0,Math.PI*2);
     ctx.fillStyle=p.c;ctx.fill();
   });
@@ -747,29 +835,28 @@ function drawBird(x,y,rot,wp){
   ctx.shadowColor='rgba(140,255,80,.8)';ctx.shadowBlur=14*ws;
   ctx.save();ctx.rotate(-wa);
   ctx.fillStyle='#9FFF60';
-  ctx.beginPath();ctx.moveTo(0,-8*ws);ctx.quadraticCurveTo(-12*ws,-30*ws,-48*ws,-19*ws);ctx.quadraticCurveTo(-27*ws,-7*ws,0,-3*ws);
+  ctx.beginPath();ctx.moveTo(0,-6*ws);ctx.quadraticCurveTo(-7*ws,-18*ws,-30*ws,-12*ws);ctx.quadraticCurveTo(-17*ws,-4*ws,0,-2*ws);
   ctx.closePath();ctx.fill();
   ctx.strokeStyle='rgba(210,255,130,.7)';ctx.lineWidth=1.5;
-  ctx.beginPath();ctx.moveTo(-1*ws,-9*ws);ctx.quadraticCurveTo(-20*ws,-23*ws,-43*ws,-17*ws);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(-1*ws,-7*ws);ctx.quadraticCurveTo(-12*ws,-14*ws,-27*ws,-10*ws);ctx.stroke();
   ctx.restore();
 
   ctx.save();ctx.rotate(wa);
   ctx.fillStyle='#9FFF60';
-  ctx.beginPath();ctx.moveTo(0,8*ws);ctx.quadraticCurveTo(-12*ws,30*ws,-48*ws,19*ws);ctx.quadraticCurveTo(-27*ws,7*ws,0,3*ws);
+  ctx.beginPath();ctx.moveTo(0,6*ws);ctx.quadraticCurveTo(-7*ws,18*ws,-30*ws,12*ws);ctx.quadraticCurveTo(-17*ws,4*ws,0,2*ws);
   ctx.closePath();ctx.fill();
   ctx.strokeStyle='rgba(210,255,130,.7)';ctx.lineWidth=1.5;
-  ctx.beginPath();ctx.moveTo(-1*ws,9*ws);ctx.quadraticCurveTo(-20*ws,23*ws,-43*ws,17*ws);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(-1*ws,7*ws);ctx.quadraticCurveTo(-12*ws,14*ws,-27*ws,10*ws);ctx.stroke();
   ctx.restore();
   ctx.shadowBlur=0;ctx.shadowColor='transparent';
 
-  // 🦕 — 4-directional glow copies (works where shadowBlur is weak on mobile)
+  // 🦕 — size-staggered glow layers (no ghost offset copies)
   ctx.save();ctx.scale(-1,1);
-  ctx.font=`${BIRD_SZ}px serif`;ctx.textAlign='center';ctx.textBaseline='middle';
-  const go=5*ws;
-  ctx.globalAlpha=0.22;
-  ctx.fillText('🦕',-go,3*ws);ctx.fillText('🦕',go,3*ws);
-  ctx.fillText('🦕',0,3*ws-go);ctx.fillText('🦕',0,3*ws+go);
-  // Sharp bright center with shadowBlur for browsers that render it
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.font=`${BIRD_SZ*1.55}px serif`;ctx.globalAlpha=0.07;ctx.fillText('🦕',0,3*ws);
+  ctx.font=`${BIRD_SZ*1.22}px serif`;ctx.globalAlpha=0.13;ctx.fillText('🦕',0,3*ws);
+  ctx.font=`${BIRD_SZ}px serif`;ctx.globalAlpha=0.20;ctx.fillText('🦕',0,3*ws);
+  // Sharp bright center
   ctx.globalAlpha=1;
   ctx.shadowColor='rgba(200,255,130,.95)';ctx.shadowBlur=BIRD_SZ*1.1;
   ctx.fillText('🦕',0,3*ws);
