@@ -495,13 +495,21 @@ function render(ts){
 
   // ── IDLE SCREEN ──────────────────────────────────────
   if(phase==='idle'){
-    const tsz=clamp(H*.12,44,92);
+    let tsz=clamp(H*.12,34,92);
     ctx.textAlign='left';
     ctx.font=`900 ${tsz}px -apple-system,BlinkMacSystemFont,sans-serif`;
-    const dinoW=ctx.measureText('DINO').width;
+    let dinoW=ctx.measureText('DINO').width;
     ctx.font=`italic 800 ${Math.round(tsz*1.06)}px 'Playfair Display',Georgia,serif`;
-    const soarW=ctx.measureText('SOAR').width;
-    const totalW=dinoW+2+soarW;
+    let soarW=ctx.measureText('SOAR').width;
+    let totalW=dinoW+2+soarW;
+    if(totalW>W*.9){
+      tsz*=(W*.9)/totalW;
+      ctx.font=`900 ${tsz}px -apple-system,BlinkMacSystemFont,sans-serif`;
+      dinoW=ctx.measureText('DINO').width;
+      ctx.font=`italic 800 ${Math.round(tsz*1.06)}px 'Playfair Display',Georgia,serif`;
+      soarW=ctx.measureText('SOAR').width;
+      totalW=dinoW+2+soarW;
+    }
     const sx2=W/2-totalW/2,ty=H*.28+tsz*.35;
 
     const shift=((ts/6200)%1)*totalW*2;
@@ -526,7 +534,7 @@ function render(ts){
     ctx.textAlign='center';
     ctx.font=`300 ${clamp(H*.034,11,19)}px -apple-system,BlinkMacSystemFont,sans-serif`;
     ctx.fillStyle='rgba(160,200,255,.44)';
-    ctx.fillText('Tap or press space to flap',W/2,ty+clamp(H*.07,28,52));
+    ctx.fillText(W<520?'Tap to flap':'Tap or press space to flap',W/2,ty+clamp(H*.07,28,52));
     if(hiScore>0){
       ctx.font=`600 ${clamp(H*.026,9,14)}px 'SF Mono','Consolas','Courier New',monospace`;
       ctx.fillStyle='rgba(0,180,255,.55)';
@@ -542,7 +550,9 @@ function render(ts){
     const a=Math.min(1,(deadT-.55)/.45);
     ctx.fillStyle=`rgba(4,8,18,${a*.8})`;ctx.fillRect(0,0,W,H);
     ctx.globalAlpha=a;ctx.textAlign='center';
-    const dsz=clamp(H*.14,52,104);
+    let dsz=clamp(H*.14,52,104);
+    ctx.font=`900 ${dsz}px -apple-system,BlinkMacSystemFont,sans-serif`;
+    if(ctx.measureText('EXTINCT').width>W*.88)dsz*=(W*.88)/ctx.measureText('EXTINCT').width;
     ctx.font=`900 ${dsz}px -apple-system,BlinkMacSystemFont,sans-serif`;
     ctx.fillStyle='rgba(0,0,0,.3)';ctx.fillText('EXTINCT',W/2+3,H*.32+dsz*.35+3);
     ctx.fillStyle='rgba(220,235,255,.95)';ctx.fillText('EXTINCT',W/2,H*.32+dsz*.35);
