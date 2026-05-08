@@ -70,73 +70,54 @@ resize();
 // ── AUDIO ──────────────────────────────────────────────
 let ac=null,muted=false;
 function initAudio(){
-  if(!ac){ac=new(window.AudioContext||window.webkitAudioContext)();startMusic();}
+  if(!ac){ac=new(window.AudioContext||window.webkitAudioContext)();loadSounds();}
   else if(ac.state==='suspended')ac.resume();
 }
 
-// ── AMBIENT MUSIC ─────────────────────────────────────
-// C major pentatonic (C D E G A), two octaves
-const M_SCALE=[261.63,293.66,329.63,392.00,440.00,523.25,587.33,659.25,784.00,880.00];
-// CMaj7 chord layers for pad drone
-const M_PAD=[[32.70,.20,.3],[65.41,.16,.8],[130.81,.052,1.3],[164.81,.038,1.8],[196.00,.033,2.3],[246.94,.025,2.8],[261.63,.018,3.3]];
-let musicMaster=null,musicReverb=null,musicActive=false,melodyIdx=4,melodyTimer=null;
-
-function buildReverb(){
-  const input=ac.createGain();
-  const wet=ac.createGain();wet.gain.value=1;wet.connect(musicMaster);
-  // Multi-tap delay — early reflections + reverb tail
-  const taps=[0.0157,0.0293,0.0431,0.0617,0.0891,0.1213,0.1637,0.2143];
-  const vols=[0.40,0.32,0.26,0.20,0.15,0.10,0.07,0.04];
-  taps.forEach((t,i)=>{
-    const d=ac.createDelay(t+.01);d.delayTime.value=t;
-    const gd=ac.createGain();gd.gain.value=vols[i]*.16;
-    input.connect(d);d.connect(gd);gd.connect(wet);
-  });
-  musicReverb=input;
+// ── CUSTOM SOUND LOADER ────────────────────────────────
+// Drop MP3/OGG files into /public/sounds/ with these names.
+// Any file that exists replaces the generated fallback for that action.
+const SFX_FILES={
+  flap:   'sounds/flap.mp3',
+  gem:    'sounds/gem.mp3',
+  score:  'sounds/score.mp3',
+  death:  'sounds/death.mp3',
+  near:   'sounds/near.mp3',
+  streak: 'sounds/streak.mp3',
+  music:  'sounds/music.mp3',
+};
+const SFX={};
+let sfxLoaded=false,musicNode=null;
+async function loadSounds(){
+  if(sfxLoaded||!ac)return;
+  sfxLoaded=true;
+  for(const[key,path]of Object.entries(SFX_FILES)){
+    try{
+      const res=await fetch(path);
+      if(!res.ok)continue;
+      SFX[key]=await ac.decodeAudioData(await res.arrayBuffer());
+    }catch(e){}
+  }
+  if(SFX.music)playMusic();
 }
-
-function padNote(hz,vol,fadeIn){
-  const o=ac.createOscillator(),gn=ac.createGain();
-  o.type='sine';o.frequency.value=hz;
-  gn.gain.setValueAtTime(0,ac.currentTime);
-  gn.gain.linearRampToValueAtTime(muted?0:vol,ac.currentTime+fadeIn+2.2);
-  o.connect(gn);gn.connect(musicMaster);
-  if(musicReverb){const rs=ac.createGain();rs.gain.value=0.55;gn.connect(rs);rs.connect(musicReverb);}
-  o.start();
-}
-
-function melodyTick(){
-  if(!ac||!musicActive)return;
-  const step=(Math.random()<0.55?1:-1)*(Math.floor(Math.random()*3)+1);
-  melodyIdx=Math.max(0,Math.min(M_SCALE.length-1,melodyIdx+step));
-  if(Math.random()<0.14)melodyIdx=Math.floor(Math.random()<0.6?0:4); // return to C root
-  const hz=M_SCALE[melodyIdx];
-  const dur=0.9+Math.random()*2.2;
-  const vol=0.038+Math.random()*0.028;
+function playSfx(key,vol=1){
+  if(!ac||muted||!SFX[key])return false;
   try{
-    const o=ac.createOscillator(),gn=ac.createGain();
-    o.type='triangle';o.frequency.value=hz;
-    const t=ac.currentTime;
-    gn.gain.setValueAtTime(0,t);
-    gn.gain.linearRampToValueAtTime(muted?0:vol,t+0.032);
-    gn.gain.setTargetAtTime(0.0001,t+0.2,dur*.30);
-    o.connect(gn);gn.connect(musicMaster);
-    if(musicReverb){const rs=ac.createGain();rs.gain.value=1.5;gn.connect(rs);rs.connect(musicReverb);}
-    o.start(t);o.stop(t+dur+0.7);
+    const src=ac.createBufferSource(),g=ac.createGain();
+    src.buffer=SFX[key];g.gain.value=vol;
+    src.connect(g);g.connect(ac.destination);src.start();
   }catch(e){}
-  melodyTimer=setTimeout(melodyTick,(dur*0.52+0.55+Math.random()*1.9)*1000);
+  return true;
 }
-
-function startMusic(){
-  if(!ac||musicActive)return;
-  musicActive=true;
-  musicMaster=ac.createGain();
-  musicMaster.gain.setValueAtTime(0,ac.currentTime);
-  musicMaster.gain.linearRampToValueAtTime(muted?0:0.15,ac.currentTime+3.2);
-  musicMaster.connect(ac.destination);
-  buildReverb();
-  M_PAD.forEach(([hz,vol,fi])=>padNote(hz,vol,fi));
-  melodyTimer=setTimeout(melodyTick,3500);
+function playMusic(){
+  if(!ac||!SFX.music||musicNode)return;
+  try{
+    const src=ac.createBufferSource(),g=ac.createGain();
+    src.buffer=SFX.music;src.loop=true;
+    g.gain.value=muted?0:.18;
+    src.connect(g);g.connect(ac.destination);src.start();
+    musicNode={src,g};
+  }catch(e){}
 }
 function tone(hz,vol,dur,type='sine'){
   if(!ac||vol<.003||muted)return;
@@ -150,10 +131,11 @@ function tone(hz,vol,dur,type='sine'){
     o.start();o.stop(t+dur+.04);
   }catch(e){}
 }
-function sfxFlap(){tone(360,.055,.07,'triangle');tone(195,.03,.12,'sine');}
-function sfxScore(){tone(620,.07,.08,'sine');setTimeout(()=>tone(840,.055,.1,'sine'),75);}
+function sfxFlap(){if(playSfx('flap',.7))return;tone(360,.055,.07,'triangle');tone(195,.03,.12,'sine');}
+function sfxScore(){if(playSfx('score',.8))return;tone(620,.07,.08,'sine');setTimeout(()=>tone(840,.055,.1,'sine'),75);}
 function sfxCoin(){tone(880,.05,.06,'sine');setTimeout(()=>tone(1100,.04,.08,'sine'),55);}
 function sfxGem(){
+  if(playSfx('gem'))return;
   if(!ac||muted)return;
   try{
     const t=ac.currentTime;
@@ -173,13 +155,15 @@ function sfxGem(){
     os.connect(gs);gs.connect(ac.destination);os.start(t);os.stop(t+.4);
   }catch(e){}
 }
-function sfxNear(){tone(520,.03,.04,'sine');}
+function sfxNear(){if(playSfx('near',.5))return;tone(520,.03,.04,'sine');}
 function sfxDeath(){
+  if(playSfx('death'))return;
   tone(290,.14,.1,'sawtooth');
   setTimeout(()=>tone(180,.11,.18,'sawtooth'),105);
   setTimeout(()=>tone(95,.09,.3,'sawtooth'),230);
 }
 function sfxRoar(){
+  if(playSfx('death'))return;
   if(!ac||muted)return;
   try{
     const t=ac.currentTime;
@@ -202,7 +186,7 @@ function sfxRoar(){
     });
   }catch(e){}
 }
-function sfxStreak(){tone(960,.06,.06,'sine');setTimeout(()=>tone(1280,.05,.1,'sine'),65);}
+function sfxStreak(){if(playSfx('streak',.9))return;tone(960,.06,.06,'sine');setTimeout(()=>tone(1280,.05,.1,'sine'),65);}
 function haptic(p){try{navigator.vibrate&&navigator.vibrate(p);}catch(e){}}
 
 // ── CONFIG ─────────────────────────────────────────────
@@ -243,7 +227,7 @@ btnPause.addEventListener('pointerdown',e=>{e.stopPropagation();e.preventDefault
 btnMute.addEventListener('pointerdown',e=>{
   e.stopPropagation();e.preventDefault();
   initAudio();muted=!muted;btnMute.textContent=muted?'🔇':'🔊';
-  if(musicMaster)musicMaster.gain.linearRampToValueAtTime(muted?0:0.15,ac.currentTime+0.4);
+  if(musicNode)musicNode.g.gain.linearRampToValueAtTime(muted?0:.18,ac.currentTime+0.4);
 });
 
 // ── RESET ──────────────────────────────────────────────
