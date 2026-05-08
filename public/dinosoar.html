@@ -795,16 +795,27 @@ function render(ts){
     ctx.fillText('SOAR',sx2+dinoW+2,ty);
 
     ctx.textAlign='center';
-    ctx.font=`300 ${clamp(H*.034,11,19)}px -apple-system,BlinkMacSystemFont,sans-serif`;
-    ctx.fillStyle='rgba(160,200,255,.44)';
-    ctx.fillText(W<520?'Tap to flap':'Tap or press space to flap',W/2,ty+clamp(H*.07,28,52));
+    // "TAP TO FLAP" — 8-bit monospace with scrolling gradient
+    const tapSz=clamp(H*.044,15,26);
+    ctx.font=`700 ${tapSz}px 'SF Mono','Consolas','Courier New',monospace`;
+    const tapText=W<520?'TAP TO FLAP':'TAP  OR  SPACE  TO  FLAP';
+    const tapW=ctx.measureText(tapText).width;
+    const tapShift=((ts/5000)%1)*tapW*2;
+    const tapG=ctx.createLinearGradient(W/2-tapW-tapShift,0,W/2+tapW*2-tapShift,0);
+    tapG.addColorStop(0,'#7EFF50');tapG.addColorStop(.25,'#00FFCC');
+    tapG.addColorStop(.5,'#38D4FF');tapG.addColorStop(.75,'#9B5CF6');
+    tapG.addColorStop(1,'#7EFF50');
+    ctx.fillStyle='rgba(0,0,0,.35)';
+    ctx.fillText(tapText,W/2+2,ty+clamp(H*.07,28,52)+2);
+    ctx.fillStyle=tapG;
+    ctx.fillText(tapText,W/2,ty+clamp(H*.07,28,52));
     if(hiScore>0){
-      ctx.font=`600 ${clamp(H*.026,9,14)}px 'SF Mono','Consolas','Courier New',monospace`;
-      ctx.fillStyle='rgba(0,180,255,.55)';
+      ctx.font=`700 ${clamp(H*.03,11,17)}px 'SF Mono','Consolas','Courier New',monospace`;
+      ctx.fillStyle='rgba(0,220,255,.88)';
       ctx.fillText(`BEST  ${hiScore}`,W/2,ty+clamp(H*.12,48,88));
     }
-    ctx.font=`600 ${clamp(H*.022,8,12)}px 'SF Mono','Consolas','Courier New',monospace`;
-    ctx.fillStyle=`rgba(0,200,255,${.35+.35*Math.sin(ts/560)})`;
+    ctx.font=`700 ${clamp(H*.048,17,28)}px 'SF Mono','Consolas','Courier New',monospace`;
+    ctx.fillStyle=`rgba(0,220,255,${.55+.45*Math.sin(ts/560)})`;
     ctx.fillText('TAP ANYWHERE',W/2,H*.84);
   }
 
