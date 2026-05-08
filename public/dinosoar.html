@@ -723,9 +723,17 @@ function render(ts){
     }
     ctx.restore();
     if(hiScore>0){
-      ctx.font=`500 ${clamp(H*.02,8,12)}px -apple-system,BlinkMacSystemFont,sans-serif`;
-      ctx.textAlign='center';ctx.fillStyle='rgba(0,180,255,.38)';
-      ctx.fillText(`BEST  ${hiScore}`,cx,py+ph2+clamp(H*.025,10,16));
+      const bsz=clamp(H*.02,8,12);
+      ctx.font=`700 ${bsz}px 'SF Mono','Consolas','Courier New',monospace`;
+      ctx.textAlign='center';
+      const bstTxt=`BEST  ${hiScore}`;
+      const bstW=ctx.measureText(bstTxt).width;
+      const bstShift=((ts/4200)%1)*bstW*2;
+      const bstG=ctx.createLinearGradient(cx-bstW-bstShift,0,cx+bstW*2-bstShift,0);
+      bstG.addColorStop(0,'#7EFF50');bstG.addColorStop(.33,'#00FFCC');
+      bstG.addColorStop(.66,'#38D4FF');bstG.addColorStop(1,'#7EFF50');
+      ctx.fillStyle=bstG;
+      ctx.fillText(bstTxt,cx,py+ph2+clamp(H*.025,10,16));
     }
     if(newBestFx>0){
       ctx.font=`700 ${clamp(H*.024,9,14)}px -apple-system,BlinkMacSystemFont,sans-serif`;
