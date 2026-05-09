@@ -368,7 +368,7 @@ function update(dt,ts){
     if(!c.scored&&c.x+PIPE_W<bx){
       c.scored=true;score++;scoreFx=1;scorePulse=1;sfxScore();
       const clearance=Math.min(Math.abs(bird.y-(c.mid-c.gapH/2)),Math.abs(bird.y-(c.mid+c.gapH/2)));
-      if(clearance<70){c.flashT=1;sfxNear();streak=0;}
+      if(clearance<63){c.flashT=1;sfxNear();streak=0;}
       else{
         streak++;streakFx=1;
         if(streak>=3&&streak%5===0){sfxStreak();haptic([10,5,10]);}
@@ -1170,19 +1170,41 @@ function drawCol(c){
   bg.addColorStop(0,'#04081A');bg.addColorStop(.4,'#0C1438');
   bg.addColorStop(.6,'#0C1438');bg.addColorStop(1,'#04081A');
   ctx.fillStyle=bg;ctx.fillRect(x,0,w,topH);ctx.fillRect(x,botY,w,H-botY);
-  ctx.fillStyle=fl>0?`rgb(${~~lerp(14,126,fl)},${~~lerp(24,255,fl)},${~~lerp(58,80,fl)})`:'#0E1840';
+  // Rainbow cap gradient — scrolling, brighter on near-miss flash
+  const capShift=((ts/3500)%1)*cw*3;
+  const ca=fl>0?.85+fl*.15:.7;
+  const capG=ctx.createLinearGradient(cx2-capShift,0,cx2+cw*2-capShift,0);
+  capG.addColorStop(0,`rgba(255,107,53,${ca})`);
+  capG.addColorStop(.2,`rgba(255,208,96,${ca})`);
+  capG.addColorStop(.4,`rgba(126,255,80,${ca})`);
+  capG.addColorStop(.6,`rgba(0,255,204,${ca})`);
+  capG.addColorStop(.8,`rgba(56,212,255,${ca})`);
+  capG.addColorStop(1,`rgba(155,92,246,${ca})`);
+  if(fl>0){ctx.save();ctx.shadowColor='rgba(126,255,80,.7)';ctx.shadowBlur=12*fl;}
+  ctx.fillStyle=capG;
   ctx.fillRect(cx2,topH-ch,cw,ch);ctx.fillRect(cx2,botY,cw,ch);
-  const ga=.32+fl*.55;
-  const g1=ctx.createLinearGradient(0,topH-60,0,topH);
-  g1.addColorStop(0,'rgba(126,255,80,0)');g1.addColorStop(1,`rgba(126,255,80,${ga})`);
-  ctx.fillStyle=g1;ctx.fillRect(cx2,topH-60,cw,60);
-  const g2=ctx.createLinearGradient(0,botY,0,botY+60);
-  g2.addColorStop(0,`rgba(126,255,80,${ga})`);g2.addColorStop(1,'rgba(126,255,80,0)');
-  ctx.fillStyle=g2;ctx.fillRect(cx2,botY,cw,60);
-  ctx.fillStyle=`rgba(126,255,80,${.16+fl*.32})`;
-  ctx.fillRect(cx2,topH-ch,cw,2);ctx.fillRect(cx2,botY+ch-2,cw,2);
-  ctx.fillStyle=`rgba(126,255,80,${.1+fl*.2})`;
-  ctx.fillRect(cx2,topH-2,cw,2);ctx.fillRect(cx2,botY,cw,2);
+  if(fl>0)ctx.restore();
+  // Inner edge glow lines — rainbow
+  const edgeShift=((ts/3500)%1)*cw*3;
+  const eg=ctx.createLinearGradient(cx2-edgeShift,0,cx2+cw*2-edgeShift,0);
+  eg.addColorStop(0,'#FF6B35');eg.addColorStop(.25,'#7EFF50');
+  eg.addColorStop(.5,'#38D4FF');eg.addColorStop(.75,'#9B5CF6');eg.addColorStop(1,'#FF6B35');
+  const ea=.35+fl*.45;
+  ctx.save();ctx.shadowColor=`rgba(56,212,255,${ea})`;ctx.shadowBlur=fl>0?10:4;
+  ctx.strokeStyle=eg;ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(cx2,topH-ch+1);ctx.lineTo(cx2+cw,topH-ch+1);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx2,topH-1);ctx.lineTo(cx2+cw,topH-1);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx2,botY+1);ctx.lineTo(cx2+cw,botY+1);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx2,botY+ch-1);ctx.lineTo(cx2+cw,botY+ch-1);ctx.stroke();
+  ctx.restore();
+  // Gap-edge fade glow
+  const ga=.22+fl*.4;
+  const g1=ctx.createLinearGradient(0,topH-50,0,topH);
+  g1.addColorStop(0,'rgba(56,212,255,0)');g1.addColorStop(1,`rgba(56,212,255,${ga})`);
+  ctx.fillStyle=g1;ctx.fillRect(cx2,topH-50,cw,50);
+  const g2=ctx.createLinearGradient(0,botY,0,botY+50);
+  g2.addColorStop(0,`rgba(56,212,255,${ga})`);g2.addColorStop(1,'rgba(56,212,255,0)');
+  ctx.fillStyle=g2;ctx.fillRect(cx2,botY,cw,50);
   const pgr=ctx.createRadialGradient(x+w/2,c.mid,0,x+w/2,c.mid,c.gapH*.5);
   pgr.addColorStop(0,'rgba(0,200,255,.07)');pgr.addColorStop(.5,'rgba(126,255,80,.04)');pgr.addColorStop(1,'rgba(0,0,0,0)');
   ctx.fillStyle=pgr;ctx.beginPath();ctx.arc(x+w/2,c.mid,c.gapH*.5,0,Math.PI*2);ctx.fill();
