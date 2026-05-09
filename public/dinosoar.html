@@ -792,59 +792,102 @@ function render(ts){
       ctx.fillStyle='rgba(0,220,255,.88)';
       ctx.fillText(`BEST  ${hiScore}`,W/2,ty+clamp(H*.09,36,64));
     }
-    // "TAP TO FLAP" — 3D button with scrolling gradient text
-    const tapSz=clamp(H*.052,18,38);
+    // "TAP TO FLAP" — chunky arcade 3D button
+    const tapSz=clamp(H*.055,20,40);
     ctx.font=`700 ${tapSz}px 'Rajdhani',sans-serif`;
     const tapText='TAP TO FLAP';
     const tapW=ctx.measureText(tapText).width;
-    const tapPadX=clamp(W*.06,22,44), tapPadY=clamp(H*.018,8,16);
+    const tapPadX=clamp(W*.07,28,52), tapPadY=clamp(H*.022,10,20);
     const tapBW=tapW+tapPadX*2, tapBH=tapSz+tapPadY*2;
-    const tapBX=W/2-tapBW/2, tapBY=H*.83-tapBH/2;
-    const tapDepth=clamp(H*.006,4,7);
-    const tapPulse=.97+.03*Math.sin(ts/400);
+    const tapBX=W/2-tapBW/2, tapBY=H*.82-tapBH/2;
+    const tapDepth=clamp(H*.009,7,13);
+    const tapR=10;
+    const tapShift=((ts/4500)%1)*tapBW*2;
+    const tapBreathe=.97+.03*Math.sin(ts/600);
     ctx.save();
-    ctx.translate(W/2,tapBY+tapBH/2);ctx.scale(tapPulse,tapPulse);ctx.translate(-W/2,-(tapBY+tapBH/2));
-    // 3D side face (bottom-right depth)
-    ctx.fillStyle='rgba(0,60,40,.9)';
-    ctx.beginPath();
-    ctx.moveTo(tapBX+tapBW,tapBY);
-    ctx.lineTo(tapBX+tapBW+tapDepth,tapBY+tapDepth);
-    ctx.lineTo(tapBX+tapBW+tapDepth,tapBY+tapBH+tapDepth);
-    ctx.lineTo(tapBX+tapBW,tapBY+tapBH);
-    ctx.closePath();ctx.fill();
-    ctx.beginPath();
-    ctx.moveTo(tapBX,tapBY+tapBH);
-    ctx.lineTo(tapBX+tapDepth,tapBY+tapBH+tapDepth);
-    ctx.lineTo(tapBX+tapBW+tapDepth,tapBY+tapBH+tapDepth);
-    ctx.lineTo(tapBX+tapBW,tapBY+tapBH);
-    ctx.closePath();ctx.fill();
-    // Button face — dark bg
-    ctx.fillStyle='rgba(0,12,24,.82)';
-    ctx.beginPath();ctx.roundRect(tapBX,tapBY,tapBW,tapBH,6);ctx.fill();
-    // Border with gradient glow
-    const tapShift=((ts/5000)%1)*tapBW*2;
-    const tapBG=ctx.createLinearGradient(tapBX-tapShift,0,tapBX+tapBW*2-tapShift,0);
-    tapBG.addColorStop(0,'#7EFF50');tapBG.addColorStop(.25,'#00FFCC');
-    tapBG.addColorStop(.5,'#38D4FF');tapBG.addColorStop(.75,'#9B5CF6');
-    tapBG.addColorStop(1,'#7EFF50');
-    ctx.save();
-    ctx.shadowColor='rgba(56,212,255,.55)';ctx.shadowBlur=12;
-    ctx.strokeStyle=tapBG;ctx.lineWidth=2;
-    ctx.beginPath();ctx.roundRect(tapBX,tapBY,tapBW,tapBH,6);ctx.stroke();
+    ctx.translate(W/2,tapBY+tapBH/2);ctx.scale(tapBreathe,tapBreathe);ctx.translate(-W/2,-(tapBY+tapBH/2));
+
+    // Shadow glow under whole button
+    ctx.save();ctx.shadowColor='rgba(56,212,255,.4)';ctx.shadowBlur=32;
+    ctx.fillStyle='rgba(56,212,255,.01)';
+    ctx.beginPath();ctx.roundRect(tapBX-4,tapBY-4,tapBW+8,tapBH+8,tapR+4);ctx.fill();
     ctx.restore();
-    // Inner top-left highlight
-    ctx.strokeStyle='rgba(255,255,255,.12)';ctx.lineWidth=1;
-    ctx.beginPath();ctx.roundRect(tapBX+1,tapBY+1,tapBW-2,tapBH-2,5);ctx.stroke();
-    // Text with same scrolling gradient
-    const tapTG=ctx.createLinearGradient(tapBX-tapShift,0,tapBX+tapBW*2-tapShift,0);
-    tapTG.addColorStop(0,'#7EFF50');tapTG.addColorStop(.25,'#00FFCC');
-    tapTG.addColorStop(.5,'#38D4FF');tapTG.addColorStop(.75,'#9B5CF6');
-    tapTG.addColorStop(1,'#7EFF50');
-    ctx.font=`700 ${tapSz}px 'Rajdhani',sans-serif`;
-    ctx.fillStyle='rgba(0,0,0,.4)';
-    ctx.fillText(tapText,W/2+1.5,tapBY+tapPadY+tapSz+1.5);
-    ctx.fillStyle=tapTG;
-    ctx.fillText(tapText,W/2,tapBY+tapPadY+tapSz);
+
+    // 3D bottom face (dark gradient)
+    const sideG=ctx.createLinearGradient(tapBX,0,tapBX+tapBW,0);
+    sideG.addColorStop(0,'#1a4a10');sideG.addColorStop(.4,'#004a3a');
+    sideG.addColorStop(.75,'#003a5a');sideG.addColorStop(1,'#1a0840');
+    ctx.fillStyle=sideG;
+    ctx.beginPath();
+    ctx.moveTo(tapBX+tapR,tapBY+tapBH);
+    ctx.lineTo(tapBX+tapR+tapDepth,tapBY+tapBH+tapDepth);
+    ctx.lineTo(tapBX+tapBW-tapR+tapDepth,tapBY+tapBH+tapDepth);
+    ctx.lineTo(tapBX+tapBW-tapR,tapBY+tapBH);
+    ctx.closePath();ctx.fill();
+    // 3D right face
+    ctx.fillStyle=sideG;
+    ctx.beginPath();
+    ctx.moveTo(tapBX+tapBW,tapBY+tapR);
+    ctx.lineTo(tapBX+tapBW+tapDepth,tapBY+tapR+tapDepth);
+    ctx.lineTo(tapBX+tapBW+tapDepth,tapBY+tapBH-tapR+tapDepth);
+    ctx.lineTo(tapBX+tapBW,tapBY+tapBH-tapR);
+    ctx.closePath();ctx.fill();
+    // Corner piece
+    ctx.fillStyle=sideG;
+    ctx.beginPath();
+    ctx.moveTo(tapBX+tapBW,tapBY+tapBH);
+    ctx.lineTo(tapBX+tapBW+tapDepth,tapBY+tapBH+tapDepth);
+    ctx.lineTo(tapBX+tapBW,tapBY+tapBH);
+    ctx.closePath();ctx.fill();
+
+    // Button face fill — very dark with subtle top-to-bottom tint
+    const faceG=ctx.createLinearGradient(0,tapBY,0,tapBY+tapBH);
+    faceG.addColorStop(0,'rgba(10,30,40,.95)');faceG.addColorStop(1,'rgba(4,8,20,.98)');
+    ctx.fillStyle=faceG;
+    ctx.beginPath();ctx.roundRect(tapBX,tapBY,tapBW,tapBH,tapR);ctx.fill();
+
+    // Gradient border — 3px, very bright, multi-glow pass
+    const edgeG=ctx.createLinearGradient(tapBX-tapShift,0,tapBX+tapBW*2-tapShift,0);
+    edgeG.addColorStop(0,'#7EFF50');edgeG.addColorStop(.25,'#00FFCC');
+    edgeG.addColorStop(.5,'#38D4FF');edgeG.addColorStop(.75,'#9B5CF6');
+    edgeG.addColorStop(1,'#7EFF50');
+    for(const [blur,alpha] of [[28,.5],[14,.7],[0,1]]){
+      ctx.save();ctx.shadowColor=`rgba(56,212,255,${alpha*.6})`;ctx.shadowBlur=blur;
+      ctx.strokeStyle=edgeG;ctx.lineWidth=blur===0?2.5:1.5;
+      ctx.beginPath();ctx.roundRect(tapBX,tapBY,tapBW,tapBH,tapR);ctx.stroke();
+      ctx.restore();
+    }
+
+    // Top-left bevel highlight
+    ctx.save();
+    ctx.clip(new Path2D(`M ${tapBX+tapR} ${tapBY} Q ${tapBX} ${tapBY} ${tapBX} ${tapBY+tapR} L ${tapBX} ${tapBY+tapBH/2} Q ${tapBX+tapBW/2} ${tapBY+tapBH*.3} ${tapBX+tapBW} ${tapBY+tapR} Q ${tapBX+tapBW} ${tapBY} ${tapBX+tapBW-tapR} ${tapBY} Z`));
+    const bevelG=ctx.createLinearGradient(0,tapBY,0,tapBY+tapBH*.45);
+    bevelG.addColorStop(0,'rgba(255,255,255,.13)');bevelG.addColorStop(1,'rgba(255,255,255,0)');
+    ctx.fillStyle=bevelG;ctx.fillRect(tapBX,tapBY,tapBW,tapBH*.45);
+    ctx.restore();
+
+    // Animated shine sweep
+    const shineX=tapBX+(((ts/2200)%1)*(tapBW+80))-40;
+    ctx.save();
+    ctx.beginPath();ctx.roundRect(tapBX,tapBY,tapBW,tapBH,tapR);ctx.clip();
+    const shineGrad=ctx.createLinearGradient(shineX-30,0,shineX+30,0);
+    shineGrad.addColorStop(0,'rgba(255,255,255,0)');
+    shineGrad.addColorStop(.5,'rgba(255,255,255,.07)');
+    shineGrad.addColorStop(1,'rgba(255,255,255,0)');
+    ctx.fillStyle=shineGrad;ctx.fillRect(tapBX,tapBY,tapBW,tapBH);
+    ctx.restore();
+
+    // Text — gradient + glow
+    const txtG=ctx.createLinearGradient(tapBX-tapShift,0,tapBX+tapBW*2-tapShift,0);
+    txtG.addColorStop(0,'#7EFF50');txtG.addColorStop(.25,'#00FFCC');
+    txtG.addColorStop(.5,'#38D4FF');txtG.addColorStop(.75,'#9B5CF6');
+    txtG.addColorStop(1,'#7EFF50');
+    const txtY=tapBY+tapPadY+tapSz;
+    ctx.save();ctx.shadowColor='rgba(56,212,255,.9)';ctx.shadowBlur=18;
+    ctx.fillStyle=txtG;ctx.font=`700 ${tapSz}px 'Rajdhani',sans-serif`;
+    ctx.fillText(tapText,W/2,txtY);
+    ctx.shadowBlur=8;ctx.fillText(tapText,W/2,txtY);
+    ctx.restore();
     ctx.restore();
   }
 
