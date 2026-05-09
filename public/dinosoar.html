@@ -851,9 +851,9 @@ function render(ts){
     edgeG.addColorStop(0,'#7EFF50');edgeG.addColorStop(.25,'#00FFCC');
     edgeG.addColorStop(.5,'#38D4FF');edgeG.addColorStop(.75,'#9B5CF6');
     edgeG.addColorStop(1,'#7EFF50');
-    for(const [blur,alpha] of [[28,.5],[14,.7],[0,1]]){
+    for(const [blur,lw,alpha] of [[32,2.5,.5],[16,2,.7],[0,4,1]]){
       ctx.save();ctx.shadowColor=`rgba(56,212,255,${alpha*.6})`;ctx.shadowBlur=blur;
-      ctx.strokeStyle=edgeG;ctx.lineWidth=blur===0?2.5:1.5;
+      ctx.strokeStyle=edgeG;ctx.lineWidth=lw;
       ctx.beginPath();ctx.roundRect(tapBX,tapBY,tapBW,tapBH,tapR);ctx.stroke();
       ctx.restore();
     }
@@ -877,13 +877,15 @@ function render(ts){
     ctx.fillStyle=shineGrad;ctx.fillRect(tapBX,tapBY,tapBW,tapBH);
     ctx.restore();
 
-    // Text — gradient + glow
+    // Text — gradient + glow, vertically centered
     const txtG=ctx.createLinearGradient(tapBX-tapShift,0,tapBX+tapBW*2-tapShift,0);
     txtG.addColorStop(0,'#7EFF50');txtG.addColorStop(.25,'#00FFCC');
     txtG.addColorStop(.5,'#38D4FF');txtG.addColorStop(.75,'#9B5CF6');
     txtG.addColorStop(1,'#7EFF50');
-    const txtY=tapBY+tapPadY+tapSz;
-    ctx.save();ctx.shadowColor='rgba(56,212,255,.9)';ctx.shadowBlur=18;
+    const txtY=tapBY+tapBH/2;
+    ctx.save();
+    ctx.textBaseline='middle';
+    ctx.shadowColor='rgba(56,212,255,.9)';ctx.shadowBlur=18;
     ctx.fillStyle=txtG;ctx.font=`700 ${tapSz}px 'Rajdhani',sans-serif`;
     ctx.fillText(tapText,W/2,txtY);
     ctx.shadowBlur=8;ctx.fillText(tapText,W/2,txtY);
