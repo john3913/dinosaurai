@@ -1166,10 +1166,23 @@ function render(ts){
 function drawCol(c,ts){
   const x=c.x,w=PIPE_W,topH=c.mid-c.gapH/2,botY=c.mid+c.gapH/2,cw=w+14,ch=18,cx2=c.x-7;
   const fl=c.flashT;
+  // Pipe body — dark glass with purple/teal depth
   const bg=ctx.createLinearGradient(x,0,x+w,0);
-  bg.addColorStop(0,'#04081A');bg.addColorStop(.4,'#0C1438');
-  bg.addColorStop(.6,'#0C1438');bg.addColorStop(1,'#04081A');
+  bg.addColorStop(0,'#030614');bg.addColorStop(.18,'#08102E');
+  bg.addColorStop(.5,'#0C1640');bg.addColorStop(.82,'#08102E');bg.addColorStop(1,'#030614');
   ctx.fillStyle=bg;ctx.fillRect(x,0,w,topH);ctx.fillRect(x,botY,w,H-botY);
+  // Left edge neon sheen
+  const eL=ctx.createLinearGradient(x,0,x+4,0);
+  eL.addColorStop(0,'rgba(155,92,246,.22)');eL.addColorStop(1,'rgba(155,92,246,0)');
+  ctx.fillStyle=eL;ctx.fillRect(x,0,4,topH);ctx.fillRect(x,botY,4,H-botY);
+  // Right edge neon sheen
+  const eR=ctx.createLinearGradient(x+w-4,0,x+w,0);
+  eR.addColorStop(0,'rgba(56,212,255,0)');eR.addColorStop(1,'rgba(56,212,255,.18)');
+  ctx.fillStyle=eR;ctx.fillRect(x+w-4,0,4,topH);ctx.fillRect(x+w-4,botY,4,H-botY);
+  // Centre vertical highlight (glass glint)
+  const eC=ctx.createLinearGradient(x+w*.38,0,x+w*.52,0);
+  eC.addColorStop(0,'rgba(255,255,255,0)');eC.addColorStop(.5,'rgba(255,255,255,.03)');eC.addColorStop(1,'rgba(255,255,255,0)');
+  ctx.fillStyle=eC;ctx.fillRect(x+w*.38,0,w*.14,topH);ctx.fillRect(x+w*.38,botY,w*.14,H-botY);
   // Rainbow cap gradient — scrolling, brighter on near-miss flash
   const capShift=((ts/3500)%1)*cw*3;
   const ca=fl>0?.85+fl*.15:.7;
