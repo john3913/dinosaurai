@@ -797,18 +797,15 @@ function render(ts){
     tapG.addColorStop(0,'#7EFF50');tapG.addColorStop(.25,'#00FFCC');
     tapG.addColorStop(.5,'#38D4FF');tapG.addColorStop(.75,'#9B5CF6');
     tapG.addColorStop(1,'#7EFF50');
-    ctx.fillStyle='rgba(0,0,0,.35)';
-    ctx.fillText(tapText,W/2+2,ty+clamp(H*.07,28,52)+2);
-    ctx.fillStyle=tapG;
-    ctx.fillText(tapText,W/2,ty+clamp(H*.07,28,52));
     if(hiScore>0){
       ctx.font=`700 ${clamp(H*.03,11,17)}px 'SF Mono','Consolas','Courier New',monospace`;
       ctx.fillStyle='rgba(0,220,255,.88)';
-      ctx.fillText(`BEST  ${hiScore}`,W/2,ty+clamp(H*.12,48,88));
+      ctx.fillText(`BEST  ${hiScore}`,W/2,ty+clamp(H*.09,36,64));
     }
-    ctx.font=`700 ${clamp(H*.052,18,32)}px 'Rajdhani',sans-serif`;
-    ctx.fillStyle=`rgba(0,220,255,${.55+.45*Math.sin(ts/560)})`;
-    ctx.fillText('TAP ANYWHERE',W/2,H*.84);
+    ctx.fillStyle='rgba(0,0,0,.35)';
+    ctx.fillText(tapText,W/2+2,H*.84+2);
+    ctx.fillStyle=tapG;
+    ctx.fillText(tapText,W/2,H*.84);
   }
 
   // ── DEAD SCREEN ──────────────────────────────────────
