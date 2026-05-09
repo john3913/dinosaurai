@@ -687,7 +687,21 @@ function render(ts){
     rrect(px,py,pw,ph2,pr);
     ctx.fillStyle='rgba(8,16,32,.78)';ctx.fill();
     rrect(px,py,pw,ph2,pr);
-    ctx.strokeStyle=`rgba(0,200,255,${.14+scorePulse*.45})`;ctx.lineWidth=1;ctx.stroke();
+    if(scorePulse>.01){
+      // Thick glowing gradient border on score
+      const scoreShift=((ts/3000)%1)*pw*2;
+      const scoreEdgeG=ctx.createLinearGradient(px-scoreShift,0,px+pw*2-scoreShift,0);
+      scoreEdgeG.addColorStop(0,'#7EFF50');scoreEdgeG.addColorStop(.25,'#00FFCC');
+      scoreEdgeG.addColorStop(.5,'#38D4FF');scoreEdgeG.addColorStop(.75,'#FFD060');
+      scoreEdgeG.addColorStop(1,'#7EFF50');
+      const bw=1+scorePulse*3.5;
+      ctx.save();ctx.shadowColor='rgba(126,255,80,.8)';ctx.shadowBlur=16*scorePulse;
+      ctx.strokeStyle=scoreEdgeG;ctx.lineWidth=bw;ctx.stroke();
+      ctx.shadowBlur=8*scorePulse;ctx.lineWidth=bw*.5;ctx.stroke();
+      ctx.restore();
+    } else {
+      ctx.strokeStyle=`rgba(0,200,255,.14)`;ctx.lineWidth=1;ctx.stroke();
+    }
     const level=Math.floor(score/10)+1;
     ctx.font=`600 ${clamp(H*.018,7,11)}px 'SF Mono','Consolas','Courier New',monospace`;
     ctx.textAlign='center';
@@ -793,7 +807,7 @@ function render(ts){
       ctx.fillText(`BEST  ${hiScore}`,W/2,ty+clamp(H*.09,36,64));
     }
     // "TAP TO FLAP" — chunky arcade 3D button
-    const tapSz=clamp(H*.055,20,40);
+    const tapSz=clamp(H*.044,16,32);
     ctx.font=`700 ${tapSz}px 'Rajdhani',sans-serif`;
     const tapText='TAP TO FLAP';
     const tapW=ctx.measureText(tapText).width;
