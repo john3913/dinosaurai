@@ -788,9 +788,9 @@ function render(ts){
 
     ctx.textAlign='center';
     // "TAP TO FLAP" — 8-bit monospace with scrolling gradient
-    const tapSz=clamp(H*.068,22,42);
+    const tapSz=clamp(H*.09,30,62);
     ctx.font=`700 ${tapSz}px 'Rajdhani',sans-serif`;
-    const tapText=W<520?'TAP TO FLAP':'TAP  OR  SPACE  TO  FLAP';
+    const tapText='TAP TO FLAP';
     const tapW=ctx.measureText(tapText).width;
     const tapShift=((ts/5000)%1)*tapW*2;
     const tapG=ctx.createLinearGradient(W/2-tapW-tapShift,0,W/2+tapW*2-tapShift,0);
