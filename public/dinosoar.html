@@ -6,7 +6,7 @@
   <title>DinoSoar — Dinosaurai</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,800&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,800&family=Rajdhani:wght@400;600;700&family=Rubik+Glitch&display=swap" rel="stylesheet">
   <style>
     *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
     html,body{width:100%;height:100%;overflow:hidden;background:#040810;touch-action:none;user-select:none;-webkit-user-select:none}
@@ -1006,9 +1006,9 @@ function render(ts){
     ctx.fillStyle=`rgba(4,8,18,${a*.8})`;ctx.fillRect(0,0,W,H);
     ctx.globalAlpha=a;ctx.textAlign='center';
     let dsz=clamp(H*.14,52,104);
-    ctx.font=`700 ${dsz}px 'Rajdhani',sans-serif`;
+    ctx.font=`400 ${dsz}px 'Rubik Glitch',sans-serif`;
     if(ctx.measureText('EXTINCT').width>W*.88)dsz*=(W*.88)/ctx.measureText('EXTINCT').width;
-    ctx.font=`700 ${dsz}px 'Rajdhani',sans-serif`;
+    ctx.font=`400 ${dsz}px 'Rubik Glitch',sans-serif`;
     const extW=ctx.measureText('EXTINCT').width;
     const extX=W/2,extY=H*.32+dsz*.35;
     const extShift=((ts/700)%1)*extW*2;
