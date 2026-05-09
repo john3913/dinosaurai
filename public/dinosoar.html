@@ -696,16 +696,22 @@ function render(ts){
     ctx.fillStyle='rgba(8,16,32,.78)';ctx.fill();
     rrect(px,py,pw,ph2,pr);
     if(scorePulse>.01){
-      // Thick glowing gradient border on score
       const scoreShift=((ts/3000)%1)*pw*2;
       const scoreEdgeG=ctx.createLinearGradient(px-scoreShift,0,px+pw*2-scoreShift,0);
-      scoreEdgeG.addColorStop(0,'#7EFF50');scoreEdgeG.addColorStop(.25,'#00FFCC');
-      scoreEdgeG.addColorStop(.5,'#38D4FF');scoreEdgeG.addColorStop(.75,'#FFD060');
-      scoreEdgeG.addColorStop(1,'#7EFF50');
-      const bw=1+scorePulse*3.5;
-      ctx.save();ctx.shadowColor='rgba(126,255,80,.8)';ctx.shadowBlur=16*scorePulse;
+      scoreEdgeG.addColorStop(0,'#7EFF50');scoreEdgeG.addColorStop(.2,'#00FFCC');
+      scoreEdgeG.addColorStop(.4,'#38D4FF');scoreEdgeG.addColorStop(.6,'#9B5CF6');
+      scoreEdgeG.addColorStop(.8,'#FFD060');scoreEdgeG.addColorStop(1,'#7EFF50');
+      const bw=2+scorePulse*5;
+      ctx.save();
+      // Outer bloom halo — wide, soft, low-alpha
+      ctx.shadowColor='rgba(126,255,80,.7)';ctx.shadowBlur=36*scorePulse;
+      ctx.strokeStyle=scoreEdgeG;ctx.lineWidth=bw*2;ctx.globalAlpha=scorePulse*.18;ctx.stroke();
+      ctx.globalAlpha=1;
+      // Mid glow pass
+      ctx.shadowColor='rgba(56,212,255,.9)';ctx.shadowBlur=22*scorePulse;
       ctx.strokeStyle=scoreEdgeG;ctx.lineWidth=bw;ctx.stroke();
-      ctx.shadowBlur=8*scorePulse;ctx.lineWidth=bw*.5;ctx.stroke();
+      // Crisp inner edge
+      ctx.shadowBlur=6*scorePulse;ctx.lineWidth=bw*.35;ctx.stroke();
       ctx.restore();
     } else {
       ctx.strokeStyle=`rgba(0,200,255,.14)`;ctx.lineWidth=1;ctx.stroke();
@@ -819,14 +825,33 @@ function render(ts){
       const sw=clamp(H*.055,24,44),sh=clamp(H*.032,14,24),sr=sh/2;
       const milestone=streak%5===0&&streakFx>.5;
       const sx2=cx+pw/2+clamp(W*.025,8,18),sy2=py;
+      const sShift=((ts/3200)%1)*sw*3;
+      // Dark face
       rrect(sx2,sy2,sw,sh,sr);
-      ctx.fillStyle=milestone?`rgba(255,160,30,${sa*.82})`:`rgba(255,100,20,${sa*.7})`;ctx.fill();
+      ctx.fillStyle='rgba(4,10,24,.92)';ctx.fill();
+      // Rainbow gradient border
+      const sEG=ctx.createLinearGradient(sx2-sShift,0,sx2+sw*2-sShift,0);
+      sEG.addColorStop(0,'#FF6B35');sEG.addColorStop(.2,'#FFD060');
+      sEG.addColorStop(.4,'#7EFF50');sEG.addColorStop(.6,'#00FFCC');
+      sEG.addColorStop(.8,'#38D4FF');sEG.addColorStop(1,'#FF6B35');
       rrect(sx2,sy2,sw,sh,sr);
-      ctx.strokeStyle=`rgba(255,200,80,${sa*.5})`;ctx.lineWidth=1;ctx.stroke();
-      ctx.font=`600 ${clamp(H*.02,8,13)}px 'SF Mono','Consolas','Courier New',monospace`;
-      ctx.fillStyle=`rgba(255,240,180,${sa*.95})`;
-      ctx.textAlign='center';
-      ctx.fillText(`×${streak}`,sx2+sw/2,sy2+sh*.66);
+      ctx.save();
+      ctx.shadowColor=milestone?'rgba(255,208,96,.85)':'rgba(56,212,255,.55)';
+      ctx.shadowBlur=milestone?14*sa:7*sa;
+      ctx.strokeStyle=sEG;ctx.lineWidth=milestone?2.5:1.5;ctx.stroke();
+      ctx.restore();
+      // ×N text — rainbow, Rajdhani, vertically centered
+      const stSz=clamp(H*.021,8,14);
+      ctx.font=`700 ${stSz}px 'Rajdhani',sans-serif`;
+      const stG=ctx.createLinearGradient(sx2-sShift,0,sx2+sw*2-sShift,0);
+      stG.addColorStop(0,'#7EFF50');stG.addColorStop(.33,'#00FFCC');
+      stG.addColorStop(.66,'#38D4FF');stG.addColorStop(1,'#7EFF50');
+      ctx.save();ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.shadowColor=milestone?'rgba(255,208,96,.9)':'rgba(56,212,255,.7)';
+      ctx.shadowBlur=milestone?10*sa:5*sa;
+      ctx.fillStyle=stG;ctx.globalAlpha=sa;
+      ctx.fillText(`×${streak}`,sx2+sw/2,sy2+sh/2);
+      ctx.restore();
     }
   }
 
@@ -1005,17 +1030,32 @@ function render(ts){
     ctx.fillStyle=extG;ctx.fillText('EXTINCT',extX,extY);
     ctx.shadowBlur=0;ctx.restore();
     const ssz=clamp(H*.085,32,68),spw=ssz*2.4,sph=ssz*1.52,scx=W/2,scy=H*.56;
-    rrect(scx-spw/2,scy-sph*.65,spw,sph,sph/2);
-    ctx.fillStyle='rgba(8,16,32,.72)';ctx.fill();
-    rrect(scx-spw/2,scy-sph*.65,spw,sph,sph/2);
-    ctx.strokeStyle='rgba(0,200,255,.2)';ctx.lineWidth=1;ctx.stroke();
+    const sbX=scx-spw/2,sbY=scy-sph*.65,sbR=sph/2;
+    rrect(sbX,sbY,spw,sph,sbR);
+    ctx.fillStyle='rgba(6,12,28,.88)';ctx.fill();
+    // Gradient border on score box
+    const sbShift=((ts/3800)%1)*spw*2;
+    const sbEG=ctx.createLinearGradient(sbX-sbShift,0,sbX+spw*2-sbShift,0);
+    sbEG.addColorStop(0,'#FF6B35');sbEG.addColorStop(.2,'#FFD060');sbEG.addColorStop(.4,'#7EFF50');
+    sbEG.addColorStop(.6,'#00FFCC');sbEG.addColorStop(.8,'#38D4FF');sbEG.addColorStop(1,'#FF6B35');
+    rrect(sbX,sbY,spw,sph,sbR);
+    ctx.save();ctx.shadowColor='rgba(56,212,255,.45)';ctx.shadowBlur=12;
+    ctx.strokeStyle=sbEG;ctx.lineWidth=2;ctx.stroke();ctx.restore();
+    // Score number
     ctx.font=`700 ${ssz}px 'Rajdhani',sans-serif`;
     ctx.fillStyle='#7EFF50';ctx.fillText(score,scx,scy+ssz*.18);
-    ctx.font=`500 ${clamp(H*.022,8,13)}px 'SF Mono','Consolas','Courier New',monospace`;
-    ctx.fillStyle='rgba(0,200,255,.45)';ctx.fillText('SCORE',scx,scy+ssz*.44);
+    // "SCORE" label — rainbow
+    const slSz=clamp(H*.022,8,13);ctx.font=`700 ${slSz}px 'Rajdhani',sans-serif`;
+    const slG=ctx.createLinearGradient(sbX-sbShift,0,sbX+spw*2-sbShift,0);
+    slG.addColorStop(0,'#FF6B35');slG.addColorStop(.2,'#FFD060');slG.addColorStop(.4,'#7EFF50');
+    slG.addColorStop(.6,'#00FFCC');slG.addColorStop(.8,'#38D4FF');slG.addColorStop(1,'#FF6B35');
+    ctx.save();ctx.shadowColor='rgba(56,212,255,.5)';ctx.shadowBlur=6;
+    ctx.fillStyle=slG;ctx.fillText('SCORE',scx,scy+ssz*.44);ctx.restore();
+    // LV label — rainbow
     const deadLevel=Math.floor(score/10)+1;
-    ctx.font=`600 ${clamp(H*.02,8,12)}px 'SF Mono','Consolas','Courier New',monospace`;
-    ctx.fillStyle='rgba(0,220,160,.6)';ctx.fillText(`LV.${deadLevel}`,scx,scy+ssz*.68);
+    const llSz=clamp(H*.02,8,12);ctx.font=`700 ${llSz}px 'Rajdhani',sans-serif`;
+    ctx.save();ctx.shadowColor='rgba(56,212,255,.5)';ctx.shadowBlur=5;
+    ctx.fillStyle=slG;ctx.fillText(`LV ${deadLevel}`,scx,scy+ssz*.68);ctx.restore();
     if(hiScore>0){
       const dbsz=clamp(H*.026,10,16);ctx.font=`700 ${dbsz}px 'Rajdhani',sans-serif`;
       const dbTxt=`BEST  ${hiScore}`;const dbW=ctx.measureText(dbTxt).width;
