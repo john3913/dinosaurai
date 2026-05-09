@@ -820,8 +820,26 @@ function render(ts){
     ctx.font=`700 ${dsz}px 'Rajdhani',sans-serif`;
     if(ctx.measureText('EXTINCT').width>W*.88)dsz*=(W*.88)/ctx.measureText('EXTINCT').width;
     ctx.font=`700 ${dsz}px 'Rajdhani',sans-serif`;
-    ctx.fillStyle='rgba(0,0,0,.3)';ctx.fillText('EXTINCT',W/2+3,H*.32+dsz*.35+3);
-    ctx.fillStyle='rgba(220,235,255,.95)';ctx.fillText('EXTINCT',W/2,H*.32+dsz*.35);
+    const extW=ctx.measureText('EXTINCT').width;
+    const extX=W/2,extY=H*.32+dsz*.35;
+    const extShift=((ts/700)%1)*extW*2;
+    const extPulse=1+.04*Math.sin(ts/140);
+    const extG=ctx.createLinearGradient(extX-extW*.5-extShift,0,extX+extW*1.5-extShift,0);
+    extG.addColorStop(0,'#FF6B35');extG.addColorStop(.14,'#FFD060');
+    extG.addColorStop(.28,'#7EFF50');extG.addColorStop(.42,'#00FFCC');
+    extG.addColorStop(.57,'#38D4FF');extG.addColorStop(.71,'#9B5CF6');
+    extG.addColorStop(.85,'#FF60A0');extG.addColorStop(1,'#FF6B35');
+    ctx.save();
+    ctx.translate(extX,extY);ctx.scale(extPulse,extPulse);ctx.translate(-extX,-extY);
+    // deep shadow
+    ctx.fillStyle='rgba(0,0,0,.5)';ctx.fillText('EXTINCT',extX+4,extY+4);
+    // outer glow
+    ctx.shadowColor='rgba(255,100,200,.55)';ctx.shadowBlur=dsz*.55;
+    ctx.fillStyle=extG;ctx.fillText('EXTINCT',extX,extY);
+    // second glow pass — cyan tint
+    ctx.shadowColor='rgba(0,220,255,.45)';ctx.shadowBlur=dsz*.3;
+    ctx.fillStyle=extG;ctx.fillText('EXTINCT',extX,extY);
+    ctx.shadowBlur=0;ctx.restore();
     const ssz=clamp(H*.085,32,68),spw=ssz*2.4,sph=ssz*1.52,scx=W/2,scy=H*.56;
     rrect(scx-spw/2,scy-sph*.65,spw,sph,sph/2);
     ctx.fillStyle='rgba(8,16,32,.72)';ctx.fill();
