@@ -710,11 +710,19 @@ function render(ts){
       ctx.strokeStyle=`rgba(0,200,255,.14)`;ctx.lineWidth=1;ctx.stroke();
     }
     const level=Math.floor(score/10)+1;
-    ctx.font=`600 ${clamp(H*.018,7,11)}px 'SF Mono','Consolas','Courier New',monospace`;
+    const lvlSz=clamp(H*.026,10,16);
+    ctx.font=`700 ${lvlSz}px 'Rajdhani',sans-serif`;
     ctx.textAlign='center';
-    const lvlAlpha=levelUpFx>.5?.55+levelUpFx*.4:.32+scorePulse*.3;
-    ctx.fillStyle=levelUpFx>.5?`rgba(0,255,180,${lvlAlpha})`:`rgba(0,200,255,${lvlAlpha})`;
-    ctx.fillText(`LV.${level}`,cx,py+ph2*.3);
+    ctx.save();
+    if(levelUpFx>.5){
+      ctx.shadowColor='rgba(0,255,180,.9)';ctx.shadowBlur=12;
+      ctx.fillStyle=`rgba(0,255,180,${.7+levelUpFx*.3})`;
+    } else {
+      ctx.shadowColor='rgba(56,212,255,.6)';ctx.shadowBlur=6+scorePulse*8;
+      ctx.fillStyle=`rgba(56,212,255,${.75+scorePulse*.2})`;
+    }
+    ctx.fillText(`LV ${level}`,cx,py+ph2*.32);
+    ctx.restore();
     ctx.font=`700 ${sz}px 'Rajdhani',sans-serif`;
     ctx.fillStyle=scoreFx>0?`rgba(150,255,110,${.92+scoreFx*.08})`:'rgba(230,242,255,.95)';
     ctx.fillText(score,cx,py+ph2*.72);
