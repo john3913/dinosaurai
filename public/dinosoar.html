@@ -807,7 +807,7 @@ function render(ts){
       ctx.fillText(`BEST  ${hiScore}`,W/2,ty+clamp(H*.09,36,64));
     }
     // "TAP TO FLAP" — chunky arcade 3D button
-    const tapSz=clamp(H*.044,16,32);
+    const tapSz=clamp(H*.055,20,40);
     ctx.font=`700 ${tapSz}px 'Rajdhani',sans-serif`;
     const tapText='TAP TO FLAP';
     const tapW=ctx.measureText(tapText).width;
