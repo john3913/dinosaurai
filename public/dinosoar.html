@@ -724,56 +724,50 @@ function render(ts){
     }
     ctx.restore();
 
-    // ── LEVEL BOX — top left ──────────────────────────────
+    // ── LEVEL BOX — top left, matches button height ───────
     {
-      const lnSz=clamp(H*.072,26,54), lbSz=clamp(H*.022,9,13);
-      ctx.font=`700 ${lnSz}px 'Rajdhani',sans-serif`;
-      const lnW=ctx.measureText(level.toString()).width;
-      const lpadX=clamp(W*.032,14,24), lpadY=clamp(H*.016,7,12);
-      const lbW=Math.max(lnW+lpadX*2, clamp(W*.09,52,90));
-      const lbH=lnSz+lbSz+lpadY*2+clamp(H*.01,4,8);
-      const lbX=clamp(W*.02,10,18), lbY=H*.04;
-      const lR=10, lShift=((ts/3500)%1)*lbW*2;
+      const lvTxt=`LV ${level}`;
+      const lbH=clamp(H*.05,38,46), lR=10;
+      const lbY=clamp(H*.012,10,14);
+      const lbX=clamp(W*.02,10,18);
+      const ltSz=clamp(lbH*.56,20,28);
+      ctx.font=`700 ${ltSz}px 'Rajdhani',sans-serif`;
+      const ltW=ctx.measureText(lvTxt).width;
+      const lpadX=clamp(lbH*.32,12,18);
+      const lbW=Math.max(ltW+lpadX*2, lbH*1.8);
+      const lShift=((ts/3500)%1)*lbW*2;
 
       // Face
-      const lvFaceG=ctx.createLinearGradient(0,lbY,0,lbY+lbH);
-      lvFaceG.addColorStop(0,'rgba(6,14,32,.93)');lvFaceG.addColorStop(1,'rgba(4,8,20,.96)');
-      ctx.fillStyle=lvFaceG;ctx.beginPath();ctx.roundRect(lbX,lbY,lbW,lbH,lR);ctx.fill();
+      const lvFG=ctx.createLinearGradient(0,lbY,0,lbY+lbH);
+      lvFG.addColorStop(0,'rgba(6,14,32,.93)');lvFG.addColorStop(1,'rgba(4,8,20,.96)');
+      ctx.fillStyle=lvFG;ctx.beginPath();ctx.roundRect(lbX,lbY,lbW,lbH,lR);ctx.fill();
 
-      // Gradient border — same language as score/button
-      const lvEdgeG=ctx.createLinearGradient(lbX-lShift,0,lbX+lbW*2-lShift,0);
-      lvEdgeG.addColorStop(0,'#7EFF50');lvEdgeG.addColorStop(.25,'#00FFCC');
-      lvEdgeG.addColorStop(.5,'#38D4FF');lvEdgeG.addColorStop(.75,'#9B5CF6');
-      lvEdgeG.addColorStop(1,'#7EFF50');
+      // Gradient border
+      const lvEG=ctx.createLinearGradient(lbX-lShift,0,lbX+lbW*2-lShift,0);
+      lvEG.addColorStop(0,'#7EFF50');lvEG.addColorStop(.25,'#00FFCC');
+      lvEG.addColorStop(.5,'#38D4FF');lvEG.addColorStop(.75,'#9B5CF6');
+      lvEG.addColorStop(1,'#7EFF50');
       const lvBW=levelUpFx>.01?2+levelUpFx*2.5:2;
       ctx.save();
       ctx.shadowColor=levelUpFx>.01?'rgba(126,255,80,.9)':'rgba(56,212,255,.45)';
       ctx.shadowBlur=levelUpFx>.01?20*levelUpFx:10;
-      ctx.strokeStyle=lvEdgeG;ctx.lineWidth=lvBW;
+      ctx.strokeStyle=lvEG;ctx.lineWidth=lvBW;
       ctx.beginPath();ctx.roundRect(lbX,lbY,lbW,lbH,lR);ctx.stroke();
       ctx.shadowBlur*=.5;ctx.lineWidth=lvBW*.4;ctx.stroke();
       ctx.restore();
 
-      // "LEVEL" label
-      ctx.font=`700 ${lbSz}px 'Rajdhani',sans-serif`;
-      ctx.textAlign='center';
-      const lblY=lbY+lpadY+lbSz;
-      const lblG=ctx.createLinearGradient(lbX-lShift,0,lbX+lbW*2-lShift,0);
-      lblG.addColorStop(0,'#7EFF50');lblG.addColorStop(.5,'#00FFCC');lblG.addColorStop(1,'#7EFF50');
-      ctx.fillStyle=lblG;ctx.fillText('LEVEL',lbX+lbW/2,lblY);
-
-      // Level number — rainbow gradient + glow
-      const lvNumG=ctx.createLinearGradient(lbX-lShift,0,lbX+lbW*2-lShift,0);
-      lvNumG.addColorStop(0,'#FF6B35');lvNumG.addColorStop(.25,'#FFD060');
-      lvNumG.addColorStop(.5,'#7EFF50');lvNumG.addColorStop(.75,'#38D4FF');
-      lvNumG.addColorStop(1,'#FF6B35');
-      ctx.font=`700 ${lnSz}px 'Rajdhani',sans-serif`;
-      const numY=lblY+lnSz*.88;
+      // "LV N" — rainbow gradient, vertically centered
+      const lvTG=ctx.createLinearGradient(lbX-lShift,0,lbX+lbW*2-lShift,0);
+      lvTG.addColorStop(0,'#FF6B35');lvTG.addColorStop(.25,'#FFD060');
+      lvTG.addColorStop(.5,'#7EFF50');lvTG.addColorStop(.75,'#38D4FF');
+      lvTG.addColorStop(1,'#FF6B35');
       ctx.save();
-      ctx.shadowColor=levelUpFx>.01?'rgba(126,255,80,.95)':'rgba(56,212,255,.55)';
-      ctx.shadowBlur=levelUpFx>.01?lnSz*.6*levelUpFx:lnSz*.2;
-      ctx.fillStyle=lvNumG;ctx.fillText(level.toString(),lbX+lbW/2,numY);
-      ctx.shadowBlur*=.5;ctx.fillText(level.toString(),lbX+lbW/2,numY);
+      ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.shadowColor=levelUpFx>.01?'rgba(126,255,80,.95)':'rgba(56,212,255,.5)';
+      ctx.shadowBlur=levelUpFx>.01?ltSz*.6*levelUpFx:ltSz*.2;
+      ctx.fillStyle=lvTG;ctx.font=`700 ${ltSz}px 'Rajdhani',sans-serif`;
+      ctx.fillText(lvTxt,lbX+lbW/2,lbY+lbH/2);
+      ctx.shadowBlur*=.5;ctx.fillText(lvTxt,lbX+lbW/2,lbY+lbH/2);
       ctx.restore();
     }
 
