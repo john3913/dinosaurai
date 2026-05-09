@@ -632,7 +632,7 @@ function render(ts){
   }
 
   // Columns + coins
-  if(phase!=='idle')cols.forEach(c=>{drawCol(c);drawGem(c,ts);});
+  if(phase!=='idle')cols.forEach(c=>{drawCol(c,ts);drawGem(c,ts);});
 
   // Bird ground shadow — grows as dino approaches ground
   if(phase==='playing'||phase==='dead'){
@@ -1163,7 +1163,7 @@ function render(ts){
 }
 
 // ── DRAW COLUMN ───────────────────────────────────────
-function drawCol(c){
+function drawCol(c,ts){
   const x=c.x,w=PIPE_W,topH=c.mid-c.gapH/2,botY=c.mid+c.gapH/2,cw=w+14,ch=18,cx2=c.x-7;
   const fl=c.flashT;
   const bg=ctx.createLinearGradient(x,0,x+w,0);
