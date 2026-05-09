@@ -360,7 +360,7 @@ function update(dt,ts){
     if(!c.scored&&c.x+PIPE_W<bx){
       c.scored=true;score++;scoreFx=1;scorePulse=1;sfxScore();
       const clearance=Math.min(Math.abs(bird.y-(c.mid-c.gapH/2)),Math.abs(bird.y-(c.mid+c.gapH/2)));
-      if(clearance<26){c.flashT=1;sfxNear();streak=0;}
+      if(clearance<42){c.flashT=1;sfxNear();streak=0;}
       else{
         streak++;streakFx=1;
         if(streak>=3&&streak%5===0){sfxStreak();haptic([10,5,10]);}
