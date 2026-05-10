@@ -340,20 +340,20 @@ function update(dt,ts){
   flapA=Math.max(0,flapA-dt*5.5);
   wingP=flapA>0?flapA:.5+Math.sin(ts/500)*.5;
 
-  // Wing trail — every frame, 3 stream particles
+  // Wing trail — every frame, 5 stream particles
   {
     const bx=W*.22,ws=BIRD_SZ/36;
-    for(let i=0;i<3;i++)
-      sparks.push({x:bx-38*ws+Math.random()*14,y:bird.y+(i===0?-16:i===1?16:0)*ws+Math.random()*10,
-        vx:-60-Math.random()*55,vy:(Math.random()-.5)*30,
-        life:1,decay:4+Math.random()*3,r:1+Math.random()*2,c:i===0?'#0090E0':i===1?'#00AAFF':'#40D4FF'});
+    for(let i=0;i<5;i++)
+      sparks.push({x:bx-38*ws+Math.random()*22,y:bird.y+(i===0?-16:i===1?16:i===2?0:i===3?-8:8)*ws+Math.random()*10,
+        vx:-55-Math.random()*70,vy:(Math.random()-.5)*30,
+        life:1,decay:2.4+Math.random()*2,r:1+Math.random()*2.2,c:i%3===0?'#0090E0':i%3===1?'#00AAFF':'#40D4FF'});
   }
-  // Larger wing puff every 3 frames
-  if(frameN%3===0){
+  // Larger wing puff every 2 frames
+  if(frameN%2===0){
     const bx=W*.22,ws=BIRD_SZ/36;
-    sparks.push({x:bx-44*ws+Math.random()*10,y:bird.y+(Math.random()-.5)*24*ws,
-      vx:-38-Math.random()*28,vy:(Math.random()-.5)*18,
-      life:1,decay:1.8+Math.random()*1.4,r:3+Math.random()*4,c:'#38D4FF'});
+    sparks.push({x:bx-44*ws+Math.random()*14,y:bird.y+(Math.random()-.5)*24*ws,
+      vx:-36-Math.random()*30,vy:(Math.random()-.5)*18,
+      life:1,decay:1.1+Math.random()*0.9,r:3+Math.random()*5,c:'#38D4FF'});
   }
   // Energy pulse ring every 10 frames
   if(frameN%10===0){
