@@ -655,7 +655,7 @@ export default function TeamPage(){
         </section>
 
         {/* Crew overview — pokemon cards */}
-        <div className="pokemon-outer">
+        <div className="pokemon-outer" style={{outline:'4px solid red'}}>
           <div className="section-eyebrow">Active Roster</div>
           <div className="pokemon-grid">
             {CHARACTERS.map(char=><PokeCard key={char.num} data={char}/>)}
