@@ -678,6 +678,40 @@ function render(ts){
     ctx.shadowBlur=4;ctx.strokeStyle='rgba(200,250,255,.5)';ctx.lineWidth=1;ctx.stroke();
     ctx.restore();
     ctx.beginPath(); // clear path
+
+    // Shark fins — [startPhase(0-1), speedPxSec, dir(-1=left 1=right), scale]
+    const finDefs=[[0.12,48,-1,1.0],[0.55,36,1,0.85],[0.78,55,-1,0.95],[0.35,40,-1,0.78]];
+    ctx.save();
+    finDefs.forEach(([ph,spd,dir,sz])=>{
+      const span=W+200;
+      const disp=(ts*spd/1000)%span;
+      const fx=dir===-1?(((W*ph-disp)%span)+span)%span-100:(((W*ph+disp)%span)+span)%span-100;
+      if(fx<-60||fx>W+60)return;
+      const fy=wY(Math.max(0,Math.min(W,fx)));
+      const fH=clamp(GNDH*.55,14,28)*sz;
+      const fW=clamp(GNDH*.38,10,20)*sz;
+      const frontX=fx+dir*fW, trailX=fx-dir*fW;
+      const tipX=fx-dir*fW*0.3, tipY=fy-fH;
+      const cpX=frontX+(tipX-frontX)*0.25, cpY=fy-fH*0.42;
+      // V-wake behind fin
+      ctx.save();
+      ctx.strokeStyle='rgba(0,190,240,0.25)';ctx.lineWidth=1;
+      for(const s of[-1,1]){
+        ctx.beginPath();ctx.moveTo(trailX,fy);ctx.lineTo(trailX-dir*fW*0.5+s*fW*0.7,fy+4);ctx.stroke();
+      }
+      ctx.restore();
+      // Fin silhouette
+      ctx.beginPath();
+      ctx.moveTo(trailX,fy);ctx.lineTo(frontX,fy);
+      ctx.quadraticCurveTo(cpX,cpY,tipX,tipY);
+      ctx.closePath();
+      ctx.fillStyle='#030D1C';
+      ctx.shadowColor='rgba(0,155,225,0.45)';ctx.shadowBlur=6;
+      ctx.fill();
+      ctx.strokeStyle='rgba(0,140,210,0.6)';ctx.lineWidth=0.9;ctx.stroke();
+    });
+    ctx.restore();
+    ctx.beginPath();
   }
 
   // Speed lines
