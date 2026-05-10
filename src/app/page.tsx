@@ -183,7 +183,7 @@ export default function DinosauraiHome() {
           <p className="section-body">Original titles in development. Launching fast, iterating faster, keeping it fun.</p>
           <div className="games-grid">
             {[
-              { color:'green',  icon:'🦕', badge:'Puzzle · Play Now',        title:'DinoTris',   desc:'Dino-themed Tetris with neon glow, ghost pieces, and hold mechanic. Stack &apos;em before extinction hits.', href:'/dinotetris' },
+              { color:'green',  icon:'🦕', badge:'Puzzle · Play Now',        title:'DinoBlox',   desc:'Dino-themed block stacker with neon glow, ghost pieces, and hold mechanic. Stack &apos;em before extinction hits.', href:'/dinoblox' },
               { color:'blue',   icon:'🥚', badge:'Match-3 · Play Now',      title:'DinoCrush', desc:'Prehistoric match-3 puzzle. Swap dino gems, chain combos, and clear the board before your moves run out.', href:'/dinocrush' },
               { color:'orange', icon:'🦖', badge:'Runner · Coming Soon',    title:'Rex Run',    desc:'Infinite dino runner through procedurally generated prehistoric worlds. Obstacles, power-ups, leaderboards.', href:null },
               { color:'purple', icon:'🧩', badge:'Puzzle · In Progress',    title:'Fossil Hunt',desc:'Dig through layers of ancient earth. Uncover complete skeletons before time runs out. Zen but ruthless.', href:null },
