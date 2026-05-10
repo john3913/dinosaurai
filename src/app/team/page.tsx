@@ -597,6 +597,560 @@ const drawSpinosFn:DrawFn=(ctx,cx,cy,ps,ts)=>{
   ctx.restore();
 };
 
+/* ── Pixel art: Magmadon (volcanic quad) ────────────────────────────────── */
+const drawMagmadonFn:DrawFn=(ctx,cx,cy,ps,ts)=>{
+  const fy=Math.sin(ts*0.0009)*5;
+  ctx.save();ctx.translate(cx,cy+fy);
+  ctx.fillStyle='#FF4500';
+  const B=(c:number,r:number)=>ctx.fillRect(c*ps-ps*.5,r*ps-ps*.5,ps,ps);
+  ctx.shadowColor='rgba(255,220,0,0.95)';ctx.shadowBlur=ps*9;
+  ([[-6,-3],[-3,-3],[0,-3],[3,-3],[6,-3]] as [number,number][]).forEach(([c,r])=>B(c,r));
+  ctx.shadowColor='rgba(255,69,0,0.9)';ctx.shadowBlur=ps*4;
+  ([
+    [-7,-2],[-6,-2],[-5,-2],[-4,-2],[-3,-2],[-2,-2],[-1,-2],[0,-2],[1,-2],[2,-2],[3,-2],[4,-2],[5,-2],[6,-2],[7,-2],
+    [-8,-1],[-7,-1],[-6,-1],[-5,-1],[-4,-1],[-3,-1],[-2,-1],[-1,-1],[0,-1],[1,-1],[2,-1],[3,-1],[4,-1],[5,-1],[6,-1],[7,-1],
+    [-9,0],[-8,0],[-7,0],[-6,0],[-5,0],[-4,0],[-3,0],[-2,0],[-1,0],[0,0],[1,0],[2,0],[3,0],[4,0],[5,0],[6,0],[7,0],[8,0],
+    [-9,1],[-8,1],[-7,1],[-6,1],[-5,1],[-4,1],[-3,1],[-2,1],[-1,1],[0,1],[1,1],[2,1],[3,1],[4,1],[5,1],[6,1],[7,1],[8,1],
+    [-8,2],[-7,2],[-6,2],[-5,2],[-4,2],[-3,2],[-2,2],[-1,2],[0,2],[1,2],[2,2],[3,2],[4,2],[5,2],[6,2],[7,2],
+    [8,-2],[9,-2],[10,-2],[8,-1],[9,-1],[10,-1],[11,-1],[9,0],[10,0],[11,0],[12,0],[10,1],[11,1],
+    [-10,0],[-11,0],[-12,0],[-12,1],[-11,1],
+    [3,3],[4,3],[3,4],[4,4],[0,3],[1,3],[0,4],[1,4],[-4,3],[-3,3],[-4,4],[-3,4],[-7,3],[-6,3],[-7,4],[-6,4],
+  ] as [number,number][]).forEach(([c,r])=>B(c,r));
+  ctx.shadowBlur=0;ctx.fillStyle='#1A0500';B(10,-1);
+  ctx.restore();
+};
+
+/* ── Pixel art: Volcanus (Ceratosaurus fire horn) ───────────────────────── */
+const drawVolcanusFn:DrawFn=(ctx,cx,cy,ps,ts)=>{
+  const fy=Math.sin(ts*0.001)*6;
+  ctx.save();ctx.translate(cx,cy+fy);
+  ctx.fillStyle='#FF8800';
+  const B=(c:number,r:number)=>ctx.fillRect(c*ps-ps*.5,r*ps-ps*.5,ps,ps);
+  ctx.shadowColor='rgba(255,220,0,0.95)';ctx.shadowBlur=ps*9;
+  ([[-1,-9],[0,-9],[0,-8],[1,-8]] as [number,number][]).forEach(([c,r])=>B(c,r));
+  ctx.shadowColor='rgba(255,136,0,0.9)';ctx.shadowBlur=ps*4;
+  ([
+    [-2,-7],[-1,-7],[0,-7],[1,-7],[2,-7],[3,-7],
+    [-2,-6],[-1,-6],[0,-6],[1,-6],[2,-6],[3,-6],[4,-6],[5,-6],
+    [-1,-5],[0,-5],[1,-5],[2,-5],[3,-5],[4,-5],[5,-5],[6,-5],
+    [-1,-4],[0,-4],[1,-4],[2,-4],[3,-4],[4,-4],[5,-4],[6,-4],[7,-4],
+    [-1,-3],[0,-3],[1,-3],[2,-3],[4,-3],[5,-3],[6,-3],[7,-3],[8,-3],
+    [-2,-2],[-1,-2],[0,-2],[1,-2],[2,-2],
+    [-5,-1],[-4,-1],[-3,-1],[-2,-1],[-1,-1],[0,-1],[1,-1],[2,-1],[3,-1],
+    [-6,0],[-5,0],[-4,0],[-3,0],[-2,0],[-1,0],[0,0],[1,0],[2,0],[3,0],
+    [-6,1],[-5,1],[-4,1],[-3,1],[-2,1],[-1,1],[0,1],[1,1],[2,1],
+    [-5,2],[-4,2],[-3,2],[-2,2],[-1,2],[0,2],[1,2],
+    [3,-1],[4,-1],[4,0],[5,0],
+    [-7,0],[-8,0],[-9,1],[-10,1],[-11,1],
+    [-1,3],[0,3],[1,3],[-3,3],[-2,3],[-1,4],[0,4],[-3,4],[-2,4],
+    [-1,5],[0,5],[1,5],[-2,5],[-3,5],
+  ] as [number,number][]).forEach(([c,r])=>B(c,r));
+  ctx.shadowBlur=0;ctx.fillStyle='#1A0500';B(1,-5);
+  ctx.restore();
+};
+
+/* ── Pixel art: Plesia (Plesiosaurus long neck) ─────────────────────────── */
+const drawPlesiaFn:DrawFn=(ctx,cx,cy,ps,ts)=>{
+  const fy=Math.sin(ts*0.001)*5;
+  ctx.save();ctx.translate(cx,cy+fy);
+  ctx.fillStyle='#1E90FF';
+  const B=(c:number,r:number)=>ctx.fillRect(c*ps-ps*.5,r*ps-ps*.5,ps,ps);
+  ctx.shadowColor='rgba(30,144,255,0.9)';ctx.shadowBlur=ps*4;
+  ([
+    [2,-8],[3,-8],[2,-7],[3,-7],[1,-6],[2,-6],[3,-6],[1,-5],[2,-5],[3,-5],
+    [0,-4],[1,-4],[2,-4],[0,-3],[1,-3],[2,-3],[-1,-2],[0,-2],[1,-2],[2,-2],
+    [3,-9],[4,-9],[5,-9],[4,-8],[5,-8],[6,-8],[5,-7],[6,-7],[7,-7],[6,-6],[7,-6],
+    [-7,-1],[-6,-1],[-5,-1],[-4,-1],[-3,-1],[-2,-1],[-1,-1],[0,-1],[1,-1],[2,-1],[3,-1],
+    [-8,0],[-7,0],[-6,0],[-5,0],[-4,0],[-3,0],[-2,0],[-1,0],[0,0],[1,0],[2,0],[3,0],[4,0],
+    [-8,1],[-7,1],[-6,1],[-5,1],[-4,1],[-3,1],[-2,1],[-1,1],[0,1],[1,1],[2,1],[3,1],[4,1],
+    [-7,2],[-6,2],[-5,2],[-4,2],[-3,2],[-2,2],[-1,2],[0,2],[1,2],[2,2],[3,2],
+    [3,-1],[4,-1],[5,-1],[5,0],[3,2],[4,2],[5,2],[5,3],
+    [-8,-1],[-9,-1],[-9,0],[-8,2],[-9,2],[-9,1],
+    [-9,0],[-10,1],[-11,1],[-12,1],[-12,2],
+  ] as [number,number][]).forEach(([c,r])=>B(c,r));
+  ctx.shadowBlur=0;ctx.fillStyle='#000E33';B(5,-7);
+  ctx.restore();
+};
+
+/* ── Pixel art: Ichthya (Ichthyosaurus dolphin) ─────────────────────────── */
+const drawIchthyaFn:DrawFn=(ctx,cx,cy,ps,ts)=>{
+  const fy=Math.sin(ts*0.0012)*6;
+  ctx.save();ctx.translate(cx,cy+fy);
+  ctx.fillStyle='#00CED1';
+  const B=(c:number,r:number)=>ctx.fillRect(c*ps-ps*.5,r*ps-ps*.5,ps,ps);
+  ctx.shadowColor='rgba(0,206,209,0.95)';ctx.shadowBlur=ps*8;
+  ([[-1,-5],[0,-5],[1,-5],[-1,-4],[0,-4],[1,-4],[-1,-3],[0,-3],[1,-3]] as [number,number][]).forEach(([c,r])=>B(c,r));
+  ctx.shadowBlur=ps*4;
+  ([
+    [-5,-1],[-4,-1],[-3,-1],[-2,-1],[-1,-1],[0,-1],[1,-1],[2,-1],
+    [-6,0],[-5,0],[-4,0],[-3,0],[-2,0],[-1,0],[0,0],[1,0],[2,0],[3,0],
+    [-5,1],[-4,1],[-3,1],[-2,1],[-1,1],[0,1],[1,1],[2,1],
+    [-4,2],[-3,2],[-2,2],[-1,2],[0,2],
+    [2,-2],[3,-2],[4,-2],[5,-2],
+    [2,-1],[3,-1],[4,-1],[5,-1],[6,-1],[7,-1],[8,-1],[9,-1],[10,-1],
+    [2,0],[3,0],[4,0],[5,0],[6,0],[7,0],[8,0],[9,0],[10,0],
+    [3,1],[4,1],
+    [1,-2],[2,-2],[2,-1],[1,2],[2,2],[2,1],
+    [-6,-1],[-7,-1],[-8,-1],[-8,-2],[-9,-2],
+    [-6,1],[-7,1],[-8,1],[-8,2],[-9,2],
+    [-7,0],[-8,0],
+  ] as [number,number][]).forEach(([c,r])=>B(c,r));
+  ctx.shadowBlur=0;ctx.fillStyle='#001A1A';B(4,-1);
+  ctx.restore();
+};
+
+/* ── Pixel art: Krakenodon (mythic sea titan) ───────────────────────────── */
+const drawKrakenodonFn:DrawFn=(ctx,cx,cy,ps,ts)=>{
+  const fy=Math.sin(ts*0.0008)*5;
+  ctx.save();ctx.translate(cx,cy+fy);
+  ctx.fillStyle='#8B00FF';
+  const B=(c:number,r:number)=>ctx.fillRect(c*ps-ps*.5,r*ps-ps*.5,ps,ps);
+  ctx.shadowColor='rgba(139,0,255,0.95)';ctx.shadowBlur=ps*7;
+  ([
+    [-3,2],[-3,3],[-4,4],[-4,5],[-5,6],
+    [-1,2],[-1,3],[-1,4],[-2,5],[-2,6],
+    [1,2],[1,3],[2,4],[2,5],[1,6],
+    [3,2],[4,3],[5,4],[5,5],[4,6],
+    [5,2],[6,3],[7,4],[7,5],
+  ] as [number,number][]).forEach(([c,r])=>B(c,r));
+  ctx.shadowBlur=ps*4;
+  ([
+    [-2,-5],[-1,-5],[0,-5],[1,-5],[2,-5],[3,-5],[4,-5],[5,-5],
+    [-3,-4],[-2,-4],[-1,-4],[0,-4],[1,-4],[2,-4],[3,-4],[4,-4],[5,-4],[6,-4],
+    [-3,-3],[-2,-3],[-1,-3],[0,-3],[1,-3],[2,-3],[3,-3],[4,-3],[5,-3],[6,-3],[7,-3],
+    [-2,-2],[-1,-2],[0,-2],[1,-2],[2,-2],[3,-2],[4,-2],[5,-2],[6,-2],[7,-2],[8,-2],[9,-2],
+    [-2,0],[-1,0],[0,0],[1,0],[2,0],[3,0],[4,0],[5,0],[6,0],[7,0],[8,0],[9,0],
+    [-2,1],[-1,1],[0,1],[1,1],[2,1],[3,1],[4,1],[5,1],[6,1],[7,1],[8,1],
+    [-5,-1],[-4,-1],[-3,-1],[-2,-1],[-1,-1],[0,-1],[1,-1],[2,-1],[3,-1],[4,-1],
+    [-6,0],[-5,0],[-4,0],[-3,0],[-6,1],[-5,1],[-4,1],[-3,1],
+    [-5,2],[-4,2],[-3,2],[-2,2],[-1,2],[0,2],[1,2],[2,2],[3,2],
+    [-7,-1],[-8,-1],[-8,0],[-8,1],[-6,2],[-7,3],[-8,3],
+  ] as [number,number][]).forEach(([c,r])=>B(c,r));
+  ctx.shadowBlur=0;ctx.fillStyle='#1A0033';B(0,-3);
+  ctx.restore();
+};
+
+/* ── Pixel art: Pterodax (Pterodactyl spread wings) ─────────────────────── */
+const drawPterodaxFn:DrawFn=(ctx,cx,cy,ps,ts)=>{
+  const fy=Math.sin(ts*0.001)*7;
+  ctx.save();ctx.translate(cx,cy+fy);
+  ctx.fillStyle='#FF9900';
+  const B=(c:number,r:number)=>ctx.fillRect(c*ps-ps*.5,r*ps-ps*.5,ps,ps);
+  ctx.shadowColor='rgba(255,153,0,0.9)';ctx.shadowBlur=ps*4;
+  ([
+    [-12,-2],[-11,-2],[-10,-2],[-9,-2],[-8,-2],[-7,-2],[-6,-2],[-5,-2],
+    [-11,-1],[-10,-1],[-9,-1],[-8,-1],[-7,-1],[-6,-1],[-5,-1],
+    [-10,0],[-9,0],[-8,0],[-7,0],[-6,0],[-5,0],
+    [-8,1],[-7,1],[-6,1],
+    [5,-2],[6,-2],[7,-2],[8,-2],[9,-2],[10,-2],[11,-2],
+    [5,-1],[6,-1],[7,-1],[8,-1],[9,-1],[10,-1],
+    [5,0],[6,0],[7,0],[8,0],[9,0],
+    [6,1],[7,1],[8,1],
+    [-4,-2],[-3,-2],[-2,-2],[-1,-2],[0,-2],[1,-2],[2,-2],[3,-2],[4,-2],
+    [-4,-1],[-3,-1],[-2,-1],[-1,-1],[0,-1],[1,-1],[2,-1],[3,-1],[4,-1],
+    [-3,0],[-2,0],[-1,0],[0,0],[1,0],[2,0],[3,0],
+    [-2,1],[-1,1],[0,1],[1,1],
+    [3,-4],[4,-4],[5,-4],[6,-4],[7,-4],[8,-4],[9,-4],
+    [2,-3],[3,-3],[4,-3],[5,-3],[6,-3],[7,-3],[8,-3],
+    [6,-5],[7,-5],[8,-5],[9,-5],
+    [0,2],[1,2],[-1,2],[0,3],[1,3],
+  ] as [number,number][]).forEach(([c,r])=>B(c,r));
+  ctx.shadowBlur=0;ctx.fillStyle='#1A0800';B(5,-3);
+  ctx.restore();
+};
+
+/* ── Pixel art: Quetzal (Quetzalcoatlus, legendary) ─────────────────────── */
+const drawQuetzalFn:DrawFn=(ctx,cx,cy,ps,ts)=>{
+  const fy=Math.sin(ts*0.0008)*5;
+  ctx.save();ctx.translate(cx,cy+fy);
+  ctx.fillStyle='#FFD700';
+  const B=(c:number,r:number)=>ctx.fillRect(c*ps-ps*.5,r*ps-ps*.5,ps,ps);
+  ctx.shadowColor='rgba(255,215,0,0.95)';ctx.shadowBlur=ps*7;
+  ([[-13,-1],[-12,-1],[11,-1],[12,-1]] as [number,number][]).forEach(([c,r])=>B(c,r));
+  ctx.shadowBlur=ps*4;
+  ([
+    [-12,-2],[-11,-2],[-10,-2],[-9,-2],[-8,-2],[-7,-2],[-6,-2],[-5,-2],[-4,-2],
+    [-11,-1],[-10,-1],[-9,-1],[-8,-1],[-7,-1],[-6,-1],[-5,-1],[-4,-1],
+    [-10,0],[-9,0],[-8,0],[-7,0],[-6,0],[-5,0],[-8,1],[-7,1],[-6,1],[-5,1],
+    [4,-2],[5,-2],[6,-2],[7,-2],[8,-2],[9,-2],[10,-2],[11,-2],
+    [4,-1],[5,-1],[6,-1],[7,-1],[8,-1],[9,-1],[10,-1],
+    [4,0],[5,0],[6,0],[7,0],[8,0],[9,0],[4,1],[5,1],[6,1],[7,1],
+    [-3,-2],[-2,-2],[-1,-2],[0,-2],[1,-2],[2,-2],[3,-2],
+    [-3,-1],[-2,-1],[-1,-1],[0,-1],[1,-1],[2,-1],[3,-1],
+    [-2,0],[-1,0],[0,0],[1,0],[2,0],[-1,1],[0,1],[1,1],
+    [3,-5],[4,-5],[5,-5],[6,-5],[7,-5],[8,-5],[9,-5],[10,-5],[11,-5],
+    [3,-4],[4,-4],[5,-4],[6,-4],[7,-4],[8,-4],
+    [3,-3],[4,-3],[5,-3],
+    [3,-5],[4,-5],[5,-6],
+    [-3,1],[-4,1],[-4,2],
+  ] as [number,number][]).forEach(([c,r])=>B(c,r));
+  ctx.shadowBlur=0;ctx.fillStyle='#1A1200';B(5,-3);
+  ctx.restore();
+};
+
+/* ── Pixel art: Archaeon (Archaeopteryx feathered) ──────────────────────── */
+const drawArchaeonFn:DrawFn=(ctx,cx,cy,ps,ts)=>{
+  const fy=Math.sin(ts*0.001)*6;
+  ctx.save();ctx.translate(cx,cy+fy);
+  ctx.fillStyle='#A0522D';
+  const B=(c:number,r:number)=>ctx.fillRect(c*ps-ps*.5,r*ps-ps*.5,ps,ps);
+  ctx.shadowColor='rgba(160,82,45,0.9)';ctx.shadowBlur=ps*4;
+  ([
+    [-8,-2],[-7,-2],[-6,-2],[-5,-2],[-4,-2],
+    [-8,-1],[-7,-1],[-6,-1],[-5,-1],[-4,-1],
+    [-7,0],[-6,0],[-5,0],[-4,0],[-6,1],[-5,1],[-4,1],[-5,2],
+    [4,-2],[5,-2],[6,-2],[7,-2],[8,-2],
+    [4,-1],[5,-1],[6,-1],[7,-1],[8,-1],
+    [4,0],[5,0],[6,0],[7,0],[4,1],[5,1],[6,1],[5,2],
+    [-3,-2],[-2,-2],[-1,-2],[0,-2],[1,-2],[2,-2],[3,-2],
+    [-3,-1],[-2,-1],[-1,-1],[0,-1],[1,-1],[2,-1],[3,-1],
+    [-2,0],[-1,0],[0,0],[1,0],[2,0],[-1,1],[0,1],[1,1],
+    [3,-3],[4,-3],[5,-3],[3,-2],[4,-2],
+    [-3,1],[-4,2],[-5,3],[-6,4],[-7,5],
+    [-3,2],[-4,3],[-5,4],[-2,2],[-3,3],[-4,4],[-5,5],
+    [0,2],[1,2],[0,3],[1,3],[-1,2],[-1,3],[0,4],[1,4],
+  ] as [number,number][]).forEach(([c,r])=>B(c,r));
+  ctx.shadowBlur=0;ctx.fillStyle='#1A0000';B(1,-1);
+  ctx.restore();
+};
+
+/* ── Pixel art: Diplo (Diplodocus long neck + whip tail) ────────────────── */
+const drawDiploFn:DrawFn=(ctx,cx,cy,ps,ts)=>{
+  const fy=Math.sin(ts*0.0009)*5;
+  ctx.save();ctx.translate(cx,cy+fy);
+  ctx.fillStyle='#78C850';
+  const B=(c:number,r:number)=>ctx.fillRect(c*ps-ps*.5,r*ps-ps*.5,ps,ps);
+  ctx.shadowColor='rgba(120,200,80,0.9)';ctx.shadowBlur=ps*4;
+  ([
+    [3,-8],[4,-8],[3,-7],[4,-7],[2,-6],[3,-6],[4,-6],[2,-5],[3,-5],
+    [1,-4],[2,-4],[3,-4],[1,-3],[2,-3],[0,-2],[1,-2],[2,-2],
+    [4,-9],[5,-9],[6,-9],[5,-8],[6,-8],[7,-8],[6,-7],[7,-7],
+    [-4,-1],[-3,-1],[-2,-1],[-1,-1],[0,-1],[1,-1],[2,-1],[3,-1],
+    [-5,0],[-4,0],[-3,0],[-2,0],[-1,0],[0,0],[1,0],[2,0],[3,0],[4,0],
+    [-5,1],[-4,1],[-3,1],[-2,1],[-1,1],[0,1],[1,1],[2,1],[3,1],[4,1],
+    [-4,2],[-3,2],[-2,2],[-1,2],[0,2],[1,2],[2,2],[3,2],
+    [-5,0],[-6,0],[-7,0],[-7,1],[-8,1],[-9,1],[-9,2],[-10,2],[-11,2],[-12,2],[-12,3],[-13,3],
+    [1,3],[2,3],[1,4],[2,4],[1,5],[2,5],
+    [-1,3],[-2,3],[-1,4],[-2,4],[-1,5],[-2,5],
+    [-4,3],[-3,3],[-4,4],[-3,4],[-6,3],[-5,3],[-6,4],[-5,4],
+  ] as [number,number][]).forEach(([c,r])=>B(c,r));
+  ctx.shadowBlur=0;ctx.fillStyle='#001A00';B(6,-7);
+  ctx.restore();
+};
+
+/* ── Pixel art: Iguana (Iguanodon thumb spike) ───────────────────────────── */
+const drawIguanaFn:DrawFn=(ctx,cx,cy,ps,ts)=>{
+  const fy=Math.sin(ts*0.001)*6;
+  ctx.save();ctx.translate(cx,cy+fy);
+  ctx.fillStyle='#2ECC40';
+  const B=(c:number,r:number)=>ctx.fillRect(c*ps-ps*.5,r*ps-ps*.5,ps,ps);
+  ctx.shadowColor='rgba(46,204,64,0.95)';ctx.shadowBlur=ps*8;
+  ([
+    [5,-5],[5,-4],[5,-3],[6,-3],[6,-2],
+  ] as [number,number][]).forEach(([c,r])=>B(c,r));
+  ctx.shadowBlur=ps*4;
+  ([
+    [1,-6],[2,-6],[3,-6],[4,-6],[5,-6],
+    [1,-5],[2,-5],[3,-5],[4,-5],
+    [1,-4],[2,-4],[3,-4],[4,-4],
+    [4,-3],[5,-3],[6,-3],[7,-3],[8,-3],
+    [4,-2],[5,-2],[6,-2],[7,-2],[8,-2],
+    [0,-3],[1,-3],[2,-3],[3,-3],[0,-2],[1,-2],[2,-2],[3,-2],
+    [-3,-1],[-2,-1],[-1,-1],[0,-1],[1,-1],[2,-1],[3,-1],[4,-1],
+    [-4,0],[-3,0],[-2,0],[-1,0],[0,0],[1,0],[2,0],[3,0],[4,0],[5,0],
+    [-4,1],[-3,1],[-2,1],[-1,1],[0,1],[1,1],[2,1],[3,1],[4,1],
+    [-3,2],[-2,2],[-1,2],[0,2],[1,2],[2,2],[3,2],
+    [4,-2],[5,-2],[5,-1],[6,-1],
+    [-4,1],[-5,1],[-6,2],[-7,2],[-8,3],[-9,3],
+    [0,3],[1,3],[2,3],[-1,3],[-2,3],[0,4],[1,4],[-1,4],[-2,4],
+    [0,5],[1,5],[-1,5],[-2,5],
+  ] as [number,number][]).forEach(([c,r])=>B(c,r));
+  ctx.shadowBlur=0;ctx.fillStyle='#001A00';B(2,-5);
+  ctx.restore();
+};
+
+/* ── Pixel art: Gallimi (Gallimimus ostrich-dino) ───────────────────────── */
+const drawGallimiFn:DrawFn=(ctx,cx,cy,ps,ts)=>{
+  const fy=Math.sin(ts*0.0013)*7;
+  ctx.save();ctx.translate(cx,cy+fy);
+  ctx.fillStyle='#D4A853';
+  const B=(c:number,r:number)=>ctx.fillRect(c*ps-ps*.5,r*ps-ps*.5,ps,ps);
+  ctx.shadowColor='rgba(212,168,83,0.9)';ctx.shadowBlur=ps*4;
+  ([
+    [2,-8],[3,-8],[4,-8],[2,-7],[3,-7],[4,-7],[5,-7],
+    [3,-6],[4,-6],[5,-6],[5,-7],[6,-7],[7,-7],[5,-6],[6,-6],
+    [2,-6],[3,-6],[1,-5],[2,-5],[3,-5],[1,-4],[2,-4],
+    [0,-3],[1,-3],[2,-3],[0,-2],[1,-2],
+    [-2,-2],[-1,-2],[0,-2],[1,-2],[2,-2],[3,-2],
+    [-3,-1],[-2,-1],[-1,-1],[0,-1],[1,-1],[2,-1],[3,-1],[4,-1],
+    [-3,0],[-2,0],[-1,0],[0,0],[1,0],[2,0],[3,0],[4,0],
+    [-2,1],[-1,1],[0,1],[1,1],[2,1],[3,1],
+    [-1,2],[0,2],[1,2],[2,2],
+    [4,-1],[5,-1],[5,0],
+    [-3,0],[-4,0],[-5,1],[-6,1],[-7,2],
+    [0,3],[1,3],[-1,3],[0,4],[1,4],[-1,4],
+    [0,5],[1,5],[-1,5],[0,6],[1,6],[-1,6],
+    [-2,7],[-1,7],[0,7],[1,7],[2,7],
+  ] as [number,number][]).forEach(([c,r])=>B(c,r));
+  ctx.shadowBlur=0;ctx.fillStyle='#1A0E00';B(3,-7);
+  ctx.restore();
+};
+
+/* ── Pixel art: Compy (Compsognathus — tiny) ─────────────────────────────── */
+const drawCompyFn:DrawFn=(ctx,cx,cy,ps,ts)=>{
+  const fy=Math.sin(ts*0.0015)*8;
+  ctx.save();ctx.translate(cx,cy+fy);
+  ctx.fillStyle='#BA55D3';
+  const B=(c:number,r:number)=>ctx.fillRect(c*ps-ps*.5,r*ps-ps*.5,ps,ps);
+  ctx.shadowColor='rgba(186,85,211,0.95)';ctx.shadowBlur=ps*5;
+  ([
+    [1,-4],[2,-4],[3,-4],[1,-3],[2,-3],[3,-3],[4,-3],
+    [2,-2],[3,-2],[4,-2],[5,-2],[3,-1],[4,-1],[5,-1],
+    [-2,-2],[-1,-2],[0,-2],[1,-2],[-2,-1],[-1,-1],[0,-1],[1,-1],[2,-1],
+    [-2,0],[-1,0],[0,0],[1,0],[2,0],[-1,1],[0,1],[1,1],
+    [2,-2],[3,-2],
+    [-2,0],[-3,0],[-4,1],[-5,1],[-6,1],[-6,2],
+    [0,2],[1,2],[-1,2],[0,3],[1,3],[-1,3],[-1,4],[0,4],[1,4],
+  ] as [number,number][]).forEach(([c,r])=>B(c,r));
+  ctx.shadowBlur=0;ctx.fillStyle='#1A0033';B(2,-3);
+  ctx.restore();
+};
+
+/* ── Pixel art: Velocia (small raptor) ──────────────────────────────────── */
+const drawVelociaFn:DrawFn=(ctx,cx,cy,ps,ts)=>{
+  const fy=Math.sin(ts*0.0013)*7;
+  ctx.save();ctx.translate(cx,cy+fy);
+  ctx.fillStyle='#FFB300';
+  const B=(c:number,r:number)=>ctx.fillRect(c*ps-ps*.5,r*ps-ps*.5,ps,ps);
+  ctx.shadowColor='rgba(255,179,0,0.95)';ctx.shadowBlur=ps*7;
+  ([[-3,4],[-4,4],[-5,4],[-5,3],[-6,3]] as [number,number][]).forEach(([c,r])=>B(c,r));
+  ctx.shadowBlur=ps*4;
+  ([
+    [-1,-6],[0,-6],[1,-6],[2,-6],[3,-6],
+    [-1,-5],[0,-5],[1,-5],[2,-5],[3,-5],[4,-5],[5,-5],
+    [0,-4],[1,-4],[2,-4],[3,-4],[4,-4],[5,-4],[6,-4],
+    [2,-3],[3,-3],[4,-3],[5,-3],[6,-3],[7,-3],
+    [-1,-3],[0,-3],[1,-3],[2,-3],
+    [4,-2],[5,-2],[6,-2],[7,-2],[8,-2],
+    [-2,-2],[-1,-2],[0,-2],[1,-2],[2,-2],
+    [-4,-1],[-3,-1],[-2,-1],[-1,-1],[0,-1],[1,-1],[2,-1],
+    [-4,0],[-3,0],[-2,0],[-1,0],[0,0],[1,0],[2,0],[3,0],
+    [-3,1],[-2,1],[-1,1],[0,1],[1,1],[2,1],
+    [-2,2],[-1,2],[0,2],[1,2],
+    [2,-1],[3,-1],[3,0],
+    [-4,0],[-5,0],[-6,0],[-7,1],[-8,1],[-9,1],[-10,1],
+    [0,3],[1,3],[-1,3],[0,4],[1,4],[-1,4],
+    [-1,5],[0,5],[1,5],[2,5],
+  ] as [number,number][]).forEach(([c,r])=>B(c,r));
+  ctx.shadowBlur=0;ctx.fillStyle='#1A0800';B(1,-5);
+  ctx.restore();
+};
+
+/* ── Pixel art: Carno (Carnotaurus bull horns) ───────────────────────────── */
+const drawCarnoFn:DrawFn=(ctx,cx,cy,ps,ts)=>{
+  const fy=Math.sin(ts*0.001)*6;
+  ctx.save();ctx.translate(cx,cy+fy);
+  ctx.fillStyle='#B71C1C';
+  const B=(c:number,r:number)=>ctx.fillRect(c*ps-ps*.5,r*ps-ps*.5,ps,ps);
+  ctx.shadowColor='rgba(183,28,28,0.95)';ctx.shadowBlur=ps*8;
+  ([
+    [-4,-7],[-5,-7],[-6,-7],[-6,-8],[-7,-8],
+    [4,-7],[5,-7],[6,-7],[6,-8],[7,-8],
+  ] as [number,number][]).forEach(([c,r])=>B(c,r));
+  ctx.shadowBlur=ps*4;
+  ([
+    [-3,-7],[-2,-7],[-1,-7],[0,-7],[1,-7],[2,-7],[3,-7],
+    [-3,-6],[-2,-6],[-1,-6],[0,-6],[1,-6],[2,-6],[3,-6],[4,-6],[5,-6],
+    [-2,-5],[-1,-5],[0,-5],[1,-5],[2,-5],[3,-5],[4,-5],[5,-5],[6,-5],
+    [0,-4],[1,-4],[2,-4],[3,-4],[4,-4],[5,-4],[6,-4],[7,-4],
+    [-1,-4],[0,-4],[1,-4],
+    [3,-3],[4,-3],[5,-3],[6,-3],[7,-3],
+    [-2,-3],[-1,-3],[0,-3],[1,-3],[2,-3],
+    [-3,-2],[-2,-2],[-1,-2],[0,-2],[1,-2],[2,-2],
+    [-6,-1],[-5,-1],[-4,-1],[-3,-1],[-2,-1],[-1,-1],[0,-1],[1,-1],[2,-1],
+    [-7,0],[-6,0],[-5,0],[-4,0],[-3,0],[-2,0],[-1,0],[0,0],[1,0],[2,0],
+    [-7,1],[-6,1],[-5,1],[-4,1],[-3,1],[-2,1],[-1,1],[0,1],[1,1],
+    [-6,2],[-5,2],[-4,2],[-3,2],[-2,2],[-1,2],[0,2],
+    [2,-1],[3,-1],
+    [-8,0],[-9,0],[-9,1],[-10,1],[-11,1],
+    [-1,3],[0,3],[1,3],[-3,3],[-2,3],[-1,4],[0,4],[-3,4],[-2,4],
+    [-1,5],[0,5],[1,5],[-2,5],[-3,5],
+  ] as [number,number][]).forEach(([c,r])=>B(c,r));
+  ctx.shadowBlur=0;ctx.fillStyle='#0D0000';B(1,-5);
+  ctx.restore();
+};
+
+/* ── Pixel art: Indomina (legendary hybrid) ──────────────────────────────── */
+const drawInominaFn:DrawFn=(ctx,cx,cy,ps,ts)=>{
+  const fy=Math.sin(ts*0.001)*5;
+  ctx.save();ctx.translate(cx,cy+fy);
+  ctx.fillStyle='#E8EAF6';
+  const B=(c:number,r:number)=>ctx.fillRect(c*ps-ps*.5,r*ps-ps*.5,ps,ps);
+  const hue=Math.floor(Date.now()*0.1)%360;
+  ctx.shadowColor=`hsl(${hue},100%,70%)`;ctx.shadowBlur=ps*10;
+  ([[-6,-2],[-4,-2],[-2,-2],[0,-2],[2,-2],[4,-2]] as [number,number][]).forEach(([c,r])=>B(c,r));
+  ctx.shadowColor='rgba(200,210,255,0.9)';ctx.shadowBlur=ps*5;
+  ([
+    [-4,-8],[-3,-8],[-2,-8],[-1,-8],[0,-8],[1,-8],[2,-8],[3,-8],[4,-8],
+    [-4,-7],[-3,-7],[-2,-7],[-1,-7],[0,-7],[1,-7],[2,-7],[3,-7],[4,-7],[5,-7],[6,-7],
+    [-3,-6],[-2,-6],[-1,-6],[0,-6],[1,-6],[2,-6],[3,-6],[4,-6],[5,-6],[6,-6],[7,-6],
+    [-2,-5],[-1,-5],[0,-5],[1,-5],[2,-5],[3,-5],[4,-5],[5,-5],[6,-5],[7,-5],[8,-5],[9,-5],
+    [-1,-5],[0,-5],[1,-5],[2,-5],
+    [3,-4],[4,-4],[5,-4],[6,-4],[7,-4],[8,-4],[9,-4],[10,-4],
+    [-4,-4],[-3,-4],[-2,-4],[-1,-4],[0,-4],[1,-4],[2,-4],[3,-4],
+    [-5,-3],[-4,-3],[-3,-3],[-2,-3],[-1,-3],[0,-3],[1,-3],[2,-3],[3,-3],
+    [-8,-2],[-7,-2],[-6,-2],[-5,-2],[-4,-2],[-3,-2],[-2,-2],[-1,-2],[0,-2],[1,-2],[2,-2],[3,-2],[4,-2],
+    [-9,-1],[-8,-1],[-7,-1],[-6,-1],[-5,-1],[-4,-1],[-3,-1],[-2,-1],[-1,-1],[0,-1],[1,-1],[2,-1],[3,-1],[4,-1],[5,-1],
+    [-9,0],[-8,0],[-7,0],[-6,0],[-5,0],[-4,0],[-3,0],[-2,0],[-1,0],[0,0],[1,0],[2,0],[3,0],[4,0],[5,0],
+    [-8,1],[-7,1],[-6,1],[-5,1],[-4,1],[-3,1],[-2,1],[-1,1],[0,1],[1,1],[2,1],[3,1],[4,1],
+    [-7,2],[-6,2],[-5,2],[-4,2],[-3,2],[-2,2],[-1,2],[0,2],[1,2],[2,2],[3,2],
+    [4,-2],[5,-2],[6,-2],[6,-1],[7,-1],
+    [-9,0],[-10,0],[-11,0],[-12,0],[-12,1],[-13,1],[-13,2],
+    [-1,3],[0,3],[1,3],[2,3],[-3,3],[-2,3],
+    [-1,4],[0,4],[1,4],[-3,4],[-2,4],
+    [-1,5],[0,5],[1,5],[2,5],[-2,5],[-3,5],
+  ] as [number,number][]).forEach(([c,r])=>B(c,r));
+  ctx.shadowBlur=0;ctx.fillStyle='#1A1A3F';B(2,-6);
+  ctx.restore();
+};
+
+/* ── Pixel art: Therizon (Therizinosaurus scythe claws) ─────────────────── */
+const drawTherizonFn:DrawFn=(ctx,cx,cy,ps,ts)=>{
+  const fy=Math.sin(ts*0.0009)*5;
+  ctx.save();ctx.translate(cx,cy+fy);
+  ctx.fillStyle='#6DAF2F';
+  const B=(c:number,r:number)=>ctx.fillRect(c*ps-ps*.5,r*ps-ps*.5,ps,ps);
+  ctx.shadowColor='rgba(109,175,47,0.95)';ctx.shadowBlur=ps*8;
+  ([
+    [4,-2],[5,-2],[6,-2],[7,-2],[8,-2],[9,-2],[10,-2],
+    [7,-3],[8,-3],[9,-3],[10,-3],[11,-3],[11,-4],[10,-4],
+    [4,-1],[5,-1],[6,-1],[7,-1],[8,-1],[9,-1],[10,-1],[11,-1],[12,-1],
+    [11,0],[12,0],
+    [4,0],[5,0],[6,0],[7,0],[8,0],[9,0],[10,0],[11,0],
+    [10,1],[11,1],
+  ] as [number,number][]).forEach(([c,r])=>B(c,r));
+  ctx.shadowBlur=ps*4;
+  ([
+    [1,-7],[2,-7],[3,-7],[1,-6],[2,-6],[3,-6],[4,-6],
+    [2,-5],[3,-5],[4,-5],[5,-5],
+    [0,-5],[1,-5],[2,-5],[0,-4],[1,-4],[2,-4],[3,-4],
+    [0,-3],[1,-3],[2,-3],[3,-3],[4,-3],
+    [-4,-2],[-3,-2],[-2,-2],[-1,-2],[0,-2],[1,-2],[2,-2],[3,-2],
+    [-5,-1],[-4,-1],[-3,-1],[-2,-1],[-1,-1],[0,-1],[1,-1],[2,-1],[3,-1],
+    [-5,0],[-4,0],[-3,0],[-2,0],[-1,0],[0,0],[1,0],[2,0],[3,0],
+    [-4,1],[-3,1],[-2,1],[-1,1],[0,1],[1,1],[2,1],
+    [-3,2],[-2,2],[-1,2],[0,2],[1,2],
+    [-5,0],[-6,0],[-7,1],[-8,1],
+    [0,3],[1,3],[-1,3],[-2,3],[0,4],[1,4],[-1,4],
+    [0,5],[1,5],[-1,5],[-1,6],[0,6],[1,6],[2,6],
+  ] as [number,number][]).forEach(([c,r])=>B(c,r));
+  ctx.shadowBlur=0;ctx.fillStyle='#0D1F00';B(2,-6);
+  ctx.restore();
+};
+
+/* ── Pixel art: Eggsy (hatchling bursting from egg) ─────────────────────── */
+const drawEggsyFn:DrawFn=(ctx,cx,cy,ps,ts)=>{
+  const fy=Math.sin(ts*0.0018)*5;
+  ctx.save();ctx.translate(cx,cy+fy);
+  const B=(c:number,r:number)=>ctx.fillRect(c*ps-ps*.5,r*ps-ps*.5,ps,ps);
+  ctx.fillStyle='#FFDB89';
+  ctx.shadowColor='rgba(255,219,137,0.9)';ctx.shadowBlur=ps*5;
+  ([
+    [-2,-2],[-1,-2],[0,-2],[1,-2],[2,-2],
+    [-3,-1],[-2,-1],[-1,-1],[0,-1],[1,-1],[2,-1],[3,-1],
+    [-3,0],[-2,0],[-1,0],[0,0],[1,0],[2,0],[3,0],
+    [-3,1],[-2,1],[-1,1],[0,1],[1,1],[2,1],[3,1],
+    [-2,2],[-1,2],[0,2],[1,2],[2,2],[-1,3],[0,3],[1,3],
+  ] as [number,number][]).forEach(([c,r])=>B(c,r));
+  ctx.fillStyle='#7EFF50';
+  ctx.shadowColor='rgba(126,255,80,0.9)';ctx.shadowBlur=ps*5;
+  ([
+    [-1,-4],[0,-4],[1,-4],[-1,-3],[0,-3],[1,-3],[2,-3],[2,-2],[3,-2],
+    [3,0],[4,0],[4,-1],
+  ] as [number,number][]).forEach(([c,r])=>B(c,r));
+  ctx.shadowBlur=0;ctx.fillStyle='#001A00';B(1,-4);
+  ctx.fillStyle='#332200';B(1,-2);B(0,-1);B(1,1);
+  ctx.restore();
+};
+
+/* ── Pixel art: Hatchy (baby T-Rex) ──────────────────────────────────────── */
+const drawHatchyFn:DrawFn=(ctx,cx,cy,ps,ts)=>{
+  const fy=Math.sin(ts*0.0015)*7;
+  ctx.save();ctx.translate(cx,cy+fy);
+  ctx.fillStyle='#98FB98';
+  const B=(c:number,r:number)=>ctx.fillRect(c*ps-ps*.5,r*ps-ps*.5,ps,ps);
+  ctx.shadowColor='rgba(152,251,152,0.9)';ctx.shadowBlur=ps*5;
+  ([
+    [-3,-6],[-2,-6],[-1,-6],[0,-6],[1,-6],[2,-6],[3,-6],
+    [-4,-5],[-3,-5],[-2,-5],[-1,-5],[0,-5],[1,-5],[2,-5],[3,-5],[4,-5],
+    [-4,-4],[-3,-4],[-2,-4],[-1,-4],[0,-4],[1,-4],[2,-4],[3,-4],[4,-4],
+    [-3,-3],[-2,-3],[-1,-3],[0,-3],[1,-3],[2,-3],[3,-3],[4,-3],[5,-3],
+    [-1,-2],[0,-2],[1,-2],[2,-2],[3,-2],[4,-2],[5,-2],
+    [2,-1],[3,-1],[4,-1],[5,-1],[6,-1],
+    [-2,-1],[-1,-1],[0,-1],[1,-1],[2,-1],
+    [-2,0],[-1,0],[0,0],[1,0],[2,0],[3,0],
+    [-1,1],[0,1],[1,1],[2,1],
+    [3,-1],[4,-1],[4,0],
+    [-2,0],[-3,0],[-4,1],[-5,1],
+    [0,2],[1,2],[-1,2],[0,3],[1,3],[-1,3],
+    [-1,4],[0,4],[1,4],[2,4],
+  ] as [number,number][]).forEach(([c,r])=>B(c,r));
+  ctx.shadowBlur=0;ctx.fillStyle='#003300';B(-1,-5);B(2,-5);
+  ctx.restore();
+};
+
+/* ── Pixel art: Sprout (baby stegosaurus) ────────────────────────────────── */
+const drawSproutFn:DrawFn=(ctx,cx,cy,ps,ts)=>{
+  const fy=Math.sin(ts*0.0012)*6;
+  ctx.save();ctx.translate(cx,cy+fy);
+  ctx.fillStyle='#87CEEB';
+  const B=(c:number,r:number)=>ctx.fillRect(c*ps-ps*.5,r*ps-ps*.5,ps,ps);
+  ctx.shadowColor='rgba(135,206,235,0.95)';ctx.shadowBlur=ps*6;
+  ([
+    [-3,-4],[-3,-3],[-3,-2],[-1,-4],[-1,-3],[-1,-2],[1,-3],[1,-2],
+  ] as [number,number][]).forEach(([c,r])=>B(c,r));
+  ctx.shadowBlur=ps*4;
+  ([
+    [-4,-1],[-3,-1],[-2,-1],[-1,-1],[0,-1],[1,-1],[2,-1],[3,-1],
+    [-5,0],[-4,0],[-3,0],[-2,0],[-1,0],[0,0],[1,0],[2,0],[3,0],[4,0],
+    [-5,1],[-4,1],[-3,1],[-2,1],[-1,1],[0,1],[1,1],[2,1],[3,1],[4,1],
+    [-4,2],[-3,2],[-2,2],[-1,2],[0,2],[1,2],[2,2],[3,2],
+    [3,-2],[4,-2],[5,-2],[3,-1],[4,-1],[5,-1],[6,-1],[4,0],[5,0],[6,0],
+    [-5,0],[-6,0],[-7,-1],[-7,0],[-7,1],
+    [1,3],[2,3],[1,4],[2,4],[-1,3],[-2,3],[-1,4],[-2,4],
+    [-4,3],[-3,3],[-4,4],[-3,4],[0,3],[0,4],
+  ] as [number,number][]).forEach(([c,r])=>B(c,r));
+  ctx.shadowBlur=0;ctx.fillStyle='#001A33';B(4,-1);
+  ctx.restore();
+};
+
+/* ── Pixel art: Nibbles (baby raptor) ────────────────────────────────────── */
+const drawNibblesFn:DrawFn=(ctx,cx,cy,ps,ts)=>{
+  const fy=Math.sin(ts*0.0015)*7;
+  ctx.save();ctx.translate(cx,cy+fy);
+  ctx.fillStyle='#FFB7C5';
+  const B=(c:number,r:number)=>ctx.fillRect(c*ps-ps*.5,r*ps-ps*.5,ps,ps);
+  ctx.shadowColor='rgba(255,183,197,0.9)';ctx.shadowBlur=ps*5;
+  ([
+    [-1,-5],[0,-5],[1,-5],[2,-5],
+    [-2,-4],[-1,-4],[0,-4],[1,-4],[2,-4],[3,-4],
+    [-2,-3],[-1,-3],[0,-3],[1,-3],[2,-3],[3,-3],[4,-3],
+    [-1,-2],[0,-2],[1,-2],[2,-2],[3,-2],[4,-2],[5,-2],
+    [1,-1],[2,-1],[3,-1],[4,-1],[5,-1],
+    [-1,-1],[0,-1],[1,-1],
+    [-3,-1],[-2,-1],[-1,-1],[0,-1],[1,-1],[2,-1],
+    [-3,0],[-2,0],[-1,0],[0,0],[1,0],[2,0],[3,0],
+    [-2,1],[-1,1],[0,1],[1,1],[2,1],
+    [-1,2],[0,2],[1,2],
+    [-2,3],[-3,3],[-3,2],
+    [2,-1],[3,-1],[3,0],
+    [-3,0],[-4,1],[-5,1],[-6,1],[-7,1],
+    [0,3],[1,3],[-1,3],[0,4],[1,4],[-1,4],[0,5],[1,5],
+  ] as [number,number][]).forEach(([c,r])=>B(c,r));
+  ctx.shadowBlur=0;ctx.fillStyle='#330011';B(0,-4);B(2,-4);
+  ctx.restore();
+};
+
 /* ── Generic character canvas ──────────────────────────────────────────────── */
 function CharCanvas({ draw, auroraRgb }:{ draw:DrawFn; auroraRgb:string }) {
   const ref = useRef<HTMLCanvasElement>(null);
@@ -797,6 +1351,186 @@ const CHARACTERS:CharData[] = [
     nameGrad:'linear-gradient(135deg,#7C3AED 0%,#C084FC 42%,#2563EB 85%)',
     draw:drawSpinosFn,
   },
+  {
+    num:'#014',name:'MAGMADON',subtitle:'The Living Eruption',game:'Dino Clash',
+    lore:'Magmadon didn\'t evolve near a volcano. Magmadon IS the volcano. The vents on its back aren\'t battle damage — they\'re fully operational. Opponents have learned that getting too close means getting singed.',
+    stats:[{label:'Power',value:10},{label:'Heat',value:10},{label:'Defense',value:9},{label:'Speed',value:4}],
+    power:{name:'Lava Surge',desc:'Back vents go critical. Everything within range becomes a geology problem.'},
+    color:'#FF4500',auroraRgb:'255,69,0',
+    nameGrad:'linear-gradient(135deg,#FF4500 0%,#FF8C00 42%,#FFD700 85%)',
+    draw:drawMagmadonFn,
+  },
+  {
+    num:'#015',name:'VOLCANUS',subtitle:'The Superheated',game:'Rex Run',
+    lore:'That horn isn\'t bone. Geologists argue about what it is exactly and none of them want to get close enough to find out. Volcanus runs hot in every sense. The track doesn\'t recover quickly.',
+    stats:[{label:'Speed',value:8},{label:'Heat',value:10},{label:'Power',value:9},{label:'Horn',value:10}],
+    power:{name:'Magma Spike',desc:'Horn hits critical temperature mid-sprint. Trail spontaneously ignites. Running advisable.'},
+    color:'#FF8800',auroraRgb:'255,136,0',
+    nameGrad:'linear-gradient(135deg,#FF8800 0%,#FFB300 42%,#FF4500 85%)',
+    draw:drawVolcanusFn,
+  },
+  {
+    num:'#016',name:'PLESIA',subtitle:'The Long Watch',game:'Fossil Hunt',
+    lore:'That neck has been above water for 75 million years, watching. Plesia doesn\'t rush. She doesn\'t need to. Everything worth finding eventually drifts past. She just has to be patient — and she has had a great deal of practice.',
+    stats:[{label:'Reach',value:10},{label:'Patience',value:10},{label:'Speed',value:6},{label:'Depth',value:9}],
+    power:{name:'Neck Sweep',desc:'Clears a 40-foot radius at the surface. What she reaches, she finds.'},
+    color:'#1E90FF',auroraRgb:'30,144,255',
+    nameGrad:'linear-gradient(135deg,#1E90FF 0%,#87CEFA 42%,#9B5CF6 85%)',
+    draw:drawPlesiaFn,
+  },
+  {
+    num:'#017',name:'ICHTHYA',subtitle:'The Velocity',game:'Fossil Hunt',
+    lore:'Ichthya doesn\'t swim. She exits one location and reappears at another. The water between is a formality. Everything about her is optimized for one thing and it shows. No other marine resident has ever seen her clearly — only the wake.',
+    stats:[{label:'Speed',value:10},{label:'Agility',value:10},{label:'Stealth',value:8},{label:'Fin',value:9}],
+    power:{name:'Sonic Surge',desc:'Exceeds the speed of sound underwater. Creates a shockwave. Fish have opinions.'},
+    color:'#00CED1',auroraRgb:'0,206,209',
+    nameGrad:'linear-gradient(135deg,#00CED1 0%,#7FFFD4 42%,#1E90FF 85%)',
+    draw:drawIchthyaFn,
+  },
+  {
+    num:'#018',name:'KRAKENODON',subtitle:'The Abyss Itself',game:'Pangaea',
+    lore:'The deep ocean has one rule: don\'t go deeper than Krakenodon. Nobody made this rule. Nobody needed to. Krakenodon predates the concept of rules and has not found them relevant. The tentacles are new. The attitude is ancient.',
+    stats:[{label:'Terror',value:10},{label:'Depth',value:10},{label:'Power',value:10},{label:'Mystery',value:10}],
+    power:{name:'Dark Tide',desc:'The sea goes black. The jaw follows. The tentacles are already there.'},
+    color:'#8B00FF',auroraRgb:'139,0,255',
+    nameGrad:'linear-gradient(135deg,#8B00FF 0%,#DA70D6 42%,#1A0040 85%)',
+    draw:drawKrakenodonFn,
+  },
+  {
+    num:'#019',name:'PTERODAX',subtitle:'The Aerial Predator',game:'DinoSoar',
+    lore:'Pterodax doesn\'t glide. Pterodax hunts. Wide wings, locked target, zero hesitation. She broke three altitude records on the way down and didn\'t notice. The crest isn\'t decorative — it\'s a targeting system.',
+    stats:[{label:'Speed',value:9},{label:'Wingspan',value:10},{label:'Dive',value:10},{label:'Precision',value:9}],
+    power:{name:'Power Dive',desc:'Folds wings, drops at terminal velocity. Pulls up at the last possible moment. Emphasis on "possible."'},
+    color:'#FF9900',auroraRgb:'255,153,0',
+    nameGrad:'linear-gradient(135deg,#FF9900 0%,#FFCC44 42%,#FF4500 85%)',
+    draw:drawPterodaxFn,
+  },
+  {
+    num:'#020',name:'QUETZAL',subtitle:'The Sky Emperor',game:'DinoSoar',
+    lore:'Quetzal has a 40-foot wingspan and the patience of a geologic era. She doesn\'t compete with other fliers — she simply exists at a different scale. Looking up and seeing Quetzal blot out the sun is the last thing many things have seen.',
+    stats:[{label:'Wingspan',value:10},{label:'Endurance',value:10},{label:'Presence',value:10},{label:'Scale',value:10}],
+    power:{name:'Sky Sovereign',desc:'Shadow alone covers a square mile. Everything below goes quiet. That\'s not metaphor.'},
+    color:'#FFD700',auroraRgb:'255,215,0',
+    nameGrad:'linear-gradient(135deg,#FFD700 0%,#FFFACD 42%,#FFA500 85%)',
+    draw:drawQuetzalFn,
+  },
+  {
+    num:'#021',name:'ARCHAEON',subtitle:'The First Flight',game:'DinoSoar',
+    lore:'Archaeon figured out flight before anyone agreed it was possible. Half bird, half dinosaur, entirely committed to the decision. Feathers where scales used to be. A brain running two operating systems simultaneously. No crashes recorded.',
+    stats:[{label:'Agility',value:10},{label:'Speed',value:8},{label:'Feathers',value:10},{label:'IQ',value:9}],
+    power:{name:'Evolution Leap',desc:'Rewrites the physics of flight mid-move. Darwin is impressed but cannot keep up.'},
+    color:'#A0522D',auroraRgb:'160,82,45',
+    nameGrad:'linear-gradient(135deg,#A0522D 0%,#D2691E 42%,#8B4513 85%)',
+    draw:drawArchaeonFn,
+  },
+  {
+    num:'#022',name:'DIPLO',subtitle:'The Longest View',game:'Pangaea',
+    lore:'The neck sees things first. The tail catches up eventually. In between is a lot of very large dinosaur with a lot of very long thoughts. Diplo has witnessed more geological events than most mountains and takes none of them personally.',
+    stats:[{label:'Reach',value:10},{label:'Tail',value:10},{label:'Patience',value:9},{label:'Length',value:10}],
+    power:{name:'Whip Tail',desc:'Tail moves faster than sound. Anything in the arc finds out before it hears it coming.'},
+    color:'#78C850',auroraRgb:'120,200,80',
+    nameGrad:'linear-gradient(135deg,#78C850 0%,#BBFF70 42%,#228B22 85%)',
+    draw:drawDiploFn,
+  },
+  {
+    num:'#023',name:'IGUANA',subtitle:'The Spike Thumb',game:'DinoBlox',
+    lore:'The thumb spike isn\'t for defense — it\'s for emphasis. Iguana makes her point once, precisely, and does not repeat herself. A surprisingly calm disposition for someone carrying a bone spike on each hand. Usually.',
+    stats:[{label:'Precision',value:10},{label:'Defense',value:9},{label:'Thumb',value:10},{label:'Calm',value:7}],
+    power:{name:'Thumb Spike',desc:'Single targeted strike. Surgical. The point is made. Literally.'},
+    color:'#2ECC40',auroraRgb:'46,204,64',
+    nameGrad:'linear-gradient(135deg,#2ECC40 0%,#BBFF70 42%,#00843D 85%)',
+    draw:drawIguanaFn,
+  },
+  {
+    num:'#024',name:'GALLIMI',subtitle:'The Pure Speed',game:'Rex Run',
+    lore:'Gallimi doesn\'t eat much, doesn\'t fight much, doesn\'t think much — she runs. Faster than anything on two legs in the Cretaceous, and most things on four. The long neck is for aerodynamics. The large eyes are for finding the next horizon.',
+    stats:[{label:'Speed',value:10},{label:'Agility',value:10},{label:'Stamina',value:9},{label:'Reflexes',value:10}],
+    power:{name:'Sprint Mode',desc:'Top speed achieved in under a second. The dust settles eventually.'},
+    color:'#D4A853',auroraRgb:'212,168,83',
+    nameGrad:'linear-gradient(135deg,#D4A853 0%,#F0D080 42%,#B8860B 85%)',
+    draw:drawGallimiFn,
+  },
+  {
+    num:'#025',name:'COMPY',subtitle:'The Tiny Terror',game:'Dino Clash',
+    lore:'Individually, a minor inconvenience. In packs of six, a catastrophe. Compy operates on the principle that size is a state of mind and has 72 million years of receipts to back it up. She has never lost a fight. She has lost some individuals, but the fight she always wins.',
+    stats:[{label:'Speed',value:9},{label:'Pack IQ',value:10},{label:'Ferocity',value:9},{label:'Size',value:1}],
+    power:{name:'Pack Swarm',desc:'Quantity has a quality all its own. The target disagrees but statistically doesn\'t matter.'},
+    color:'#BA55D3',auroraRgb:'186,85,211',
+    nameGrad:'linear-gradient(135deg,#BA55D3 0%,#DDA0DD 42%,#8B00FF 85%)',
+    draw:drawCompyFn,
+  },
+  {
+    num:'#026',name:'VELOCIA',subtitle:'The Streak',game:'Dino Clash',
+    lore:'Smaller than Raptoria, faster than the eye can follow, and genuinely offended by any comparison. Velocia doesn\'t do the door trick — she doesn\'t need to. The door is already open before you realize she was there.',
+    stats:[{label:'Speed',value:10},{label:'Agility',value:10},{label:'Claw',value:9},{label:'Stealth',value:10}],
+    power:{name:'Ghost Strike',desc:'Strikes from a position nobody was watching. Nobody is ever watching every position.'},
+    color:'#FFB300',auroraRgb:'255,179,0',
+    nameGrad:'linear-gradient(135deg,#FFB300 0%,#FFE066 42%,#FF6B35 85%)',
+    draw:drawVelociaFn,
+  },
+  {
+    num:'#027',name:'CARNO',subtitle:'The Bull of the Cretaceous',game:'Dino Clash',
+    lore:'Those horns are load-bearing. Carno\'s entire philosophy involves going through the obstacle rather than around it. Arm reach is compensated for by enthusiasm. The charging distance required before impact is genuinely alarming.',
+    stats:[{label:'Charge',value:10},{label:'Power',value:10},{label:'Horns',value:10},{label:'Arms',value:1}],
+    power:{name:'Bull Rush',desc:'Horns first, philosophy later. Everything in the path becomes the aftermath.'},
+    color:'#B71C1C',auroraRgb:'183,28,28',
+    nameGrad:'linear-gradient(135deg,#B71C1C 0%,#E53935 42%,#880000 85%)',
+    draw:drawCarnoFn,
+  },
+  {
+    num:'#028',name:'INDOMINA',subtitle:'The Apex of Everything',game:'Dino Clash',
+    lore:'Not found in any fossil record. Not documented by any paleontologist. What Indomina IS has been the subject of twelve classified reports and one very nervous committee meeting. The spine ridge isn\'t bone. The coloring isn\'t pigment. The stats are all 10.',
+    stats:[{label:'Power',value:10},{label:'Speed',value:10},{label:'Intelligence',value:10},{label:'Unknown',value:10}],
+    power:{name:'Hybrid Protocol',desc:'Activates capabilities that have no prior classification. The committee report is still being written.'},
+    color:'#E8EAF6',auroraRgb:'200,210,246',
+    nameGrad:'linear-gradient(135deg,#E8EAF6 0%,#C5CAE9 42%,#9FA8DA 85%)',
+    draw:drawInominaFn,
+  },
+  {
+    num:'#029',name:'THERIZON',subtitle:'The Gentle Apocalypse',game:'Fossil Hunt',
+    lore:'Those claws are for reaching tall plants. That\'s the official position and Therizon holds it firmly. Yes, they are four feet long. Yes, they glow. Therizon is a herbivore and would like everyone to remain calm and also perhaps maintain some distance.',
+    stats:[{label:'Claws',value:10},{label:'Reach',value:10},{label:'Power',value:9},{label:'Gentleness',value:8}],
+    power:{name:'Scythe Harvest',desc:'Technically for vegetation. Everything else in range is a secondary consideration.'},
+    color:'#6DAF2F',auroraRgb:'109,175,47',
+    nameGrad:'linear-gradient(135deg,#6DAF2F 0%,#A8E063 42%,#00843D 85%)',
+    draw:drawTherizonFn,
+  },
+  {
+    num:'#030',name:'EGGSY',subtitle:'The Beginning',game:'DinoBlox',
+    lore:'Technically still hatching. Has been "technically still hatching" for three weeks. The egg is now 40% structural suggestion. The small green head sticking out has very strong opinions about Tetris and will tell you all of them.',
+    stats:[{label:'Potential',value:10},{label:'Enthusiasm',value:10},{label:'Shell',value:3},{label:'Patience',value:1}],
+    power:{name:'Hatch Burst',desc:'Egg fragments everywhere. Reveals 100% baby dinosaur. Immediate chaos follows.'},
+    color:'#FFDB89',auroraRgb:'255,219,137',
+    nameGrad:'linear-gradient(135deg,#FFDB89 0%,#FFF3C4 42%,#F4845F 85%)',
+    draw:drawEggsyFn,
+  },
+  {
+    num:'#031',name:'HATCHY',subtitle:'The Baby Apex',game:'Rex Run',
+    lore:'Head larger than body. Arms approximately decorative. Running speed already alarming. Hatchy is three days old and has already knocked over two trees, one researcher, and an entire opinions section. The future is complicated.',
+    stats:[{label:'Cuteness',value:10},{label:'Potential',value:10},{label:'Speed',value:6},{label:'Tiny Arms',value:1}],
+    power:{name:'Baby Chomp',desc:'No technique. Pure enthusiasm. Statistically more dangerous than it looks.'},
+    color:'#98FB98',auroraRgb:'152,251,152',
+    nameGrad:'linear-gradient(135deg,#98FB98 0%,#CCFFCC 42%,#7EFF50 85%)',
+    draw:drawHatchyFn,
+  },
+  {
+    num:'#032',name:'SPROUT',subtitle:'The Tiny Ancient',game:'DinoTris',
+    lore:'The plates haven\'t grown in yet but they\'re glowing. Sprout stacks blocks with a methodical calm that no creature this small should possess. The plates will be magnificent when they arrive. For now, she\'s working on the basics.',
+    stats:[{label:'Calm',value:10},{label:'Plates',value:4},{label:'Potential',value:10},{label:'Focus',value:9}],
+    power:{name:'Micro Slam',desc:'Small but perfectly placed. The blocks fall exactly where she intends. Every time.'},
+    color:'#87CEEB',auroraRgb:'135,206,235',
+    nameGrad:'linear-gradient(135deg,#87CEEB 0%,#E0F7FF 42%,#06D6A0 85%)',
+    draw:drawSproutFn,
+  },
+  {
+    num:'#033',name:'NIBBLES',subtitle:'The Tiny Danger',game:'Dino Clash',
+    lore:'The sickle claw is already there. Already functional. Already sharp. Nibbles is three inches tall and the training data suggests this is a temporary situation. The large eyes are for cuteness. The claw is not for cuteness.',
+    stats:[{label:'Cuteness',value:10},{label:'Claw',value:9},{label:'Speed',value:8},{label:'Size',value:1}],
+    power:{name:'Baby Slash',desc:'Tiny. Precise. Oddly terrifying. The size does not scale to the commitment.'},
+    color:'#FFB7C5',auroraRgb:'255,183,197',
+    nameGrad:'linear-gradient(135deg,#FFB7C5 0%,#FFE4EC 42%,#FF6B9D 85%)',
+    draw:drawNibblesFn,
+  },
 ];
 
 /* ── Stat bar ─────────────────────────────────────────────────────────────── */
@@ -986,9 +1720,9 @@ export default function TeamPage(){
           <h2 className="section-h">More Characters Incoming</h2>
           <p className="section-body">The crew is expanding. Each new game brings a new legend.</p>
           <div className="locked-grid">
-            <LockedCard num="#014" game="Dino Derby"  color="#FF8C42"/>
-            <LockedCard num="#015" game="DinoBlox"    color="#00D4FF"/>
-            <LockedCard num="#016" game="App-a-Day"   color="#FFD700"/>
+            <LockedCard num="#034" game="Dino Derby"  color="#FF8C42"/>
+            <LockedCard num="#035" game="App-a-Day"   color="#9B5CF6"/>
+            <LockedCard num="#036" game="DinoBlox"    color="#FFD700"/>
           </div>
         </div>
 
