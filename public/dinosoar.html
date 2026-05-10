@@ -839,7 +839,7 @@ function render(ts){
       const luMW=ctx.measureText(luTxt).width;
       if(luMW>W*.88){luFSz*=(W*.88/luMW);ctx.font=`700 ${luFSz}px 'Rajdhani',sans-serif`;}
       const luW=ctx.measureText(luTxt).width;
-      const luCx=cx,luCy=H*.42;
+      const luCx=cx,luCy=H*.25;
       const luShift=((ts/1800)%1)*luW*2;
       const luG=ctx.createLinearGradient(luCx-luW*.5-luShift,0,luCx+luW*1.5-luShift,0);
       luG.addColorStop(0,'#7EFF50');luG.addColorStop(.25,'#00FFCC');
