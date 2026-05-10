@@ -406,25 +406,21 @@ function update(dt,ts){
       if(bird.y-HIT_R<c.mid-c.gapH/2||bird.y+HIT_R>c.mid+c.gapH/2){die();return;}
   }
   updSparks(dt);
-  // Shark jumps
+  // Shark jumps — decorative only, low arc, can't reach dino
   sharkJumpT=Math.max(0,sharkJumpT-dt);
   if(sharkJumpT<=0){
-    const wY0=H-GNDH,dy=wY0-bird.y;
-    if(dy>80){
-      const SG=460,sx=W*(0.08+Math.random()*0.84);
-      const vy0=-Math.sqrt(2*SG*(dy+80));
-      const airT=(-vy0/SG)*2;
-      const vx0=clamp(((W*0.22)-sx)/airT,-140,140);
-      sharkJumps.push({x:sx,y:wY0,vy:vy0,vx:vx0,maw:0,sz:0.85+Math.random()*0.3,done:false});
-      spawnSplash(sx,wY0);
-    }
-    sharkJumpT=3+Math.random()*4;
+    const wY0=H-GNDH,sx=W*(0.08+Math.random()*0.84);
+    const peakH=clamp(GNDH*.9,30,55); // jumps only ~30-55px above waterline
+    const SG=480,vy0=-Math.sqrt(2*SG*peakH);
+    const vx0=(Math.random()-.5)*60;
+    sharkJumps.push({x:sx,y:wY0,vy:vy0,vx:vx0,maw:0,sz:0.85+Math.random()*0.3,done:false});
+    spawnSplash(sx,wY0);
+    sharkJumpT=2.5+Math.random()*4;
   }
-  {const SG=460;
+  {const SG=480;
   for(const s of sharkJumps){
     s.vy+=SG*dt;s.y+=s.vy*dt;s.x+=s.vx*dt;
-    s.maw=s.vy<80?Math.min(1,s.maw+dt*3.5):Math.max(0,s.maw-dt*7);
-    if(Math.hypot(s.x-W*0.22,s.y-bird.y)<HIT_R+18*s.sz)die();
+    s.maw=s.vy<0?Math.min(1,s.maw+dt*4):Math.max(0,s.maw-dt*8);
     if(s.y>=H-GNDH&&s.vy>0){spawnSplash(s.x,H-GNDH);s.done=true;}
   }
   sharkJumps=sharkJumps.filter(s=>!s.done);}
