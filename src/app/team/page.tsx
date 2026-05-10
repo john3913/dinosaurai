@@ -426,6 +426,177 @@ const drawMossyfn:DrawFn=(ctx,cx,cy,ps,ts)=>{
   ctx.restore();
 };
 
+/* ── Pixel art: Pyrannosaurus (Fire T-Rex) ──────────────────────────────── */
+const drawPyrannFn:DrawFn=(ctx,cx,cy,ps,ts)=>{
+  const fy=Math.sin(ts*0.001)*6;
+  ctx.save();ctx.translate(cx,cy+fy);
+  ctx.fillStyle='#DC143C';
+  const B=(c:number,r:number)=>ctx.fillRect(c*ps-ps*.5,r*ps-ps*.5,ps,ps);
+  ctx.shadowColor='rgba(255,140,0,0.95)';ctx.shadowBlur=ps*9;
+  ([[-1,-9],[0,-9],[1,-9],[-2,-8],[-1,-8],[0,-8],[1,-8],[2,-8]] as [number,number][]).forEach(([c,r])=>B(c,r));
+  ctx.shadowColor='rgba(220,20,60,0.9)';ctx.shadowBlur=ps*4;
+  ([
+    [-2,-7],[-1,-7],[0,-7],[1,-7],[2,-7],[3,-7],
+    [-2,-6],[-1,-6],[0,-6],[1,-6],[2,-6],[3,-6],[4,-6],[5,-6],
+    [-1,-5],[0,-5],[1,-5],[2,-5],[3,-5],[4,-5],[5,-5],[6,-5],[7,-5],
+    [-1,-4],[0,-4],[1,-4],[2,-4],
+    [3,-4],[4,-4],[5,-4],[6,-4],[7,-4],[8,-4],
+    [-2,-3],[-1,-3],[0,-3],[1,-3],[2,-3],
+    [4,-3],[5,-3],[6,-3],[7,-3],[8,-3],[9,-3],
+    [-3,-2],[-2,-2],[-1,-2],[0,-2],[1,-2],[2,-2],
+    [-6,-1],[-5,-1],[-4,-1],[-3,-1],[-2,-1],[-1,-1],[0,-1],[1,-1],[2,-1],[3,-1],
+    [-7,0],[-6,0],[-5,0],[-4,0],[-3,0],[-2,0],[-1,0],[0,0],[1,0],[2,0],[3,0],
+    [-7,1],[-6,1],[-5,1],[-4,1],[-3,1],[-2,1],[-1,1],[0,1],[1,1],[2,1],
+    [-6,2],[-5,2],[-4,2],[-3,2],[-2,2],[-1,2],[0,2],[1,2],
+    [3,-1],[4,-1],[4,0],
+    [-8,0],[-9,0],[-10,0],[-10,1],[-11,1],[-12,1],
+    [-1,3],[0,3],[1,3],[-4,3],[-3,3],[-2,3],
+    [-1,4],[0,4],[1,4],[2,4],[-5,4],[-4,4],[-3,4],[-2,4],
+  ] as [number,number][]).forEach(([c,r])=>B(c,r));
+  ctx.shadowBlur=0;ctx.fillStyle='#FF4400';B(1,-5);
+  ctx.restore();
+};
+
+/* ── Pixel art: Anky (Ankylosaurus) ─────────────────────────────────────── */
+const drawAnkyFn:DrawFn=(ctx,cx,cy,ps,ts)=>{
+  const fy=Math.sin(ts*0.0008)*4;
+  ctx.save();ctx.translate(cx,cy+fy);
+  ctx.fillStyle='#C4873A';
+  const B=(c:number,r:number)=>ctx.fillRect(c*ps-ps*.5,r*ps-ps*.5,ps,ps);
+  ctx.shadowColor='rgba(196,135,58,0.95)';ctx.shadowBlur=ps*8;
+  ([[-12,-1],[-13,-1],[-14,0],[-13,0],[-12,0],[-13,1],[-12,1]] as [number,number][]).forEach(([c,r])=>B(c,r));
+  ctx.shadowBlur=ps*5;
+  ([[-7,-3],[-5,-3],[-3,-3],[-1,-3],[1,-3],[3,-3],[5,-3]] as [number,number][]).forEach(([c,r])=>B(c,r));
+  ctx.shadowBlur=ps*4;
+  ([
+    [-8,-2],[-7,-2],[-6,-2],[-5,-2],[-4,-2],[-3,-2],[-2,-2],[-1,-2],[0,-2],[1,-2],[2,-2],[3,-2],[4,-2],[5,-2],[6,-2],
+    [-9,-1],[-8,-1],[-7,-1],[-6,-1],[-5,-1],[-4,-1],[-3,-1],[-2,-1],[-1,-1],[0,-1],[1,-1],[2,-1],[3,-1],[4,-1],[5,-1],[6,-1],[7,-1],
+    [-10,0],[-9,0],[-8,0],[-7,0],[-6,0],[-5,0],[-4,0],[-3,0],[-2,0],[-1,0],[0,0],[1,0],[2,0],[3,0],[4,0],[5,0],[6,0],[7,0],
+    [-10,1],[-9,1],[-8,1],[-7,1],[-6,1],[-5,1],[-4,1],[-3,1],[-2,1],[-1,1],[0,1],[1,1],[2,1],[3,1],[4,1],[5,1],[6,1],[7,1],
+    [-9,2],[-8,2],[-7,2],[-6,2],[-5,2],[-4,2],[-3,2],[-2,2],[-1,2],[0,2],[1,2],[2,2],[3,2],[4,2],[5,2],[6,2],
+    [-10,-1],[-11,0],[-11,1],
+    [7,-2],[8,-2],[9,-2],
+    [8,-1],[9,-1],[10,-1],
+    [8,0],[9,0],[10,0],[11,0],
+    [9,1],[10,1],
+    [4,3],[5,3],[4,4],[5,4],
+    [0,3],[1,3],[0,4],[1,4],
+    [-4,3],[-3,3],[-4,4],[-3,4],
+    [-8,3],[-7,3],[-8,4],[-7,4],
+  ] as [number,number][]).forEach(([c,r])=>B(c,r));
+  ctx.shadowBlur=0;ctx.fillStyle='#2A1800';B(9,-1);
+  ctx.restore();
+};
+
+/* ── Pixel art: Pachy (Pachycephalosaurus) ──────────────────────────────── */
+const drawPachyFn:DrawFn=(ctx,cx,cy,ps,ts)=>{
+  const fy=Math.sin(ts*0.0013)*6;
+  ctx.save();ctx.translate(cx,cy+fy);
+  ctx.fillStyle='#E8D44D';
+  const B=(c:number,r:number)=>ctx.fillRect(c*ps-ps*.5,r*ps-ps*.5,ps,ps);
+  ctx.shadowColor='rgba(232,212,77,0.95)';ctx.shadowBlur=ps*8;
+  ([
+    [-1,-8],[0,-8],[1,-8],
+    [-2,-7],[-1,-7],[0,-7],[1,-7],[2,-7],
+    [-3,-6],[-2,-6],[-1,-6],[0,-6],[1,-6],[2,-6],[3,-6],
+    [-3,-5],[-2,-5],[-1,-5],[0,-5],[1,-5],[2,-5],
+  ] as [number,number][]).forEach(([c,r])=>B(c,r));
+  ctx.shadowBlur=ps*4;
+  ([
+    [-1,-4],[0,-4],[1,-4],[2,-4],
+    [-1,-3],[0,-3],[1,-3],[2,-3],[3,-3],[4,-3],
+    [3,-2],[4,-2],[5,-2],[6,-2],
+    [4,-1],[5,-1],[6,-1],[7,-1],
+    [5,0],[6,0],
+    [-1,-2],[0,-2],[1,-2],
+    [-1,-1],[0,-1],[1,-1],
+    [-3,-1],[-2,-1],[-1,-1],[0,-1],[1,-1],[2,-1],[3,-1],[4,-1],
+    [-4,0],[-3,0],[-2,0],[-1,0],[0,0],[1,0],[2,0],[3,0],[4,0],
+    [-3,1],[-2,1],[-1,1],[0,1],[1,1],[2,1],[3,1],
+    [-2,2],[-1,2],[0,2],[1,2],[2,2],
+    [4,-1],[5,-1],[5,0],[6,0],
+    [-4,1],[-5,1],[-6,2],[-7,2],[-8,3],
+    [0,3],[1,3],[2,3],[-1,3],[-2,3],
+    [0,4],[1,4],[-1,4],[-2,4],
+    [-1,5],[0,5],[1,5],[2,5],[-3,5],[-2,5],
+  ] as [number,number][]).forEach(([c,r])=>B(c,r));
+  ctx.shadowBlur=0;ctx.fillStyle='#1A1200';B(1,-4);
+  ctx.restore();
+};
+
+/* ── Pixel art: Parasol (Parasaurolophus) ───────────────────────────────── */
+const drawParasolFn:DrawFn=(ctx,cx,cy,ps,ts)=>{
+  const fy=Math.sin(ts*0.0011)*6;
+  ctx.save();ctx.translate(cx,cy+fy);
+  ctx.fillStyle='#F4845F';
+  const B=(c:number,r:number)=>ctx.fillRect(c*ps-ps*.5,r*ps-ps*.5,ps,ps);
+  ctx.shadowColor='rgba(244,132,95,0.95)';ctx.shadowBlur=ps*8;
+  ([
+    [-10,-6],[-9,-6],[-8,-6],[-7,-6],[-6,-6],[-5,-6],[-4,-6],[-3,-6],[-2,-6],[-1,-6],
+    [-10,-5],[-9,-5],[-8,-5],[-7,-5],[-6,-5],[-5,-5],[-4,-5],[-3,-5],
+  ] as [number,number][]).forEach(([c,r])=>B(c,r));
+  ctx.shadowBlur=ps*4;
+  ([
+    [-2,-5],[-1,-5],[0,-5],[1,-5],[2,-5],[3,-5],
+    [-1,-4],[0,-4],[1,-4],[2,-4],[3,-4],[4,-4],[5,-4],
+    [0,-3],[1,-3],[2,-3],[3,-3],[4,-3],[5,-3],[6,-3],
+    [5,-2],[6,-2],[7,-2],[8,-2],
+    [5,-1],[6,-1],[7,-1],[8,-1],
+    [6,0],[7,0],
+    [-1,-2],[0,-2],[1,-2],
+    [-1,-1],[0,-1],[1,-1],
+    [-4,-1],[-3,-1],[-2,-1],[-1,-1],[0,-1],[1,-1],[2,-1],[3,-1],[4,-1],
+    [-5,0],[-4,0],[-3,0],[-2,0],[-1,0],[0,0],[1,0],[2,0],[3,0],[4,0],
+    [-5,1],[-4,1],[-3,1],[-2,1],[-1,1],[0,1],[1,1],[2,1],[3,1],
+    [-4,2],[-3,2],[-2,2],[-1,2],[0,2],[1,2],[2,2],
+    [4,-1],[5,-1],[5,0],
+    [-5,1],[-6,2],[-7,2],[-8,3],[-9,3],
+    [0,3],[1,3],[2,3],[-1,3],[-2,3],
+    [0,4],[1,4],[-1,4],
+    [-1,5],[0,5],[1,5],[2,5],[-2,5],[-3,5],
+  ] as [number,number][]).forEach(([c,r])=>B(c,r));
+  ctx.shadowBlur=0;ctx.fillStyle='#1A0800';B(2,-4);
+  ctx.restore();
+};
+
+/* ── Pixel art: Spinos (Spinosaurus) ────────────────────────────────────── */
+const drawSpinosFn:DrawFn=(ctx,cx,cy,ps,ts)=>{
+  const fy=Math.sin(ts*0.001)*6;
+  ctx.save();ctx.translate(cx,cy+fy);
+  ctx.fillStyle='#7C3AED';
+  const B=(c:number,r:number)=>ctx.fillRect(c*ps-ps*.5,r*ps-ps*.5,ps,ps);
+  ctx.shadowColor='rgba(124,58,237,0.95)';ctx.shadowBlur=ps*8;
+  ([
+    [-4,-5],[-4,-4],[-4,-3],
+    [-2,-7],[-2,-6],[-2,-5],[-2,-4],[-2,-3],
+    [0,-9],[0,-8],[0,-7],[0,-6],[0,-5],[0,-4],[0,-3],
+    [2,-6],[2,-5],[2,-4],[2,-3],
+    [4,-4],[4,-3],
+  ] as [number,number][]).forEach(([c,r])=>B(c,r));
+  ctx.shadowBlur=ps*3;
+  ([[-3,-4],[-3,-3],[-1,-6],[-1,-5],[-1,-4],[-1,-3],[1,-6],[1,-5],[1,-4],[1,-3],[3,-4],[3,-3]] as [number,number][]).forEach(([c,r])=>B(c,r));
+  ctx.shadowBlur=ps*4;
+  ([
+    [3,-3],[4,-3],[5,-3],[6,-3],[7,-3],[8,-3],[9,-3],
+    [4,-4],[5,-4],[6,-4],[7,-4],
+    [3,-2],[4,-2],[5,-2],[6,-2],[7,-2],[8,-2],[9,-2],[10,-2],[11,-2],
+    [4,-1],[5,-1],[6,-1],[7,-1],[8,-1],[9,-1],[10,-1],[11,-1],
+    [5,0],[6,0],[7,0],[8,0],[9,0],[10,0],
+    [-4,-2],[-3,-2],[-2,-2],[-1,-2],[0,-2],[1,-2],[2,-2],[3,-2],
+    [-5,-1],[-4,-1],[-3,-1],[-2,-1],[-1,-1],[0,-1],[1,-1],[2,-1],
+    [-5,0],[-4,0],[-3,0],[-2,0],[-1,0],[0,0],[1,0],[2,0],
+    [-4,1],[-3,1],[-2,1],[-1,1],[0,1],[1,1],
+    [-3,2],[-2,2],[-1,2],[0,2],
+    [2,-2],[3,-2],[3,-1],[4,-1],[4,0],
+    [-5,1],[-6,2],[-7,2],[-8,2],[-9,3],[-10,3],[-11,3],
+    [-1,3],[0,3],[1,3],[-2,3],[-3,3],
+    [-1,4],[0,4],[-2,4],
+    [-2,5],[-1,5],[0,5],[1,5],
+  ] as [number,number][]).forEach(([c,r])=>B(c,r));
+  ctx.shadowBlur=0;ctx.fillStyle='#1A0040';B(6,-3);
+  ctx.restore();
+};
+
 /* ── Generic character canvas ──────────────────────────────────────────────── */
 function CharCanvas({ draw, auroraRgb }:{ draw:DrawFn; auroraRgb:string }) {
   const ref = useRef<HTMLCanvasElement>(null);
@@ -580,6 +751,51 @@ const CHARACTERS:CharData[] = [
     color:'#00843D', auroraRgb:'0,132,61',
     nameGrad:'linear-gradient(135deg,#00843D 0%,#44D17A 42%,#00C9A0 85%)',
     draw:drawMossyfn,
+  },
+  {
+    num:'#009', name:'PYRANNOSAURUS', subtitle:'The Burning Colossus', game:'Rex Run',
+    lore:'Every step leaves a scorch mark. Pyrannosaurus didn\'t evolve from fire — it evolved into fire. Runs hotter than the Cretaceous itself, and the Cretaceous was already pretty unpleasant. The other runners have a head start. They don\'t appreciate this fact.',
+    stats:[{label:'Speed',value:9},{label:'Power',value:10},{label:'Heat',value:10},{label:'Tiny Arms',value:2}],
+    power:{name:'Magma Rush',desc:'Incinerates the track. Every footprint is a crater. The other runners have a head start. They regret this.'},
+    color:'#DC143C', auroraRgb:'220,20,60',
+    nameGrad:'linear-gradient(135deg,#DC143C 0%,#FF6B35 42%,#FFD700 85%)',
+    draw:drawPyrannFn,
+  },
+  {
+    num:'#010', name:'ANKY', subtitle:'The Living Tank', game:'DinoBlox',
+    lore:'Anky has never lost a fight. Anky has also never started one. She exists, armored, patient, and profoundly unbothered. The tail club is decorative. It has never been decorative.',
+    stats:[{label:'Defense',value:10},{label:'Armor',value:10},{label:'Tail',value:10},{label:'Speed',value:3}],
+    power:{name:'Tail Club',desc:'One swing. Seismic. Geologists will find this impact in the fossil record.'},
+    color:'#C4873A', auroraRgb:'196,135,58',
+    nameGrad:'linear-gradient(135deg,#C4873A 0%,#E8B567 42%,#8B5E20 85%)',
+    draw:drawAnkyFn,
+  },
+  {
+    num:'#011', name:'PACHY', subtitle:'The Dome of Doom', game:'Fossil Hunt',
+    lore:'Pachy leads with her head. This is not a metaphor. The dome is solid bone, ten inches thick, tested against every geological formation on record. A living battering ram who wears her weapon on her skull.',
+    stats:[{label:'Dome',value:10},{label:'Speed',value:8},{label:'Impact',value:10},{label:'Defense',value:8}],
+    power:{name:'Skull Crusher',desc:'Full sprint dome charge. The target does not receive advance notice.'},
+    color:'#E8D44D', auroraRgb:'232,212,77',
+    nameGrad:'linear-gradient(135deg,#E8D44D 0%,#FFF066 42%,#C8A020 85%)',
+    draw:drawPachyFn,
+  },
+  {
+    num:'#012', name:'PARASOL', subtitle:'The Signal Caller', game:'Pangaea',
+    lore:'That crest isn\'t decorative — it\'s a resonance chamber. Parasol has been broadcasting across the floodplains for 70 million years and hasn\'t stopped yet. Everything in a two-mile radius knows her frequency.',
+    stats:[{label:'Resonance',value:10},{label:'Stamina',value:9},{label:'Speed',value:7},{label:'Crest',value:10}],
+    power:{name:'Crest Call',desc:'Broadcasts at subsonic frequency. Every herd responds. Every predator reconsiders its life choices.'},
+    color:'#F4845F', auroraRgb:'244,132,95',
+    nameGrad:'linear-gradient(135deg,#F4845F 0%,#FFAA88 42%,#FF6B35 85%)',
+    draw:drawParasolFn,
+  },
+  {
+    num:'#013', name:'SPINOS', subtitle:'The River Antihero', game:'Dino Clash',
+    lore:'The apex predator nobody talks about is always the most dangerous one. Spinos operates at the river\'s edge, patient and twice your size. The sail isn\'t for show. The sail doesn\'t need to be for show.',
+    stats:[{label:'Power',value:10},{label:'Patience',value:9},{label:'Stealth',value:8},{label:'Sail',value:10}],
+    power:{name:'River Strike',desc:'Emerges from still water without warning. Precision ambush. Nobody checks the river. That is the problem.'},
+    color:'#7C3AED', auroraRgb:'124,58,237',
+    nameGrad:'linear-gradient(135deg,#7C3AED 0%,#C084FC 42%,#2563EB 85%)',
+    draw:drawSpinosFn,
   },
 ];
 
@@ -770,9 +986,9 @@ export default function TeamPage(){
           <h2 className="section-h">More Characters Incoming</h2>
           <p className="section-body">The crew is expanding. Each new game brings a new legend.</p>
           <div className="locked-grid">
-            <LockedCard num="#009" game="Fossil Hunt" color="#FF8C42"/>
-            <LockedCard num="#010" game="Pangaea"     color="#00D4FF"/>
-            <LockedCard num="#011" game="Dino Derby"  color="#FFD700"/>
+            <LockedCard num="#014" game="Dino Derby"  color="#FF8C42"/>
+            <LockedCard num="#015" game="DinoBlox"    color="#00D4FF"/>
+            <LockedCard num="#016" game="App-a-Day"   color="#FFD700"/>
           </div>
         </div>
 
