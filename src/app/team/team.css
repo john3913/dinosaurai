@@ -357,6 +357,99 @@
   opacity: 0.8;
 }
 
+/* ─── CREW OVERVIEW ─────────────────────────────────────────────────────── */
+.crew-outer {
+  padding: 0 2rem 3rem;
+  max-width: 1160px;
+  margin: 0 auto;
+}
+
+.crew-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+  gap: 1rem;
+  margin-top: 1.75rem;
+}
+
+.crew-card {
+  background: rgba(255,255,255,0.022);
+  border: 1px solid var(--ac20);
+  border-radius: 18px;
+  padding: 1.4rem 1.2rem 1.6rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+  text-decoration: none;
+  transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
+}
+
+.crew-card:hover {
+  border-color: var(--ac);
+  box-shadow: 0 0 30px var(--ac12), 0 16px 40px rgba(0,0,0,0.4);
+  transform: translateY(-4px);
+}
+
+.crew-topbar {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--ac), transparent);
+}
+
+.crew-num {
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  color: var(--ac);
+  opacity: 0.45;
+  font-family: var(--font-jetbrains-mono), monospace;
+  align-self: flex-start;
+}
+
+.crew-abbrev {
+  font-size: 2.4rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0.5rem 0 0.25rem;
+}
+
+.crew-name {
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: var(--ac);
+}
+
+.crew-subtitle {
+  font-size: 0.58rem;
+  font-weight: 400;
+  color: rgba(242,242,243,0.32);
+  letter-spacing: 0.04em;
+  line-height: 1.4;
+}
+
+.crew-game {
+  margin-top: 0.4rem;
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: rgba(242,242,243,0.22);
+  letter-spacing: 0.06em;
+}
+
+.profiles-label {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 0 2rem 1.5rem;
+}
+
 /* ─── RESPONSIVE ─────────────────────────────────────────────────────────── */
 @media (max-width: 820px) {
   .featured-card,
@@ -371,4 +464,7 @@
   .chars-outer { padding: 1rem 1.25rem 4rem; gap: 1.5rem; }
   .team-hero { padding: 9rem 1.5rem 2rem; }
   .locked-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+  .crew-grid { grid-template-columns: repeat(auto-fill, minmax(128px, 1fr)); }
+  .crew-outer { padding: 0 1.25rem 2.5rem; }
+  .profiles-label { padding: 0 1.25rem 1.5rem; }
 }

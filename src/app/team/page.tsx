@@ -266,6 +266,45 @@ const drawSpikesFn:DrawFn=(ctx,cx,cy,ps,ts)=>{
   ctx.restore();
 };
 
+/* ── Pixel art: Stegatlantis (Stegosaurus) ──────────────────────────────── */
+const drawStegatlantisfn:DrawFn=(ctx,cx,cy,ps,ts)=>{
+  const fy=Math.sin(ts*0.0014)*7;
+  ctx.save();ctx.translate(cx,cy+fy);
+  ctx.fillStyle='#06D6A0';
+  const B=(c:number,r:number)=>ctx.fillRect(c*ps-ps*.5,r*ps-ps*.5,ps,ps);
+  // Taller plates — extra bright glow
+  ctx.shadowColor='rgba(6,214,160,0.9)';ctx.shadowBlur=ps*7;
+  ([
+    [-5,-5],[-5,-4],[-5,-3],[-5,-2],
+    [-3,-7],[-3,-6],[-3,-5],[-3,-4],[-3,-3],[-3,-2],
+    [-1,-5],[-1,-4],[-1,-3],[-1,-2],
+    [1,-7],[1,-6],[1,-5],[1,-4],[1,-3],[1,-2],
+    [3,-5],[3,-4],[3,-3],[3,-2],
+    [5,-4],[5,-3],[5,-2],
+  ] as [number,number][]).forEach(([c,r])=>B(c,r));
+  ctx.shadowBlur=ps*4;
+  ([
+    [-7,-1],[-6,-1],[-5,-1],[-4,-1],[-3,-1],[-2,-1],[-1,-1],[0,-1],[1,-1],[2,-1],[3,-1],[4,-1],
+    [-8,0],[-7,0],[-6,0],[-5,0],[-4,0],[-3,0],[-2,0],[-1,0],[0,0],[1,0],[2,0],[3,0],[4,0],[5,0],
+    [-8,1],[-7,1],[-6,1],[-5,1],[-4,1],[-3,1],[-2,1],[-1,1],[0,1],[1,1],[2,1],[3,1],[4,1],[5,1],
+    [-7,2],[-6,2],[-5,2],[-4,2],[-3,2],[-2,2],[-1,2],[0,2],[1,2],[2,2],[3,2],[4,2],
+    [5,-2],[6,-2],[7,-2],
+    [6,-1],[7,-1],[8,-1],
+    [7,0],[8,0],
+    [-9,0],[-10,0],[-11,0],
+    [-9,1],[-10,1],[-11,1],
+    [-10,2],
+    [-11,-2],[-12,-1],
+    [-11,2],[-12,1],
+    [2,3],[3,3],[2,4],[3,4],[2,5],[3,5],
+    [-5,3],[-4,3],[-5,4],[-4,4],[-5,5],[-4,5],
+    [1,6],[2,6],[3,6],[4,6],
+    [-6,6],[-5,6],[-4,6],[-3,6],
+  ] as [number,number][]).forEach(([c,r])=>B(c,r));
+  ctx.shadowBlur=0;ctx.fillStyle='#001a0f';B(7,-1);
+  ctx.restore();
+};
+
 /* ── Pixel art: Tricerapop (Triceratops) ────────────────────────────────── */
 const drawTricerapopFn:DrawFn=(ctx,cx,cy,ps,ts)=>{
   const fy=Math.sin(ts*0.0012)*6;
@@ -457,6 +496,15 @@ const CHARACTERS:CharData[] = [
     nameGrad:'linear-gradient(135deg,#FF2D78 0%,#FF80B0 42%,#FF0066 85%)',
     draw:drawTricerapopFn,
   },
+  {
+    num:'#007', name:'STEGATLANTIS', subtitle:'The Ancient Tide', game:'Pangaea',
+    lore:'From depths uncharted. Stegatlantis predates the name. The plates pulse like bioluminescence in dark water. She was here before the continents separated and she has strong opinions about the current arrangement.',
+    stats:[{label:'Endurance',value:10},{label:'Mystery',value:10},{label:'Patience',value:9},{label:'Plates',value:10}],
+    power:{name:'Tidal Surge',desc:'The ocean has waited 250 million years. So can she. When she moves, everything moves with her.'},
+    color:'#06D6A0', auroraRgb:'6,214,160',
+    nameGrad:'linear-gradient(135deg,#06D6A0 0%,#80FFD6 42%,#00B4D8 85%)',
+    draw:drawStegatlantisfn,
+  },
 ];
 
 /* ── Stat bar ─────────────────────────────────────────────────────────────── */
@@ -508,9 +556,25 @@ function CharCard({data,flip}:{data:CharData;flip?:boolean}){
     </div>
   );
   return(
-    <div className={`featured-card${flip?' flip':''}`} style={vars}>
+    <div id={`char-${data.num.slice(1)}`} className={`featured-card${flip?' flip':''}`} style={vars}>
       {flip?<>{infoSide}{canvasSide}</>:<>{canvasSide}{infoSide}</>}
     </div>
+  );
+}
+
+/* ── Crew card (small overview) ───────────────────────────────────────────── */
+function CrewCard({data}:{data:CharData}){
+  const c=data.color;
+  const vars={'--ac':c,'--ac12':`${c}1F`,'--ac20':`${c}33`} as React.CSSProperties;
+  return(
+    <a className="crew-card" href={`#char-${data.num.slice(1)}`} style={vars}>
+      <div className="crew-topbar"/>
+      <span className="crew-num">{data.num}</span>
+      <div className="crew-abbrev" style={{backgroundImage:data.nameGrad}}>{data.name.slice(0,3)}</div>
+      <div className="crew-name">{data.name}</div>
+      <div className="crew-subtitle">{data.subtitle}</div>
+      <div className="crew-game">{data.game}</div>
+    </a>
   );
 }
 
@@ -563,6 +627,20 @@ export default function TeamPage(){
           </div>
         </section>
 
+        {/* Crew overview — small cards */}
+        <div className="crew-outer">
+          <div className="section-eyebrow">Active Roster</div>
+          <div className="crew-grid">
+            {CHARACTERS.map(char=><CrewCard key={char.num} data={char}/>)}
+          </div>
+        </div>
+
+        <div className="rule"/>
+
+        {/* Full profiles */}
+        <div className="profiles-label">
+          <div className="section-eyebrow">Character Files</div>
+        </div>
         <div className="chars-outer">
           {CHARACTERS.map((char,i)=>(
             <CharCard key={char.num} data={char} flip={i%2===1}/>
@@ -576,9 +654,9 @@ export default function TeamPage(){
           <h2 className="section-h">More Characters Incoming</h2>
           <p className="section-body">The crew is expanding. Each new game brings a new legend.</p>
           <div className="locked-grid">
-            <LockedCard num="#007" game="Fossil Hunt" color="#FF8C42"/>
-            <LockedCard num="#008" game="Pangaea"     color="#00D4FF"/>
-            <LockedCard num="#009" game="Dino Derby"  color="#FFD700"/>
+            <LockedCard num="#008" game="Fossil Hunt" color="#FF8C42"/>
+            <LockedCard num="#009" game="Pangaea"     color="#00D4FF"/>
+            <LockedCard num="#010" game="Dino Derby"  color="#FFD700"/>
           </div>
         </div>
 
