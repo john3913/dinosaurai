@@ -153,12 +153,12 @@ function pixWings(tx, ty, ps, wa) {
   ctx.restore();
 }
 
-// KLAW — Raptor (#004, lime #7EFF50)
+// KLAW — Raptor (#004, orange #FF6B35)
 function drawKlaw(cx, cy, ps, ts) {
   const fy = Math.sin(ts*0.0022)*ps*0.7;
   const ox = cx - ps, oy = cy + fy + ps*2; // visual centering offset
   const B = (c,r) => ctx.fillRect(ox+c*ps-ps*.5, oy+r*ps-ps*.5, ps, ps);
-  ctx.fillStyle = '#7EFF50';
+  ctx.fillStyle = '#FF6B35';
   [[2,-8],[3,-8],[4,-8],[5,-8],[6,-8],
    [1,-7],[2,-7],[3,-7],[4,-7],[5,-7],[6,-7],[7,-7],
    [2,-6],[3,-6],[4,-6],[5,-6],[6,-6],
@@ -175,15 +175,15 @@ function drawKlaw(cx, cy, ps, ts) {
    [-1,3],[0,3],[1,3],[2,3],[3,3],
    [-2,4],[-1,4],[3,4],[4,4],[5,4],[5,3],[6,3],
   ].forEach(([c,r])=>B(c,r));
-  ctx.fillStyle='#051400'; B(5,-7);
+  ctx.fillStyle='#1a0500'; B(5,-7);
 }
 
-// REXX — T-Rex (#002, orange #FF6B35)
+// REXX — T-Rex (#002, lime #7EFF50)
 function drawRexx(cx, cy, ps, ts) {
   const fy = Math.sin(ts*0.002)*ps*0.8;
   const ox = cx - ps*.5, oy = cy + fy + ps;
   const B = (c,r) => ctx.fillRect(ox+c*ps-ps*.5, oy+r*ps-ps*.5, ps, ps);
-  ctx.fillStyle = '#FF6B35';
+  ctx.fillStyle = '#7EFF50';
   [[3,-9],[4,-9],[5,-9],
    [2,-8],[3,-8],[4,-8],[5,-8],[6,-8],
    [1,-7],[2,-7],[3,-7],[4,-7],[5,-7],[6,-7],
@@ -202,7 +202,7 @@ function drawRexx(cx, cy, ps, ts) {
    [-1,6],[0,6],[1,6],[2,6],
    [-2,7],[-1,7],[0,7],[1,7],[2,7],[3,7],
   ].forEach(([c,r])=>B(c,r));
-  ctx.fillStyle='#1a0500'; B(5,-7);
+  ctx.fillStyle='#051400'; B(5,-7);
 }
 
 // BRONTY — Sauropod (#001, cyan #38D4FF)
@@ -270,8 +270,8 @@ function drawEgg(cx, cy, ps, ts) {
 
 // ── GEM DEFINITIONS ───────────────────────────────────
 const GEMS = [
-  { key:'klaw',   color:'#7EFF50', glow:'rgba(126,255,80,.6)',  name:'KLAW',   draw:drawKlaw },
-  { key:'rexx',   color:'#FF6B35', glow:'rgba(255,107,53,.6)',  name:'REXX',   draw:drawRexx },
+  { key:'rexx',   color:'#7EFF50', glow:'rgba(126,255,80,.6)',  name:'REXX',   draw:drawRexx },
+  { key:'klaw',   color:'#FF6B35', glow:'rgba(255,107,53,.6)',  name:'KLAW',   draw:drawKlaw },
   { key:'bronty', color:'#38D4FF', glow:'rgba(56,212,255,.6)',  name:'BRONTY', draw:drawBronty },
   { key:'ptera',  color:'#9B5CF6', glow:'rgba(155,92,246,.6)',  name:'PTERA',  draw:drawPtera },
   { key:'egg',    color:'#FFD060', glow:'rgba(255,208,96,.6)',  name:'EGG',    draw:drawEgg },
