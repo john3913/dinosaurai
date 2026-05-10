@@ -182,19 +182,22 @@ export default function DinosauraiHome() {
           <p className="section-body">Original titles in development. Launching fast, iterating faster, keeping it fun.</p>
           <div className="games-grid">
             {[
-              { color:'green',  icon:'🦖', badge:'Runner · Coming Soon',    title:'Rex Run',    desc:'Infinite dino runner through procedurally generated prehistoric worlds. Obstacles, power-ups, leaderboards.' },
-              { color:'orange', icon:'🧩', badge:'Puzzle · In Progress',    title:'Fossil Hunt',desc:'Dig through layers of ancient earth. Uncover complete skeletons before time runs out. Zen but ruthless.' },
-              { color:'blue',   icon:'⚡', badge:'Battle · Coming Soon',    title:'Dino Clash', desc:'Real-time dino combat with a herd-building mechanic. Evolve traits, conquer territories, dominate.' },
-              { color:'purple', icon:'🌍', badge:'Strategy · Idea Stage',   title:'Pangaea',    desc:'Guide a species through the age of dinosaurs. Survive extinction events, adapt, and dominate the planet.' },
-              { color:'green',  icon:'⌨️', badge:'App · In Progress',       title:'Speed Type', desc:'Typing game with real-time multiplayer. Themed word sets, custom races, and global rankings.' },
-              { color:'orange', icon:'🎲', badge:'Fun Tool · Coming Soon',  title:'App-a-Day',  desc:'Spin the wheel, get a random micro-app idea, build it in 24 hrs. Weekly community drops.' },
+              { color:'green',  icon:'🦕', badge:'Puzzle · Play Now',        title:'DinoTris',   desc:'Dino-themed Tetris with neon glow, ghost pieces, and hold mechanic. Stack &apos;em before extinction hits.', href:'/dinotetris' },
+              { color:'blue',   icon:'🥚', badge:'Match-3 · Play Now',      title:'DinoCrush', desc:'Prehistoric match-3 puzzle. Swap dino gems, chain combos, and clear the board before your moves run out.', href:'/dinocrush' },
+              { color:'orange', icon:'🦖', badge:'Runner · Coming Soon',    title:'Rex Run',    desc:'Infinite dino runner through procedurally generated prehistoric worlds. Obstacles, power-ups, leaderboards.', href:null },
+              { color:'purple', icon:'🧩', badge:'Puzzle · In Progress',    title:'Fossil Hunt',desc:'Dig through layers of ancient earth. Uncover complete skeletons before time runs out. Zen but ruthless.', href:null },
+              { color:'purple', icon:'⚡', badge:'Battle · Coming Soon',    title:'Dino Clash', desc:'Real-time dino combat with a herd-building mechanic. Evolve traits, conquer territories, dominate.', href:null },
+              { color:'green',  icon:'⌨️', badge:'App · In Progress',       title:'Speed Type', desc:'Typing game with real-time multiplayer. Themed word sets, custom races, and global rankings.', href:null },
+              { color:'orange', icon:'🎲', badge:'Fun Tool · Coming Soon',  title:'App-a-Day',  desc:'Spin the wheel, get a random micro-app idea, build it in 24 hrs. Weekly community drops.', href:null },
             ].map((c, i) => (
-              <div key={i} className={`card card-${c.color} in-view`} style={{ transitionDelay: `${i * 90}ms` }}>
+              <div key={i} className={`card card-${c.color} in-view`}
+                onClick={() => c.href && (window.location.href = c.href)}
+                style={{ transitionDelay: `${i * 90}ms`, cursor: c.href ? 'pointer' : 'default' }}>
                 <span className="card-icon">{c.icon}</span>
                 <span className={`card-badge badge-${c.color}`}>{c.badge}</span>
                 <div className="card-title">{c.title}</div>
                 <p className="card-desc">{c.desc}</p>
-                <div className="card-arrow">Play Soon →</div>
+                <div className="card-arrow">{c.href ? 'Play Now →' : 'Play Soon →'}</div>
               </div>
             ))}
           </div>

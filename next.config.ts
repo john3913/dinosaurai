@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
     return [
       { source: "/dinosoar", destination: "/dinosoar.html" },
       { source: "/tremor", destination: "/tremor.html" },
+      { source: "/dinocrush", destination: "/dinocrush.html" },
     ];
   },
 };
