@@ -99,7 +99,7 @@ const drawBrontyFn:DrawFn=(ctx,cx,cy,ps,ts)=>{
 const drawRexxFn:DrawFn=(ctx,cx,cy,ps,ts)=>{
   const fy=Math.sin(ts*0.002)*8;
   ctx.save();ctx.translate(cx,cy+fy);
-  ctx.shadowColor='rgba(255,107,53,0.9)';ctx.shadowBlur=ps*4;ctx.fillStyle='#FF6B35';
+  ctx.shadowColor='rgba(126,255,80,0.9)';ctx.shadowBlur=ps*4;ctx.fillStyle='#7EFF50';
   const B=(c:number,r:number)=>ctx.fillRect(c*ps-ps*.5,r*ps-ps*.5,ps,ps);
   ([
     // skull
@@ -135,7 +135,7 @@ const drawRexxFn:DrawFn=(ctx,cx,cy,ps,ts)=>{
     [-2,7],[-1,7],[0,7],
     [1,7],[2,7],[3,7],
   ] as [number,number][]).forEach(([c,r])=>B(c,r));
-  ctx.shadowBlur=0;ctx.fillStyle='#1a0500';B(5,-7);
+  ctx.shadowBlur=0;ctx.fillStyle='#051400';B(5,-7);
   ctx.restore();
 };
 
@@ -169,43 +169,53 @@ const drawPteraFn:DrawFn=(ctx,cx,cy,ps,ts)=>{
   ctx.restore();
 };
 
-/* ── Pixel art: Klaw (Raptor) ─────────────────────────────────────────────── */
+/* ── Pixel art: Klaw (Velociraptor) ──────────────────────────────────────── */
 const drawKlawFn:DrawFn=(ctx,cx,cy,ps,ts)=>{
   const fy=Math.sin(ts*0.0022)*7;
   ctx.save();ctx.translate(cx,cy+fy);
-  ctx.shadowColor='rgba(126,255,80,0.9)';ctx.shadowBlur=ps*4;ctx.fillStyle='#7EFF50';
+  ctx.shadowColor='rgba(255,107,53,0.9)';ctx.shadowBlur=ps*4;ctx.fillStyle='#FF6B35';
   const B=(c:number,r:number)=>ctx.fillRect(c*ps-ps*.5,r*ps-ps*.5,ps,ps);
   ([
-    // narrow forward head + snout
+    // skull (elongated, narrow — classic velociraptor profile)
+    [3,-9],[4,-9],[5,-9],
     [2,-8],[3,-8],[4,-8],[5,-8],[6,-8],
     [1,-7],[2,-7],[3,-7],[4,-7],[5,-7],[6,-7],[7,-7],
-    [2,-6],[3,-6],[4,-6],[5,-6],[6,-6],
-    [4,-5],[5,-5],[6,-5],[7,-5],
-    // neck
-    [1,-4],[2,-4],[3,-4],
-    [0,-3],[1,-3],[2,-3],[3,-3],
-    // body (slight forward lean)
-    [-1,-2],[0,-2],[1,-2],[2,-2],[3,-2],
-    [-2,-1],[-1,-1],[0,-1],[1,-1],[2,-1],[3,-1],
-    [-2,0],[-1,0],[0,0],[1,0],[2,0],
-    [-1,1],[0,1],[1,1],[2,1],
-    // arms (relatively large)
-    [3,-2],[4,-2],[5,-2],
-    [4,-1],[5,-1],
-    // tail (left-lower)
-    [-3,-1],[-4,-1],[-5,-1],
-    [-3,0],[-4,0],[-5,0],[-6,0],
-    [-5,1],[-6,1],[-7,1],[-7,2],
-    // legs
+    // upper jaw (long snout extending right)
+    [2,-6],[3,-6],[4,-6],[5,-6],[6,-6],[7,-6],[8,-6],
+    [4,-5],[5,-5],[6,-5],[7,-5],[8,-5],[9,-5],
+    // ← OPEN MOUTH at row -4: neck on left only, right side is jaw gap →
+    [0,-4],[1,-4],[2,-4],[3,-4],
+    // lower jaw + neck row -3
+    [-1,-3],[0,-3],[1,-3],[2,-3],
+    [5,-3],[6,-3],[7,-3],[8,-3],[9,-3],
+    // chin
+    [6,-2],[7,-2],[8,-2],
+    // body (pitched forward, compact)
+    [-2,-2],[-1,-2],[0,-2],[1,-2],[2,-2],[3,-2],
+    [-3,-1],[-2,-1],[-1,-1],[0,-1],[1,-1],[2,-1],[3,-1],
+    [-3,0],[-2,0],[-1,0],[0,0],[1,0],[2,0],
+    [-2,1],[-1,1],[0,1],[1,1],[2,1],
     [-1,2],[0,2],[1,2],[2,2],
-    [-1,3],[0,3],
+    // arms (three-fingered, outstretched)
+    [4,-2],[5,-2],[6,-2],
+    [6,-1],[7,-1],
+    [7,-2],[8,-1],[7,0],
+    // tail (stiff horizontal — ossified tendons)
+    [-4,-1],[-5,-1],[-6,-1],[-7,-1],[-8,-1],[-9,-1],
+    [-4,0],[-5,0],[-6,0],[-7,0],[-8,0],[-9,0],[-10,0],
+    [-4,1],[-5,1],[-6,1],[-7,1],[-8,1],
+    // front leg (left, raised running stride)
+    [-2,3],[-1,3],[0,3],
+    [-1,4],[0,4],
+    [-1,5],[0,5],
+    // SICKLE CLAW — killing claw on front foot
+    [-2,5],[-3,5],[-4,5],[-4,4],[-5,4],
+    // back leg (right, planted)
     [1,3],[2,3],[3,3],
-    // feet + sickle claw
-    [-2,4],[-1,4],
-    [3,4],[4,4],[5,4],
-    [5,3],[6,3],
+    [2,4],[3,4],
+    [1,5],[2,5],[3,5],[4,5],
   ] as [number,number][]).forEach(([c,r])=>B(c,r));
-  ctx.shadowBlur=0;ctx.fillStyle='#051400';B(5,-7);
+  ctx.shadowBlur=0;ctx.fillStyle='#1a0500';B(5,-7);
   ctx.restore();
 };
 
@@ -352,8 +362,8 @@ const CHARACTERS:CharData[] = [
     lore:'Rexx doesn\'t stop. Not for obstacles, not for physics, not for any well-meaning bystander who didn\'t get out of the way in time. Running is the only setting.',
     stats:[{label:'Speed',value:9},{label:'Power',value:10},{label:'Grit',value:10},{label:'Tiny Arms',value:2}],
     power:{name:'Rex Charge',desc:'Full-tilt unstoppable sprint. No brakes. No regrets. Teeth optional.'},
-    color:'#FF6B35', auroraRgb:'255,100,40',
-    nameGrad:'linear-gradient(135deg,#FF6B35 0%,#FFB07A 42%,#FF4500 85%)',
+    color:'#7EFF50', auroraRgb:'126,255,80',
+    nameGrad:'linear-gradient(135deg,#7EFF50 0%,#BBFF70 42%,#40FF90 85%)',
     draw:drawRexxFn,
   },
   {
@@ -366,12 +376,12 @@ const CHARACTERS:CharData[] = [
     draw:drawPteraFn,
   },
   {
-    num:'#004', name:'KLAW', subtitle:'The Apex Predator', game:'Dino Clash',
-    lore:'Quick, calculating, and absolutely unnerving. Klaw was the last character designed and the first to be feared. That sickle claw is not decorative.',
+    num:'#004', name:'KLAW', subtitle:'The Apex Hunter', game:'Dino Clash',
+    lore:'Pack hunter. Problem solver. She figured out how to open the door before anyone thought to lock it. Quick, calculating, and absolutely unnerving. The sickle claw is not the most dangerous thing about her.',
     stats:[{label:'Speed',value:9},{label:'Agility',value:10},{label:'Stealth',value:8},{label:'Claw',value:10}],
-    power:{name:'Sickle Strike',desc:'One swipe. Devastating. Prehistoric precision in a single motion.'},
-    color:'#7EFF50', auroraRgb:'126,255,80',
-    nameGrad:'linear-gradient(135deg,#7EFF50 0%,#BBFF70 42%,#40E0FF 85%)',
+    power:{name:'Sickle Strike',desc:'One slash. Devastating. The killing claw curves up and forward — designed for one thing only.'},
+    color:'#FF6B35', auroraRgb:'255,107,53',
+    nameGrad:'linear-gradient(135deg,#FF6B35 0%,#FFB07A 42%,#FF4500 85%)',
     draw:drawKlawFn,
   },
   {
