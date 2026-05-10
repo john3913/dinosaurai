@@ -129,6 +129,7 @@ export default function DinosauraiHome() {
           <a className="nav-logo" href="/">🦕 DINOSAUR<span className="logo-ai">AI</span></a>
           <a className="nav-link" href="#games">Games</a>
           <a className="nav-link" href="#apps">Apps</a>
+          <a className="nav-link" href="/team">Team</a>
           <a className="nav-link" href="/agenticstudio">AgenticStudio</a>
           <button className="nav-btn">Early Access</button>
         </nav>
