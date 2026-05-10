@@ -2734,6 +2734,69 @@ export default function TeamPage(){
           </div>
         </div>
 
+        <div className="rule"/>
+
+        {/* ── Launch Plan ── */}
+        <div className="launch-section" id="launch-plan">
+          <div className="launch-header">
+            <div className="section-eyebrow">App Store Roadmap</div>
+            <h2 className="launch-h">1 Game / Week</h2>
+            <p className="launch-desc">
+              Rolling pipeline — submit the current game, build the next one in parallel.
+              Apple review takes 1–3 days; we don&apos;t wait for approval to start.
+            </p>
+          </div>
+
+          {/* Pipeline diagram */}
+          <div className="pipeline">
+            {['Build','Submit','Review 1–3d','Live ✓'].map((s, i) => (
+              <div className="pipeline-track" key={s}>
+                <div className={`pipeline-node${i === 3 ? ' pipeline-node-live' : ''}`}>{s}</div>
+                {i < 3 && <div className="pipeline-arrow">→</div>}
+              </div>
+            ))}
+          </div>
+
+          {/* Game rows */}
+          <div className="launch-table">
+            {[
+              { week:1, name:'DinoBlox',    mechanic:'Block stacker',     color:'#7EFF50', status:'live'     },
+              { week:2, name:'DinoCrush',   mechanic:'Match-3 puzzle',    color:'#00D4FF', status:'building' },
+              { week:3, name:'Rex Run',     mechanic:'Infinite runner',   color:'#FF6B35', status:'queued'   },
+              { week:4, name:'Speed Type',  mechanic:'Typing challenge',  color:'#9B5CF6', status:'queued'   },
+              { week:5, name:'Fossil Hunt', mechanic:'Dig & reveal',      color:'#BBFF70', status:'queued'   },
+              { week:6, name:'Dino Clash',  mechanic:'Turn-based battle', color:'#FF8C42', status:'queued'   },
+            ].map(g => (
+              <div className="launch-row" key={g.week}>
+                <span className="launch-wk">WK {g.week}</span>
+                <span className="launch-bar" style={{background: `${g.color}22`, borderColor: `${g.color}44`}}/>
+                <span className="launch-name" style={{color: g.color, textShadow: `0 0 18px ${g.color}55`}}>{g.name}</span>
+                <span className="launch-mechanic">{g.mechanic}</span>
+                <span className={`launch-status ls-${g.status}`}>
+                  {g.status === 'live' ? 'LIVE' : g.status === 'building' ? 'BUILDING' : 'QUEUED'}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          {/* Key rules */}
+          <div className="launch-rules">
+            {[
+              { icon:'👆', rule:'Touch controls first', detail:'Keyboard-only Tetris won\'t pass App Store review as a mobile game.' },
+              { icon:'🔒', rule:'Privacy policy required', detail:'Apple demands a URL for every app. Publish at dinosaurai.vercel.app/privacy before submitting.' },
+              { icon:'⚡', rule:'Submit before approval', detail:'Don\'t wait for green light — start building week N+1 the day you submit week N.' },
+            ].map(r => (
+              <div className="launch-rule" key={r.rule}>
+                <span className="launch-rule-icon">{r.icon}</span>
+                <div>
+                  <div className="launch-rule-title">{r.rule}</div>
+                  <div className="launch-rule-detail">{r.detail}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
         <footer>
           <div className="footer-logo">🦕 DINOSAUR<span className="footer-ai">AI</span></div>
           <p className="footer-sub">dinosaurai.vercel.app &nbsp;·&nbsp; 2026</p>
