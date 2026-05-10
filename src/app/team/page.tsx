@@ -562,18 +562,45 @@ function CharCard({data,flip}:{data:CharData;flip?:boolean}){
   );
 }
 
-/* ── Crew card (small overview) ───────────────────────────────────────────── */
-function CrewCard({data}:{data:CharData}){
+/* ── Pokemon-style crew cards ─────────────────────────────────────────────── */
+const TYPE_MAP:Record<string,string>={
+  'DinoSoar':'FLIER','Rex Run':'RUNNER','Speed Type':'SWIFT',
+  'Dino Clash':'FIGHTER','DinoTris':'TACTICIAN','DinoBlox':'BUILDER',
+  'Pangaea':'ANCIENT','Fossil Hunt':'EXPLORER',
+};
+
+function PokeCard({data}:{data:CharData}){
   const c=data.color;
-  const vars={'--ac':c,'--ac12':`${c}1F`,'--ac20':`${c}33`} as React.CSSProperties;
+  const vars={'--ac':c,'--ac12':`${c}1F`,'--ac20':`${c}33`,'--ac30':`${c}4D`,'--ac40':`${c}66`} as React.CSSProperties;
+  const hp=data.stats.reduce((a,s)=>a+s.value,0)*3;
+  const type=TYPE_MAP[data.game]??'PREHISTORIC';
   return(
-    <a className="crew-card" href={`#char-${data.num.slice(1)}`} style={vars}>
-      <div className="crew-topbar"/>
-      <span className="crew-num">{data.num}</span>
-      <div className="crew-abbrev" style={{backgroundImage:data.nameGrad}}>{data.name.slice(0,3)}</div>
-      <div className="crew-name">{data.name}</div>
-      <div className="crew-subtitle">{data.subtitle}</div>
-      <div className="crew-game">{data.game}</div>
+    <a className="poke-card" href={`#char-${data.num.slice(1)}`} style={vars}>
+      <div className="poke-header">
+        <span className="poke-num">{data.num}</span>
+        <span className="poke-type-badge">{type}</span>
+        <span className="poke-hp">HP <strong>{hp}</strong></span>
+      </div>
+      <div className="poke-art">
+        <CharCanvas draw={data.draw} auroraRgb={data.auroraRgb}/>
+        <div className="poke-art-fade"/>
+      </div>
+      <div className="poke-body">
+        <div className="poke-name" style={{backgroundImage:data.nameGrad}}>{data.name}</div>
+        <div className="poke-subtitle">{data.subtitle}</div>
+        <div className="poke-game-row">
+          <span className="poke-dot" style={{background:c}}/>
+          {data.game}
+        </div>
+        <div className="poke-rule"/>
+        <div className="poke-move-label">◆ {data.power.name}</div>
+        <div className="poke-move-desc">{data.power.desc}</div>
+        <div className="poke-rule"/>
+        <div className="poke-footer">
+          <span>{data.num}/{String(CHARACTERS.length).padStart(3,'0')}</span>
+          <span>◆ PREHISTORIC RARE</span>
+        </div>
+      </div>
     </a>
   );
 }
@@ -627,11 +654,11 @@ export default function TeamPage(){
           </div>
         </section>
 
-        {/* Crew overview — small cards */}
-        <div className="crew-outer">
+        {/* Crew overview — pokemon cards */}
+        <div className="pokemon-outer">
           <div className="section-eyebrow">Active Roster</div>
-          <div className="crew-grid">
-            {CHARACTERS.map(char=><CrewCard key={char.num} data={char}/>)}
+          <div className="pokemon-grid">
+            {CHARACTERS.map(char=><PokeCard key={char.num} data={char}/>)}
           </div>
         </div>
 
