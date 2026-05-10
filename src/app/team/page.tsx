@@ -359,6 +359,73 @@ const drawTricerapopFn:DrawFn=(ctx,cx,cy,ps,ts)=>{
   ctx.restore();
 };
 
+/* ── Pixel art: Mossy (Mosasaurus) ─────────────────────────────────────────── */
+const drawMossyfn:DrawFn=(ctx,cx,cy,ps,ts)=>{
+  const fy=Math.sin(ts*0.0009)*5;
+  ctx.save();ctx.translate(cx,cy+fy);
+  ctx.fillStyle='#00843D';
+  const B=(c:number,r:number)=>ctx.fillRect(c*ps-ps*.5,r*ps-ps*.5,ps,ps);
+  ctx.shadowColor='rgba(0,132,61,0.9)';ctx.shadowBlur=ps*4;
+  // ── long streamlined body ──
+  ([
+    [-10,-1],[-9,-1],[-8,-1],[-7,-1],[-6,-1],[-5,-1],[-4,-1],[-3,-1],[-2,-1],[-1,-1],[0,-1],[1,-1],[2,-1],[3,-1],
+    [-11,0],[-10,0],[-9,0],[-8,0],[-7,0],[-6,0],[-5,0],[-4,0],[-3,0],[-2,0],[-1,0],[0,0],[1,0],[2,0],[3,0],[4,0],
+    [-10,1],[-9,1],[-8,1],[-7,1],[-6,1],[-5,1],[-4,1],[-3,1],[-2,1],[-1,1],[0,1],[1,1],[2,1],[3,1],
+  ] as [number,number][]).forEach(([c,r])=>B(c,r));
+  // ── skull ──
+  ([
+    [3,-4],[4,-4],[5,-4],[6,-4],[7,-4],
+    [3,-3],[4,-3],[5,-3],[6,-3],[7,-3],[8,-3],
+    [3,-2],[4,-2],[5,-2],[6,-2],[7,-2],[8,-2],[9,-2],
+    // upper jaw extends far right
+    [7,-1],[8,-1],[9,-1],[10,-1],[11,-1],
+  ] as [number,number][]).forEach(([c,r])=>B(c,r));
+  // ── open mouth: throat left, gap center, lower jaw right ──
+  ([
+    // throat (left continuous)
+    [3,0],[4,0],[5,0],
+    // lower jaw
+    [7,1],[8,1],[9,1],[10,1],[11,1],[12,1],
+    // lower jaw tip curls up
+    [11,0],[12,0],
+    // chin
+    [8,2],[9,2],[10,2],[11,2],
+  ] as [number,number][]).forEach(([c,r])=>B(c,r));
+  // ── front upper flipper ──
+  ([
+    [-1,-2],[0,-2],[1,-2],[2,-2],
+    [0,-3],[1,-3],
+  ] as [number,number][]).forEach(([c,r])=>B(c,r));
+  // ── front lower flipper ──
+  ([
+    [-1,2],[0,2],[1,2],[2,2],
+    [0,3],[1,3],
+  ] as [number,number][]).forEach(([c,r])=>B(c,r));
+  // ── rear upper flipper ──
+  ([
+    [-7,-2],[-6,-2],[-5,-2],
+    [-6,-3],
+  ] as [number,number][]).forEach(([c,r])=>B(c,r));
+  // ── rear lower flipper ──
+  ([
+    [-7,2],[-6,2],[-5,2],
+    [-6,3],
+  ] as [number,number][]).forEach(([c,r])=>B(c,r));
+  // ── tail taper ──
+  ([
+    [-11,-1],[-12,0],[-13,0],
+    [-12,1],
+  ] as [number,number][]).forEach(([c,r])=>B(c,r));
+  // ── forked tail fin ──
+  ctx.shadowBlur=ps*7;
+  ([
+    [-13,-1],[-14,-1],[-14,-2],
+    [-13,1],[-14,1],[-14,2],
+  ] as [number,number][]).forEach(([c,r])=>B(c,r));
+  ctx.shadowBlur=0;ctx.fillStyle='#001a0d';B(6,-3);
+  ctx.restore();
+};
+
 /* ── Generic character canvas ──────────────────────────────────────────────── */
 function CharCanvas({ draw, auroraRgb }:{ draw:DrawFn; auroraRgb:string }) {
   const ref = useRef<HTMLCanvasElement>(null);
@@ -504,6 +571,15 @@ const CHARACTERS:CharData[] = [
     color:'#06D6A0', auroraRgb:'6,214,160',
     nameGrad:'linear-gradient(135deg,#06D6A0 0%,#80FFD6 42%,#00B4D8 85%)',
     draw:drawStegatlantisfn,
+  },
+  {
+    num:'#008', name:'MOSSY', subtitle:'The Ancient Leviathan', game:'Fossil Hunt',
+    lore:'She was the ocean. All of it. Mossy patrolled warm Cretaceous seas before the concept of "too big" was invented. Now she surfaces once in a while to remind everyone that the deep still has opinions. They are not gentle opinions.',
+    stats:[{label:'Power',value:10},{label:'Depth',value:10},{label:'Speed',value:8},{label:'Jaw Force',value:10}],
+    power:{name:'Abyss Surge',desc:'Rises from the dark without warning. One snap. Gone. The sea forgets nothing.'},
+    color:'#00843D', auroraRgb:'0,132,61',
+    nameGrad:'linear-gradient(135deg,#00843D 0%,#44D17A 42%,#00C9A0 85%)',
+    draw:drawMossyfn,
   },
 ];
 
@@ -694,9 +770,9 @@ export default function TeamPage(){
           <h2 className="section-h">More Characters Incoming</h2>
           <p className="section-body">The crew is expanding. Each new game brings a new legend.</p>
           <div className="locked-grid">
-            <LockedCard num="#008" game="Fossil Hunt" color="#FF8C42"/>
-            <LockedCard num="#009" game="Pangaea"     color="#00D4FF"/>
-            <LockedCard num="#010" game="Dino Derby"  color="#FFD700"/>
+            <LockedCard num="#009" game="Fossil Hunt" color="#FF8C42"/>
+            <LockedCard num="#010" game="Pangaea"     color="#00D4FF"/>
+            <LockedCard num="#011" game="Dino Derby"  color="#FFD700"/>
           </div>
         </div>
 
