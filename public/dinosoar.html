@@ -653,13 +653,37 @@ function render(ts){
     ctx.quadraticCurveTo(tx,H-GNDH-th,tx+tw2,H-GNDH+2);ctx.fill();
   }
 
-  // Ground
-  ctx.fillStyle='#060912';ctx.fillRect(0,H-GNDH,W,GNDH);
-  ctx.fillStyle='#0A0F1E';ctx.fillRect(0,H-GNDH,W,3);
-  ctx.fillStyle='rgba(0,200,255,.28)';ctx.fillRect(0,H-GNDH,W,1.5);
-  ctx.fillStyle='rgba(0,0,0,.22)';
-  const goff2=scrollX%82;
-  for(let gx=-goff2;gx<W+82;gx+=82)ctx.fillRect(gx,H-GNDH+5,36,2);
+  // Water
+  {
+    const wOff=ts*.0013,wBase=H-GNDH;
+    const wY=x=>wBase+Math.sin(x*.016+wOff)*5.5+Math.sin(x*.032-wOff*1.4)*3+Math.sin(x*.007+wOff*.45)*7;
+    // Body
+    ctx.beginPath();ctx.moveTo(0,H);
+    for(let x=0;x<=W;x+=3)ctx.lineTo(x,wY(x));
+    ctx.lineTo(W,H);ctx.closePath();
+    const wBG=ctx.createLinearGradient(0,wBase,0,H);
+    wBG.addColorStop(0,'rgba(0,60,105,.97)');wBG.addColorStop(.3,'rgba(0,28,62,.99)');wBG.addColorStop(1,'#010912');
+    ctx.fillStyle=wBG;ctx.fill();
+    // Caustic light blobs
+    const rOff=scrollX*.3;ctx.save();
+    for(let i=0;i<6;i++){
+      const rx=((i*175+40-rOff)%(W+200))-60;
+      const ry=wBase+GNDH*(.28+(i*.13)%.4)+Math.sin(ts/2200+i*1.4)*5;
+      const rr=42+(i*19%32);
+      const rG=ctx.createRadialGradient(rx,ry,0,rx,ry,rr);
+      rG.addColorStop(0,'rgba(0,175,255,.09)');rG.addColorStop(1,'rgba(0,0,0,0)');
+      ctx.fillStyle=rG;ctx.beginPath();ctx.ellipse(rx,ry,rr,rr*.3,0,0,Math.PI*2);ctx.fill();
+    }
+    ctx.restore();
+    // Glowing surface line
+    ctx.save();
+    ctx.beginPath();
+    for(let x=0;x<=W;x+=3){x===0?ctx.moveTo(x,wY(x)):ctx.lineTo(x,wY(x));}
+    ctx.shadowColor='#00CCFF';ctx.shadowBlur=12;
+    ctx.strokeStyle='rgba(0,215,255,.7)';ctx.lineWidth=1.8;ctx.stroke();
+    ctx.shadowBlur=3;ctx.strokeStyle='rgba(190,248,255,.45)';ctx.lineWidth=.85;ctx.stroke();
+    ctx.restore();
+  }
 
   // Speed lines
   if(phase==='playing'){
