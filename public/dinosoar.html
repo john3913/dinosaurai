@@ -705,17 +705,17 @@ function render(ts){
       scoreEdgeG.addColorStop(0,'#7EFF50');scoreEdgeG.addColorStop(.2,'#00FFCC');
       scoreEdgeG.addColorStop(.4,'#38D4FF');scoreEdgeG.addColorStop(.6,'#9B5CF6');
       scoreEdgeG.addColorStop(.8,'#FFD060');scoreEdgeG.addColorStop(1,'#7EFF50');
-      const bw=2+scorePulse*5;
+      const bw=2+scorePulse*5.5;
       ctx.save();
       // Outer bloom halo — wide, soft, low-alpha
-      ctx.shadowColor='rgba(126,255,80,.7)';ctx.shadowBlur=36*scorePulse;
-      ctx.strokeStyle=scoreEdgeG;ctx.lineWidth=bw*2;ctx.globalAlpha=scorePulse*.18;ctx.stroke();
+      ctx.shadowColor='rgba(126,255,80,.7)';ctx.shadowBlur=40*scorePulse;
+      ctx.strokeStyle=scoreEdgeG;ctx.lineWidth=bw*2;ctx.globalAlpha=scorePulse*.2;ctx.stroke();
       ctx.globalAlpha=1;
       // Mid glow pass
-      ctx.shadowColor='rgba(56,212,255,.9)';ctx.shadowBlur=22*scorePulse;
+      ctx.shadowColor='rgba(56,212,255,.9)';ctx.shadowBlur=24*scorePulse;
       ctx.strokeStyle=scoreEdgeG;ctx.lineWidth=bw;ctx.stroke();
       // Crisp inner edge
-      ctx.shadowBlur=6*scorePulse;ctx.lineWidth=bw*.35;ctx.stroke();
+      ctx.shadowBlur=6.6*scorePulse;ctx.lineWidth=bw*.35;ctx.stroke();
       ctx.restore();
     } else {
       ctx.save();ctx.shadowColor='rgba(56,212,255,.45)';ctx.shadowBlur=18;
@@ -1095,7 +1095,7 @@ function render(ts){
     const countT=Math.min(1,Math.max(0,(deadT-.55)/.55));
     const displayScore=Math.round(score*(1-Math.pow(1-countT,3)));
     // "SCORE" eyebrow — small, above the number
-    const eyeSz=clamp(H*.028,10,18);
+    const eyeSz=clamp(H*.032,12,22);
     const eyeY=snCy-snSz*.54-clamp(H*.018,8,18);
     ctx.save();ctx.textBaseline='middle';
     ctx.font=`700 ${eyeSz}px 'Rajdhani',sans-serif`;
@@ -1119,14 +1119,18 @@ function render(ts){
     const btnTW=ctx.measureText('TAP TO FLAP').width+_rPadX2*2;
     const cardGap=clamp(W*.025,8,14);
     const cardW=(btnTW-cardGap)/2;
-    const cardH=clamp(H*.125,56,92);
+    const cardH=clamp(H*.14,60,100);
     const cardsX=scx-btnTW/2;
     const cardsY=snCy+snSz*.54+clamp(H*.025,12,22);
     const cardR=10;
-    const cLblSz=clamp(cardH*.175,9,15);
-    const cNumSz=clamp(cardH*.55,26,50);
-    const cLblY=cardsY+cardH*.27;
-    const cNumY=cardsY+cardH*.75;
+    const cLblSz=clamp(cardH*.2,10,17);
+    const cNumSz=clamp(cardH*.6,28,56);
+    // Equal top/bottom padding — computed from actual visual heights
+    const _vc=0.72,_ig=clamp(cardH*.05,3,6);
+    const _tv=cLblSz*_vc+_ig+cNumSz*_vc;
+    const _pad=Math.max(3,(cardH-_tv)/2);
+    const cLblY=cardsY+_pad+cLblSz*_vc/2;
+    const cNumY=cardsY+cardH-_pad-cNumSz*_vc/2;
     // Card 1 — LEVEL (cool rainbow)
     const c1X=cardsX;
     ctx.fillStyle='rgba(4,10,24,.92)';ctx.beginPath();ctx.roundRect(c1X,cardsY,cardW,cardH,cardR);ctx.fill();
