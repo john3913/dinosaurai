@@ -209,6 +209,52 @@ const drawKlawFn:DrawFn=(ctx,cx,cy,ps,ts)=>{
   ctx.restore();
 };
 
+/* ── Pixel art: Spikes (Stegosaurus) ─────────────────────────────────────── */
+const drawSpikesFn:DrawFn=(ctx,cx,cy,ps,ts)=>{
+  const fy=Math.sin(ts*0.0015)*7;
+  ctx.save();ctx.translate(cx,cy+fy);
+  ctx.fillStyle='#BBFF70';
+  const B=(c:number,r:number)=>ctx.fillRect(c*ps-ps*.5,r*ps-ps*.5,ps,ps);
+  // Back plates — extra bright glow for the iconic dorsal plates
+  ctx.shadowColor='rgba(187,255,112,0.9)';ctx.shadowBlur=ps*7;
+  ([
+    [-5,-4],[-5,-3],[-5,-2],
+    [-3,-6],[-3,-5],[-3,-4],[-3,-3],[-3,-2],
+    [-1,-4],[-1,-3],[-1,-2],
+    [1,-6],[1,-5],[1,-4],[1,-3],[1,-2],
+    [3,-4],[3,-3],[3,-2],
+  ] as [number,number][]).forEach(([c,r])=>B(c,r));
+  ctx.shadowBlur=ps*4;
+  ([
+    // body (wide horizontal quadruped)
+    [-7,-1],[-6,-1],[-5,-1],[-4,-1],[-3,-1],[-2,-1],[-1,-1],[0,-1],[1,-1],[2,-1],[3,-1],[4,-1],
+    [-8,0],[-7,0],[-6,0],[-5,0],[-4,0],[-3,0],[-2,0],[-1,0],[0,0],[1,0],[2,0],[3,0],[4,0],[5,0],
+    [-8,1],[-7,1],[-6,1],[-5,1],[-4,1],[-3,1],[-2,1],[-1,1],[0,1],[1,1],[2,1],[3,1],[4,1],[5,1],
+    [-7,2],[-6,2],[-5,2],[-4,2],[-3,2],[-2,2],[-1,2],[0,2],[1,2],[2,2],[3,2],[4,2],
+    // head (small, right)
+    [5,-2],[6,-2],[7,-2],
+    [6,-1],[7,-1],[8,-1],
+    [7,0],[8,0],
+    // tail (left, tapering)
+    [-9,-1],[-10,-1],
+    [-9,0],[-10,0],[-11,0],
+    [-9,1],[-10,1],[-11,1],
+    [-10,2],
+    // thagomizer spikes
+    [-11,-2],[-12,-1],
+    [-11,2],[-12,1],
+    // front legs
+    [2,3],[3,3],[2,4],[3,4],[2,5],[3,5],
+    // rear legs
+    [-5,3],[-4,3],[-5,4],[-4,4],[-5,5],[-4,5],
+    // feet
+    [1,6],[2,6],[3,6],[4,6],
+    [-6,6],[-5,6],[-4,6],[-3,6],
+  ] as [number,number][]).forEach(([c,r])=>B(c,r));
+  ctx.shadowBlur=0;ctx.fillStyle='#0a1400';B(7,-1);
+  ctx.restore();
+};
+
 /* ── Generic character canvas ──────────────────────────────────────────────── */
 function CharCanvas({ draw, auroraRgb }:{ draw:DrawFn; auroraRgb:string }) {
   const ref = useRef<HTMLCanvasElement>(null);
@@ -327,6 +373,15 @@ const CHARACTERS:CharData[] = [
     color:'#7EFF50', auroraRgb:'126,255,80',
     nameGrad:'linear-gradient(135deg,#7EFF50 0%,#BBFF70 42%,#40E0FF 85%)',
     draw:drawKlawFn,
+  },
+  {
+    num:'#005', name:'SPIKES', subtitle:'The Deliberate', game:'DinoTris',
+    lore:'Armored. Patient. Inevitable. Spikes doesn\'t panic-drop. She reads the board, waits for the moment, then lands the perfect T-spin like she knew it all along. Those plates aren\'t just for show.',
+    stats:[{label:'Defense',value:10},{label:'Patience',value:10},{label:'Style',value:8},{label:'Plates',value:10}],
+    power:{name:'Plate Slam',desc:'Clears four lines simultaneously. No celebration. Just a slow, satisfied tail swing.'},
+    color:'#BBFF70', auroraRgb:'187,255,112',
+    nameGrad:'linear-gradient(135deg,#BBFF70 0%,#EEFF99 42%,#40E0FF 85%)',
+    draw:drawSpikesFn,
   },
 ];
 
@@ -447,8 +502,9 @@ export default function TeamPage(){
           <h2 className="section-h">More Characters Incoming</h2>
           <p className="section-body">The crew is expanding. Each new game brings a new legend.</p>
           <div className="locked-grid">
-            <LockedCard num="#005" game="DinoTris"    color="#BBFF70"/>
-            <LockedCard num="#006" game="Fossil Hunt"  color="#FF8C42"/>
+            <LockedCard num="#006" game="Fossil Hunt" color="#FF8C42"/>
+            <LockedCard num="#007" game="Rex Run"     color="#FF6B35"/>
+            <LockedCard num="#008" game="Pangaea"     color="#00D4FF"/>
           </div>
         </div>
 
