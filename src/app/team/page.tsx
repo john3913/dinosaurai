@@ -655,8 +655,21 @@ export default function TeamPage(){
         </section>
 
         {/* Crew overview — pokemon cards */}
-        <div className="pokemon-outer" style={{outline:'4px solid red'}}>
-          <div className="section-eyebrow">Active Roster</div>
+        <div className="pokemon-outer">
+          <div className="roster-header">
+            <div className="roster-rule"/>
+            <div className="roster-title-group">
+              <div className="roster-eyebrow">◆ DINOSAURAI UNIVERSE</div>
+              <h2 className="roster-title">ACTIVE ROSTER</h2>
+              <div className="roster-dots">
+                {CHARACTERS.map((char,i)=>(
+                  <span key={char.num} className="roster-dot" style={{background:char.color,boxShadow:`0 0 8px ${char.color}`,animationDelay:`${i*0.22}s`}}/>
+                ))}
+              </div>
+              <div className="roster-count">{String(CHARACTERS.length).padStart(2,'0')} PREHISTORIC LEGENDS</div>
+            </div>
+            <div className="roster-rule"/>
+          </div>
           <div className="pokemon-grid">
             {CHARACTERS.map(char=><PokeCard key={char.num} data={char}/>)}
           </div>
