@@ -2760,12 +2760,13 @@ export default function TeamPage(){
           {/* Game rows */}
           <div className="launch-table">
             {[
-              { week:1, name:'DinoBlox',    mechanic:'Block stacker',     color:'#7EFF50', status:'live'     },
-              { week:2, name:'DinoCrush',   mechanic:'Match-3 puzzle',    color:'#00D4FF', status:'building' },
-              { week:3, name:'Rex Run',     mechanic:'Infinite runner',   color:'#FF6B35', status:'queued'   },
-              { week:4, name:'Speed Type',  mechanic:'Typing challenge',  color:'#9B5CF6', status:'queued'   },
-              { week:5, name:'Fossil Hunt', mechanic:'Dig & reveal',      color:'#BBFF70', status:'queued'   },
-              { week:6, name:'Dino Clash',  mechanic:'Turn-based battle', color:'#FF8C42', status:'queued'   },
+              { week:1, name:'DinoSoar',    mechanic:'Flappy flier',      color:'#7EFF50', status:'live'     },
+              { week:2, name:'DinoBlox',    mechanic:'Block stacker',     color:'#00D4FF', status:'live'     },
+              { week:3, name:'DinoCrush',   mechanic:'Match-3 puzzle',    color:'#FF6B35', status:'building' },
+              { week:4, name:'Rex Run',     mechanic:'Infinite runner',   color:'#9B5CF6', status:'queued'   },
+              { week:5, name:'Speed Type',  mechanic:'Typing challenge',  color:'#BBFF70', status:'queued'   },
+              { week:6, name:'Fossil Hunt', mechanic:'Dig & reveal',      color:'#FF8C42', status:'queued'   },
+              { week:7, name:'Dino Clash',  mechanic:'Turn-based battle', color:'#FF6B35', status:'queued'   },
             ].map(g => (
               <div className="launch-row" key={g.week}>
                 <span className="launch-wk">WK {g.week}</span>
