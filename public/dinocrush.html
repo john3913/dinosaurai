@@ -542,8 +542,8 @@ function drawGem(cx, cy, size, gemIdx, alpha, selected, flashT, swapOff, ts) {
 
   // Dark gem background with subtle tint
   const bg=ctx.createLinearGradient(x,y,x+w,y+h);
-  bg.addColorStop(0,lighten(gem.color,.1)+'28');
-  bg.addColorStop(1,'rgba(4,8,16,.9)');
+  bg.addColorStop(0,gem.color+'22');
+  bg.addColorStop(1,'rgba(4,8,16,.88)');
   drawRoundRect(x,y,w,h,r);
   ctx.fillStyle=bg; ctx.fill();
 
@@ -622,7 +622,7 @@ function drawBoard(ts) {
     let cx2=GX+c*CS+CS/2, cy2=GY+r*CS+CS/2, alpha=1;
     if(fall){
       const ease=fall.t<.6?fall.t/.6:1;
-      cy2=(GY+fall.fromY)+(GY+fall.toY+CS/2-(GY+fall.fromY))*ease+CS/2;
+      cy2=GY+fall.fromY+CS/2+ease*(fall.toY-fall.fromY);
       alpha=Math.min(1,fall.t*3);
     }
     drawGem(cx2,cy2,CS,board[r][c],alpha,isSel,flashT,swapOff,ts);
