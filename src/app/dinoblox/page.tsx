@@ -680,14 +680,136 @@ function drawMiniPiece(
   if (type) drawDinoPiece(ctx, ox, oy, shape, color, type, cs);
 }
 
-/* ─── Background: rainbow dinos + sparks ─── */
-const BKGD_DINOS = [
-  { emoji: '🦕', rx: 0.05, ry: 0.36, sz: 220, spd: 0.42, ph: 0.0,  flip: false },
-  { emoji: '🦖', rx: 0.94, ry: 0.28, sz: 200, spd: 0.60, ph: 2.2,  flip: true  },
-  { emoji: '🦕', rx: 0.89, ry: 0.74, sz: 175, spd: 0.38, ph: 4.5,  flip: true  },
-  { emoji: '🦖', rx: 0.06, ry: 0.76, sz: 160, spd: 0.52, ph: 1.7,  flip: false },
-  { emoji: '🦕', rx: 0.50, ry: 0.04, sz: 150, spd: 0.35, ph: 3.1,  flip: false },
-  { emoji: '🦖', rx: 0.50, ry: 0.96, sz: 140, spd: 0.48, ph: 5.4,  flip: true  },
+/* ─── Team character pixel art (from /team page) ──────────────────────────── */
+
+/* Wing pixel offsets — upper membrane and lower membrane */
+const _WU: readonly [number,number][] = [
+  [0,-1],[0,0],[-1,-1],[-1,0],[-2,-2],[-2,-1],[-3,-2],[-3,-1],
+  [-4,-3],[-4,-2],[-4,-1],[-5,-3],[-5,-2],[-5,-1],
+  [-6,-3],[-6,-2],[-6,-1],[-7,-2],[-7,-1],[-8,-2],[-8,-1],[-9,-1],[-10,-1],
+];
+const _WL: readonly [number,number][] = [
+  [0,0],[0,1],[-1,0],[-1,1],[-2,1],[-2,2],[-3,1],[-3,2],
+  [-4,1],[-4,2],[-4,3],[-5,1],[-5,2],[-5,3],
+  [-6,1],[-6,2],[-6,3],[-7,1],[-7,2],[-8,1],[-8,2],[-9,1],[-10,1],
+];
+function _wings(ctx: CanvasRenderingContext2D, ps: number, wa: number, px: number, py: number) {
+  const P = (c: number, r: number) => ctx.fillRect(c*ps, r*ps, ps, ps);
+  ctx.save(); ctx.translate(px,py); ctx.rotate(-wa); _WU.forEach(([c,r])=>P(c,r)); ctx.restore();
+  ctx.save(); ctx.translate(px,py); ctx.rotate(wa);  _WL.forEach(([c,r])=>P(c,r)); ctx.restore();
+}
+
+type BgDrawFn = (ctx: CanvasRenderingContext2D, cx: number, cy: number, ps: number, ts: number) => void;
+
+/* BRONTY — sauropod with wings, cyan */
+const _drawBronty: BgDrawFn = (ctx, cx, cy, ps, ts) => {
+  const fy = Math.sin(ts*0.0018)*11, wa = Math.sin(ts*0.003)*(52*Math.PI/180);
+  ctx.save(); ctx.translate(cx, cy+fy);
+  ctx.shadowColor = 'rgba(56,212,255,0.85)'; ctx.shadowBlur = ps*3.5; ctx.fillStyle = '#38D4FF';
+  const B = (c: number, r: number) => ctx.fillRect(c*ps-ps*.5, r*ps-ps*.5, ps, ps);
+  _wings(ctx, ps, wa, -3.5*ps, -ps);
+  ([ [-3,-2],[-2,-2],[-1,-2],[0,-2],[1,-2],[2,-2],[3,-2],[4,-2],[5,-2],
+     [-4,-1],[-3,-1],[-2,-1],[-1,-1],[0,-1],[1,-1],[2,-1],[3,-1],[4,-1],
+     [-4,0],[-3,0],[-2,0],[-1,0],[0,0],[1,0],[2,0],[3,0],[4,0],
+     [-4,1],[-3,1],[-2,1],[-1,1],[0,1],[1,1],[2,1],[3,1],[4,1],
+     [-3,2],[-2,2],[-1,2],[0,2],[1,2],[2,2],[3,2],
+     [3,-3],[4,-3],[5,-3],[3,-4],[4,-4],[5,-4],[3,-5],[4,-5],[3,-6],[4,-6],[3,-7],[4,-7],
+     [3,-8],[4,-8],[5,-8],[6,-8],[4,-9],[5,-9],[6,-9],
+     [-5,-1],[-6,-1],[-7,-1],[-5,0],[-6,0],[-7,0],[-7,1],[-8,1],[-9,2],
+     [2,3],[3,3],[2,4],[3,4],[2,5],[3,5],[-3,3],[-2,3],[-3,4],[-2,4],[-3,5],[-2,5],
+  ] as [number,number][]).forEach(([c,r]) => B(c,r));
+  ctx.shadowBlur = 0; ctx.fillStyle = '#001848'; B(5,-9);
+  ctx.restore();
+};
+
+/* REXX — T-Rex, orange */
+const _drawRexx: BgDrawFn = (ctx, cx, cy, ps, ts) => {
+  const fy = Math.sin(ts*0.002)*8;
+  ctx.save(); ctx.translate(cx, cy+fy);
+  ctx.shadowColor = 'rgba(255,107,53,0.85)'; ctx.shadowBlur = ps*3.5; ctx.fillStyle = '#FF6B35';
+  const B = (c: number, r: number) => ctx.fillRect(c*ps-ps*.5, r*ps-ps*.5, ps, ps);
+  ([
+    [3,-9],[4,-9],[5,-9],
+    [2,-8],[3,-8],[4,-8],[5,-8],[6,-8],
+    [1,-7],[2,-7],[3,-7],[4,-7],[5,-7],[6,-7],
+    [1,-6],[2,-6],[3,-6],[4,-6],[5,-6],
+    [3,-5],[4,-5],[5,-5],[6,-5],[7,-5],
+    [4,-3],[5,-3],[6,-3],[7,-3],
+    [1,-2],[2,-2],[3,-2],
+    [0,-1],[1,-1],[2,-1],[3,-1],
+    [-1,0],[0,0],[1,0],[2,0],[3,0],
+    [-2,1],[-1,1],[0,1],[1,1],[2,1],[3,1],
+    [-2,2],[-1,2],[0,2],[1,2],[2,2],
+    [-1,3],[0,3],[1,3],[2,3],
+    [4,0],[5,0],[5,1],
+    [-3,1],[-4,1],[-5,1],[-3,2],[-4,2],[-5,2],[-6,2],
+    [-5,3],[-6,3],[-7,3],[-7,4],
+    [-1,4],[0,4],[1,4],[2,4],[-1,5],[0,5],[1,5],[2,5],
+    [-1,6],[0,6],[1,6],[2,6],
+    [-2,7],[-1,7],[0,7],[1,7],[2,7],[3,7],
+  ] as [number,number][]).forEach(([c,r]) => B(c,r));
+  ctx.shadowBlur = 0; ctx.fillStyle = '#1a0500'; B(5,-7);
+  ctx.restore();
+};
+
+/* PTERA — pterodactyl, purple */
+const _drawPtera: BgDrawFn = (ctx, cx, cy, ps, ts) => {
+  const fy = Math.sin(ts*0.002)*9, wa = Math.sin(ts*0.0035)*(50*Math.PI/180);
+  ctx.save(); ctx.translate(cx, cy+fy);
+  ctx.shadowColor = 'rgba(155,92,246,0.85)'; ctx.shadowBlur = ps*3.5; ctx.fillStyle = '#9B5CF6';
+  const B = (c: number, r: number) => ctx.fillRect(c*ps-ps*.5, r*ps-ps*.5, ps, ps);
+  _wings(ctx, ps, wa, -3*ps, -ps);
+  ([
+    [-2,-1],[-1,-1],[0,-1],[1,-1],[2,-1],
+    [-2,0],[-1,0],[0,0],[1,0],[2,0],
+    [-1,1],[0,1],[1,1],[0,2],[-1,2],
+    [-1,-3],[-2,-3],[-3,-3],[-4,-3],[-5,-3],
+    [-1,-4],[-2,-4],[-3,-4],
+    [2,-2],[3,-2],[4,-2],[2,-3],[3,-3],[4,-3],
+    [5,-3],[6,-3],[7,-3],[8,-3],[5,-2],[6,-2],
+    [0,3],[1,3],[-1,3],[1,4],[2,4],
+  ] as [number,number][]).forEach(([c,r]) => B(c,r));
+  ctx.shadowBlur = 0; ctx.fillStyle = '#0a001a'; B(3,-3);
+  ctx.restore();
+};
+
+/* KLAW — raptor, lime green */
+const _drawKlaw: BgDrawFn = (ctx, cx, cy, ps, ts) => {
+  const fy = Math.sin(ts*0.0022)*7;
+  ctx.save(); ctx.translate(cx, cy+fy);
+  ctx.shadowColor = 'rgba(126,255,80,0.85)'; ctx.shadowBlur = ps*3.5; ctx.fillStyle = '#7EFF50';
+  const B = (c: number, r: number) => ctx.fillRect(c*ps-ps*.5, r*ps-ps*.5, ps, ps);
+  ([
+    [2,-8],[3,-8],[4,-8],[5,-8],[6,-8],
+    [1,-7],[2,-7],[3,-7],[4,-7],[5,-7],[6,-7],[7,-7],
+    [2,-6],[3,-6],[4,-6],[5,-6],[6,-6],
+    [4,-5],[5,-5],[6,-5],[7,-5],
+    [1,-4],[2,-4],[3,-4],[0,-3],[1,-3],[2,-3],[3,-3],
+    [-1,-2],[0,-2],[1,-2],[2,-2],[3,-2],
+    [-2,-1],[-1,-1],[0,-1],[1,-1],[2,-1],[3,-1],
+    [-2,0],[-1,0],[0,0],[1,0],[2,0],
+    [-1,1],[0,1],[1,1],[2,1],
+    [3,-2],[4,-2],[5,-2],[4,-1],[5,-1],
+    [-3,-1],[-4,-1],[-5,-1],[-3,0],[-4,0],[-5,0],[-6,0],
+    [-5,1],[-6,1],[-7,1],[-7,2],
+    [-1,2],[0,2],[1,2],[2,2],
+    [-1,3],[0,3],[1,3],[2,3],[3,3],
+    [-2,4],[-1,4],[3,4],[4,4],[5,4],[5,3],[6,3],
+  ] as [number,number][]).forEach(([c,r]) => B(c,r));
+  ctx.shadowBlur = 0; ctx.fillStyle = '#051400'; B(5,-7);
+  ctx.restore();
+};
+
+/*
+  4 characters positioned around the board edges, all facing inward.
+  rx/ry = fractional screen position, ps = pixel size, flip = horizontal mirror,
+  alpha = overall opacity (low so they don't distract from gameplay).
+*/
+const BKGD_CHARS = [
+  { draw: _drawBronty, rx: 0.09, ry: 0.38, ps: 8,  flip: false, alpha: 0.18 }, // left upper  → faces right
+  { draw: _drawPtera,  rx: 0.14, ry: 0.76, ps: 7,  flip: false, alpha: 0.14 }, // left lower  → faces right
+  { draw: _drawRexx,   rx: 0.90, ry: 0.44, ps: 9,  flip: true,  alpha: 0.18 }, // right upper → faces left
+  { draw: _drawKlaw,   rx: 0.85, ry: 0.78, ps: 7,  flip: true,  alpha: 0.14 }, // right lower → faces left
 ];
 
 function BgCanvas() {
@@ -722,27 +844,13 @@ function BgCanvas() {
     }
     function frame(ts: number) {
       ctx.clearRect(0, 0, W, H);
-      const sec = ts / 1000;
-      BKGD_DINOS.forEach(d => {
-        const x = W * d.rx, y = H * d.ry + Math.sin(sec * d.spd + d.ph) * 14;
-        const hue = (sec * 24 + d.ph * 58) % 360;
+      // Team characters: ghosted pixel art watching the game from each side
+      BKGD_CHARS.forEach(c => {
         ctx.save();
-        ctx.translate(x, y);
-        if (d.flip) ctx.scale(-1, 1);
-        ctx.font = `${d.sz}px serif`;
-        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-        const glows = [
-          { color: `hsl(${hue}, 100%, 60%)`, blur: 90, alpha: 0.025 },
-          { color: `hsl(${(hue+90)%360}, 100%, 60%)`, blur: 65, alpha: 0.030 },
-          { color: `hsl(${(hue+180)%360}, 100%, 60%)`, blur: 42, alpha: 0.035 },
-          { color: `hsl(${(hue+270)%360}, 100%, 65%)`, blur: 22, alpha: 0.040 },
-        ];
-        glows.forEach(g => {
-          ctx.save(); ctx.globalAlpha = g.alpha; ctx.shadowColor = g.color; ctx.shadowBlur = g.blur;
-          ctx.fillText(d.emoji, 0, 0); ctx.restore();
-        });
-        ctx.globalAlpha = 0.17; ctx.shadowColor = `hsl(${hue}, 100%, 72%)`; ctx.shadowBlur = 18;
-        ctx.fillText(d.emoji, 0, 0);
+        ctx.globalAlpha = c.alpha;
+        ctx.translate(W * c.rx, H * c.ry);
+        if (c.flip) ctx.scale(-1, 1);
+        c.draw(ctx, 0, 0, c.ps, ts);
         ctx.restore();
       });
       ctx.lineWidth = 1;
