@@ -110,8 +110,8 @@ const drawRexxFn:DrawFn=(ctx,cx,cy,ps,ts)=>{
     // upper jaw / snout
     [3,-5],[4,-5],[5,-5],[6,-5],[7,-5],
     // row -4 empty = open mouth
-    // lower jaw
-    [4,-3],[5,-3],[6,-3],[7,-3],
+    // lower jaw + chin (bridges to neck)
+    [2,-3],[3,-3],[4,-3],[5,-3],[6,-3],[7,-3],
     // neck
     [1,-2],[2,-2],[3,-2],
     [0,-1],[1,-1],[2,-1],[3,-1],
