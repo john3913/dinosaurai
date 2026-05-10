@@ -211,6 +211,7 @@ let deadT=0,deathRot=0,scoreFx=0,newBestFx=0,scorePulse=0;
 let milestoneFx={alpha:0,color:'#38D4FF'};
 let shakeT=0,shakeAmt=0;
 let frameN=0,lastTs=0;
+let gcLeaderBtn=null; // bounds of leaderboard button on dead screen, set each frame
 let streak=0,streakFx=0,pausedPhase=null,lastLevel=1,levelUpFx=0;
 
 hiScore=parseInt(localStorage.getItem('ds-hi')||'0');
@@ -285,7 +286,16 @@ function tap(){
     spawnFlapSparks(W*.22,bird.y);
   }
 }
-cvs.addEventListener('pointerdown',e=>{e.preventDefault();tap();},{passive:false});
+cvs.addEventListener('pointerdown',e=>{
+  e.preventDefault();
+  if(phase==='dead'&&deadT>.78&&gcLeaderBtn&&gcIsNative()){
+    const b=gcLeaderBtn;
+    if(e.clientX>=b.x&&e.clientX<=b.x+b.w&&e.clientY>=b.y&&e.clientY<=b.y+b.h){
+      gcShowLeaderboard();return;
+    }
+  }
+  tap();
+},{passive:false});
 document.addEventListener('keydown',e=>{
   if(e.code==='Space'||e.code==='ArrowUp'){e.preventDefault();tap();}
   if(e.code==='KeyP'||e.code==='Escape'){if(phase==='playing'||phase==='paused')togglePause();}
@@ -406,6 +416,7 @@ function die(){
     {x:W*.22,y:bird.y,r:0,maxR:clamp(W*.44,260,480),life:.45,rgb:'255,200,80'},
   ];
   if(score>hiScore){hiScore=score;localStorage.setItem('ds-hi',hiScore);}
+  gcSubmitScore(score);
 }
 
 // ── SPARKS ─────────────────────────────────────────────
@@ -1288,6 +1299,40 @@ function render(ts){
       ctx.fillText(rText,W/2,rBY+rBH/2);ctx.shadowBlur=8;ctx.fillText(rText,W/2,rBY+rBH/2);
       ctx.restore();ctx.restore();
     }
+
+    // ── LEADERBOARD button (native only) ──────────────
+    gcLeaderBtn=null;
+    if(gcIsNative()){
+      const lSz=clamp(H*.042,16,30);
+      ctx.font=`700 ${lSz}px 'Rajdhani',sans-serif`;
+      const lText='🏆  LEADERBOARD';
+      const lTW=ctx.measureText(lText).width;
+      const lPadX=clamp(W*.06,22,40),lPadY=clamp(H*.016,7,13);
+      const lBW=lTW+lPadX*2,lBH=lSz+lPadY*2;
+      const lBX=W/2-lBW/2,lBY=H*.927-lBH/2;
+      const lR=lBH/2;
+      gcLeaderBtn={x:lBX,y:lBY,w:lBW,h:lBH};
+      // Face
+      ctx.fillStyle='rgba(4,10,24,.88)';
+      ctx.beginPath();ctx.roundRect(lBX,lBY,lBW,lBH,lR);ctx.fill();
+      // Gold border — scrolling
+      const lShift=((ts/4000)%1)*lBW*2;
+      const lBG=ctx.createLinearGradient(lBX-lShift,0,lBX+lBW*2-lShift,0);
+      lBG.addColorStop(0,'#FFD060');lBG.addColorStop(.33,'#FF9500');
+      lBG.addColorStop(.66,'#FFD060');lBG.addColorStop(1,'#FF9500');
+      ctx.save();ctx.shadowColor='rgba(255,180,30,.5)';ctx.shadowBlur=10;
+      ctx.strokeStyle=lBG;ctx.lineWidth=1.6;
+      ctx.beginPath();ctx.roundRect(lBX,lBY,lBW,lBH,lR);ctx.stroke();ctx.restore();
+      // Text
+      const lTG=ctx.createLinearGradient(lBX-lShift,0,lBX+lBW*2-lShift,0);
+      lTG.addColorStop(0,'#FFD060');lTG.addColorStop(.33,'#FFEE88');
+      lTG.addColorStop(.66,'#FFA820');lTG.addColorStop(1,'#FFD060');
+      ctx.save();ctx.textBaseline='middle';ctx.textAlign='center';
+      ctx.shadowColor='rgba(255,200,40,.7)';ctx.shadowBlur=10;
+      ctx.fillStyle=lTG;ctx.font=`700 ${lSz}px 'Rajdhani',sans-serif`;
+      ctx.fillText(lText,W/2,lBY+lBH/2);ctx.restore();
+    }
+
     ctx.globalAlpha=1;
   }
 
@@ -1594,6 +1639,15 @@ function loop(ts){
   requestAnimationFrame(loop);
 }
 requestAnimationFrame(loop);
+
+// ── GAME CENTER ────────────────────────────────────────
+const GC_LEADERBOARD_ID='com.dinosaurai.dinosoar.hiscore';
+function _gc(){return window.Capacitor?.Plugins?.GameConnect;}
+function gcIsNative(){return!!window.Capacitor?.isNativePlatform?.();}
+function gcSignIn(){_gc()?.signIn().catch(()=>{});}
+function gcSubmitScore(s){if(s>0)_gc()?.submitScore({leaderboardID:GC_LEADERBOARD_ID,totalScoreAmount:String(s)}).catch(()=>{});}
+function gcShowLeaderboard(){_gc()?.showLeaderboard({leaderboardID:GC_LEADERBOARD_ID}).catch(()=>{});}
+gcSignIn();
 </script>
 </body>
 </html>
