@@ -6,7 +6,7 @@
   <title>DinoSoar — Dinosaurai</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,800&family=Rajdhani:wght@400;600;700&family=Rubik+Glitch&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@900&family=Playfair+Display:ital,wght@1,800&family=Rajdhani:wght@400;600;700&family=Rubik+Glitch&display=swap" rel="stylesheet">
   <style>
     *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
     html,body{width:100%;height:100%;overflow:hidden;background:#040810;touch-action:none;user-select:none;-webkit-user-select:none}
@@ -951,14 +951,14 @@ function render(ts){
   if(phase==='idle'){
     let tsz=clamp(H*.12,34,92);
     ctx.textAlign='left';
-    ctx.font=`700 ${tsz}px 'Rajdhani',sans-serif`;
+    ctx.font=`900 ${tsz}px 'Inter Tight',sans-serif`;
     let dinoW=ctx.measureText('DINO').width;
     ctx.font=`italic 800 ${Math.round(tsz*1.06)}px 'Playfair Display',Georgia,serif`;
     let soarW=ctx.measureText('SOAR').width;
     let totalW=dinoW+2+soarW;
     if(totalW>W*.9){
       tsz*=(W*.9)/totalW;
-      ctx.font=`700 ${tsz}px 'Rajdhani',sans-serif`;
+      ctx.font=`900 ${tsz}px 'Inter Tight',sans-serif`;
       dinoW=ctx.measureText('DINO').width;
       ctx.font=`italic 800 ${Math.round(tsz*1.06)}px 'Playfair Display',Georgia,serif`;
       soarW=ctx.measureText('SOAR').width;
@@ -974,13 +974,13 @@ function render(ts){
     tg.addColorStop(.66,'#7EFF50');tg.addColorStop(.82,'#00FFCC');tg.addColorStop(1,'#00AAFF');
 
     ctx.fillStyle='rgba(0,0,0,.3)';
-    ctx.font=`700 ${tsz}px 'Rajdhani',sans-serif`;
+    ctx.font=`900 ${tsz}px 'Inter Tight',sans-serif`;
     ctx.fillText('DINO',sx2+3,ty+3);
     ctx.font=`italic 800 ${Math.round(tsz*1.06)}px 'Playfair Display',Georgia,serif`;
     ctx.fillText('SOAR',sx2+dinoW+2+3,ty+3);
 
     ctx.fillStyle=tg;
-    ctx.font=`700 ${tsz}px 'Rajdhani',sans-serif`;
+    ctx.font=`900 ${tsz}px 'Inter Tight',sans-serif`;
     ctx.fillText('DINO',sx2,ty);
     ctx.font=`italic 800 ${Math.round(tsz*1.06)}px 'Playfair Display',Georgia,serif`;
     ctx.fillText('SOAR',sx2+dinoW+2,ty);
