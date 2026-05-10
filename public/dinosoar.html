@@ -809,28 +809,75 @@ function render(ts){
     }
 
     if(hiScore>0){
-      const bsz=clamp(H*.026,10,16);
-      ctx.font=`700 ${bsz}px 'Rajdhani',sans-serif`;
-      ctx.textAlign='center';
-      const bstTxt=`BEST  ${hiScore}`;
-      const bstW=ctx.measureText(bstTxt).width;
-      const bstShift=((ts/4200)%1)*bstW*2;
-      const bstG=ctx.createLinearGradient(cx-bstW*.5-bstShift,0,cx+bstW*1.5-bstShift,0);
-      bstG.addColorStop(0,'#FF6B35');bstG.addColorStop(.2,'#FFD060');
-      bstG.addColorStop(.4,'#7EFF50');bstG.addColorStop(.6,'#00FFCC');
-      bstG.addColorStop(.8,'#38D4FF');bstG.addColorStop(1,'#FF6B35');
-      ctx.save();ctx.shadowColor='rgba(56,212,255,.5)';ctx.shadowBlur=6;
-      ctx.fillStyle=bstG;ctx.fillText(bstTxt,cx,py+ph2+clamp(H*.025,10,16));
+      const bLblSz=clamp(H*.018,7,13);
+      const bNumSz=clamp(H*.05,20,40);
+      const bCardH=clamp(H*.1,46,80);
+      const bCardPadX=clamp(W*.07,24,48);
+      ctx.font=`700 ${bNumSz}px 'Rajdhani',sans-serif`;
+      const bNumW=ctx.measureText(String(hiScore)).width;
+      ctx.font=`700 ${bLblSz}px 'Rajdhani',sans-serif`;
+      const bLblW=ctx.measureText('★ BEST').width;
+      const bCardW=Math.max(bNumW,bLblW)+bCardPadX*2;
+      const bCardX=cx-bCardW/2;
+      const bCardY=py+ph2+clamp(H*.018,8,14);
+      const bCardR=bCardH/5;
+      const isNB=newBestFx>.01;
+      const nbP=isNB?0.5+0.5*Math.sin(ts/250):0;
+      // Dark face
+      ctx.fillStyle='rgba(4,10,24,.92)';
+      ctx.beginPath();ctx.roundRect(bCardX,bCardY,bCardW,bCardH,bCardR);ctx.fill();
+      // Gold glow fill on new best
+      if(isNB){
+        ctx.save();ctx.beginPath();ctx.roundRect(bCardX,bCardY,bCardW,bCardH,bCardR);ctx.clip();
+        ctx.fillStyle=`rgba(255,150,20,${0.07+0.05*nbP})`;
+        ctx.shadowColor=`rgba(255,200,40,${0.4+0.3*nbP})`;ctx.shadowBlur=16+8*nbP;
+        ctx.fillRect(bCardX,bCardY,bCardW,bCardH);ctx.restore();
+      }
+      // Scrolling warm gold border
+      const bBSh=((ts/3800)%1)*bCardW*2;
+      const bBG=ctx.createLinearGradient(bCardX-bBSh,0,bCardX+bCardW*2-bBSh,0);
+      bBG.addColorStop(0,'#FFD060');bBG.addColorStop(.33,'#FF9500');
+      bBG.addColorStop(.66,'#FFD060');bBG.addColorStop(1,'#FF9500');
+      ctx.save();
+      ctx.shadowColor=isNB?`rgba(255,200,40,${0.6+0.3*nbP})`:'rgba(255,160,30,.35)';
+      ctx.shadowBlur=isNB?18+8*nbP:8;
+      ctx.strokeStyle=bBG;ctx.lineWidth=isNB?2.5:1.8;
+      ctx.beginPath();ctx.roundRect(bCardX,bCardY,bCardW,bCardH,bCardR);ctx.stroke();
       ctx.restore();
-    }
-    if(newBestFx>0){
-      const nbSz=clamp(H*.028,10,16);ctx.font=`700 ${nbSz}px 'Rajdhani',sans-serif`;
-      const nbShift=((ts/2000)%1)*120;
-      const nbG=ctx.createLinearGradient(cx-60-nbShift,0,cx+120-nbShift,0);
-      nbG.addColorStop(0,'#7EFF50');nbG.addColorStop(.5,'#00FFCC');nbG.addColorStop(1,'#7EFF50');
-      ctx.save();ctx.shadowColor='rgba(0,255,180,.8)';ctx.shadowBlur=10*newBestFx;
-      ctx.fillStyle=nbG;ctx.globalAlpha=newBestFx;
-      ctx.fillText('NEW BEST!',cx,py+ph2+clamp(H*.055,22,34));ctx.restore();
+      // Equal vertical padding — same formula as EXTINCT cards
+      const _vc=0.72,_ig=3;
+      const _tv=bLblSz*_vc+_ig+bNumSz*_vc;
+      const _pad=Math.max(3,(bCardH-_tv)/2);
+      const bLblY=bCardY+_pad+bLblSz*_vc/2;
+      const bNumY=bCardY+bCardH-_pad-bNumSz*_vc/2;
+      ctx.save();ctx.textBaseline='middle';ctx.textAlign='center';
+      // ★ BEST label
+      ctx.font=`700 ${bLblSz}px 'Rajdhani',sans-serif`;
+      ctx.shadowColor=isNB?'rgba(255,220,60,.8)':'rgba(255,180,30,.45)';
+      ctx.shadowBlur=isNB?12:5;
+      ctx.fillStyle=isNB?'rgba(255,240,100,1)':'rgba(255,208,96,.88)';
+      ctx.fillText('★ BEST',cx,bLblY);
+      // Score number — gold shimmer gradient
+      ctx.font=`700 ${bNumSz}px 'Rajdhani',sans-serif`;
+      const bNSh=((ts/3200)%1)*bNumW*3;
+      const bNG=ctx.createLinearGradient(cx-bNumW*1.5-bNSh,0,cx+bNumW*1.5-bNSh,0);
+      bNG.addColorStop(0,'#FFD060');bNG.addColorStop(.3,'#FFEE88');
+      bNG.addColorStop(.6,'#FFA820');bNG.addColorStop(1,'#FFD060');
+      ctx.shadowColor=isNB?'rgba(255,200,40,.9)':'rgba(255,180,30,.5)';
+      ctx.shadowBlur=bNumSz*(isNB?.3:.15);
+      ctx.fillStyle=bNG;ctx.fillText(hiScore,cx,bNumY);
+      if(isNB){ctx.shadowBlur=bNumSz*.08;ctx.fillText(hiScore,cx,bNumY);}
+      ctx.restore();
+      // Floating "★ NEW BEST!" badge above card when triggered
+      if(isNB){
+        const nbSz=clamp(H*.022,8,14);
+        ctx.save();ctx.textBaseline='middle';ctx.textAlign='center';
+        ctx.font=`700 ${nbSz}px 'Rajdhani',sans-serif`;
+        ctx.shadowColor='rgba(255,208,96,1)';ctx.shadowBlur=16;
+        ctx.fillStyle='rgba(255,240,80,1)';ctx.globalAlpha=Math.min(1,newBestFx/.3);
+        ctx.fillText('★  NEW BEST!',cx,bCardY-clamp(H*.018,7,13)-3*Math.sin(ts/350));
+        ctx.restore();
+      }
     }
     if(levelUpFx>0){
       const luTxt=`LV ${level} UNLOCKED`;
