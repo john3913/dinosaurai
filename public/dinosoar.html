@@ -948,9 +948,50 @@ function render(ts){
 
     ctx.textAlign='center';
     if(hiScore>0){
-      ctx.font=`700 ${clamp(H*.03,11,17)}px 'SF Mono','Consolas','Courier New',monospace`;
-      ctx.fillStyle='rgba(0,220,255,.88)';
-      ctx.fillText(`BEST  ${hiScore}`,W/2,ty+clamp(H*.09,36,64));
+      const isNB=newBestFx>.01;
+      const bob=2.5*Math.sin(ts/720);
+      const bBaseY=ty+clamp(H*.075,28,52);
+      const eyeSz=clamp(H*.022,9,15);
+      const numSz=clamp(H*.085,34,68);
+      ctx.save();ctx.textBaseline='top';ctx.textAlign='center';
+      // ★ BEST ★ eyebrow — warm gold
+      ctx.font=`700 ${eyeSz}px 'Rajdhani',sans-serif`;
+      ctx.shadowColor=isNB?'rgba(255,220,60,.95)':'rgba(255,180,30,.6)';
+      ctx.shadowBlur=isNB?18:9;
+      ctx.fillStyle=isNB?'rgba(255,245,110,1)':'rgba(255,208,96,.85)';
+      ctx.fillText('★  BEST  ★',W/2,bBaseY+bob);
+      // Score number — full-palette rainbow shimmer
+      ctx.font=`700 ${numSz}px 'Rajdhani',sans-serif`;
+      const numW=ctx.measureText(String(hiScore)).width;
+      const numY=bBaseY+eyeSz+clamp(H*.01,4,8)+bob;
+      const nShift=((ts/3600)%1)*numW*3;
+      const nG=ctx.createLinearGradient(W/2-numW*1.5-nShift,0,W/2+numW*1.5-nShift,0);
+      nG.addColorStop(0,'#FFD060');nG.addColorStop(.18,'#7EFF50');
+      nG.addColorStop(.36,'#00FFCC');nG.addColorStop(.54,'#38D4FF');
+      nG.addColorStop(.72,'#9B5CF6');nG.addColorStop(.9,'#FF6B35');nG.addColorStop(1,'#FFD060');
+      // Outer bloom pass
+      ctx.shadowColor=isNB?'rgba(255,200,40,.75)':'rgba(56,212,255,.5)';
+      ctx.shadowBlur=numSz*(isNB?.55:.28);
+      ctx.fillStyle=nG;ctx.globalAlpha=.28;
+      ctx.fillText(hiScore,W/2,numY);
+      ctx.globalAlpha=1;
+      // Mid glow pass
+      ctx.shadowBlur=numSz*(isNB?.22:.12);
+      ctx.fillText(hiScore,W/2,numY);
+      // Crisp inner pass
+      ctx.shadowBlur=numSz*.05;
+      ctx.fillText(hiScore,W/2,numY);
+      // Floating ★ NEW BEST! badge
+      if(isNB){
+        const nbSz=clamp(H*.026,10,18);
+        ctx.font=`700 ${nbSz}px 'Rajdhani',sans-serif`;
+        ctx.textBaseline='middle';
+        ctx.shadowColor='rgba(255,208,96,1)';ctx.shadowBlur=22;
+        ctx.fillStyle='rgba(255,245,80,1)';
+        ctx.globalAlpha=Math.min(1,newBestFx/.3);
+        ctx.fillText('★  NEW BEST!',W/2,bBaseY-nbSz-clamp(H*.012,5,10)-3*Math.sin(ts/350));
+      }
+      ctx.restore();
     }
     // "TAP TO FLAP" — chunky arcade 3D button
     const tapSz=clamp(H*.055,20,40);
