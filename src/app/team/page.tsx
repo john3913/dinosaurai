@@ -266,6 +266,60 @@ const drawSpikesFn:DrawFn=(ctx,cx,cy,ps,ts)=>{
   ctx.restore();
 };
 
+/* ── Pixel art: Tricerapop (Triceratops) ────────────────────────────────── */
+const drawTricerapopFn:DrawFn=(ctx,cx,cy,ps,ts)=>{
+  const fy=Math.sin(ts*0.0012)*6;
+  ctx.save();ctx.translate(cx,cy+fy);
+  ctx.fillStyle='#FF2D78';
+  const B=(c:number,r:number)=>ctx.fillRect(c*ps-ps*.5,r*ps-ps*.5,ps,ps);
+  // Frill — extra bright glow, the iconic triceratops shield
+  ctx.shadowColor='rgba(255,45,120,0.9)';ctx.shadowBlur=ps*7;
+  ([
+    [3,-8],[4,-8],
+    [2,-7],[3,-7],[4,-7],[5,-7],
+    [1,-6],[2,-6],[3,-6],[4,-6],[5,-6],[6,-6],
+    [1,-5],[2,-5],[3,-5],[4,-5],[5,-5],[6,-5],
+    [1,-4],[2,-4],[3,-4],[4,-4],[5,-4],[6,-4],
+    [2,-3],[3,-3],[4,-3],[5,-3],[6,-3],
+    [3,-2],[4,-2],[5,-2],[6,-2],
+  ] as [number,number][]).forEach(([c,r])=>B(c,r));
+  ctx.shadowBlur=ps*4;
+  ([
+    // body (massive quadruped)
+    [-7,-1],[-6,-1],[-5,-1],[-4,-1],[-3,-1],[-2,-1],[-1,-1],[0,-1],[1,-1],[2,-1],
+    [-8,0],[-7,0],[-6,0],[-5,0],[-4,0],[-3,0],[-2,0],[-1,0],[0,0],[1,0],[2,0],[3,0],
+    [-8,1],[-7,1],[-6,1],[-5,1],[-4,1],[-3,1],[-2,1],[-1,1],[0,1],[1,1],[2,1],[3,1],
+    [-7,2],[-6,2],[-5,2],[-4,2],[-3,2],[-2,2],[-1,2],[0,2],[1,2],[2,2],
+    // head (large skull connecting to body)
+    [4,-3],[5,-3],[6,-3],[7,-3],
+    [4,-2],[5,-2],[6,-2],[7,-2],[8,-2],
+    [4,-1],[5,-1],[6,-1],[7,-1],[8,-1],
+    [4,0],[5,0],[6,0],[7,0],[8,0],
+    [5,1],[6,1],[7,1],
+    // snout / beak
+    [8,-1],[9,-1],[10,-1],
+    [8,0],[9,0],[10,0],
+    [9,1],[10,1],[11,1],
+    [10,2],
+    // upper brow horn (long, angles up)
+    [7,-4],[8,-4],[9,-4],[10,-4],[10,-5],[11,-5],
+    // nose horn (short, forward from snout)
+    [11,0],[12,0],[12,-1],
+    // tail (short — triceratops had a stubby tail)
+    [-9,0],[-10,0],
+    [-9,1],[-10,1],
+    // front legs
+    [0,3],[1,3],[0,4],[1,4],[0,5],[1,5],
+    // rear legs
+    [-5,3],[-6,3],[-5,4],[-6,4],[-5,5],[-6,5],
+    // feet
+    [-1,6],[0,6],[1,6],[2,6],
+    [-7,6],[-6,6],[-5,6],[-4,6],
+  ] as [number,number][]).forEach(([c,r])=>B(c,r));
+  ctx.shadowBlur=0;ctx.fillStyle='#1a0007';B(7,-1);
+  ctx.restore();
+};
+
 /* ── Generic character canvas ──────────────────────────────────────────────── */
 function CharCanvas({ draw, auroraRgb }:{ draw:DrawFn; auroraRgb:string }) {
   const ref = useRef<HTMLCanvasElement>(null);
@@ -394,6 +448,15 @@ const CHARACTERS:CharData[] = [
     nameGrad:'linear-gradient(135deg,#BBFF70 0%,#EEFF99 42%,#40E0FF 85%)',
     draw:drawSpikesFn,
   },
+  {
+    num:'#006', name:'TRICERAPOP', subtitle:'The Unstoppable Charge', game:'Dino Clash',
+    lore:'She doesn\'t negotiate. She doesn\'t detour. Tricerapop sees the obstacle, lowers the horns, and the obstacle becomes a memory. Three horns. Zero patience. Infinite momentum.',
+    stats:[{label:'Charge',value:10},{label:'Defense',value:9},{label:'Momentum',value:10},{label:'Style',value:7}],
+    power:{name:'Triple Horn Charge',desc:'Once she starts moving, physics has no opinion. Three horns forward, full speed, end of discussion.'},
+    color:'#FF2D78', auroraRgb:'255,45,120',
+    nameGrad:'linear-gradient(135deg,#FF2D78 0%,#FF80B0 42%,#FF0066 85%)',
+    draw:drawTricerapopFn,
+  },
 ];
 
 /* ── Stat bar ─────────────────────────────────────────────────────────────── */
@@ -513,9 +576,9 @@ export default function TeamPage(){
           <h2 className="section-h">More Characters Incoming</h2>
           <p className="section-body">The crew is expanding. Each new game brings a new legend.</p>
           <div className="locked-grid">
-            <LockedCard num="#006" game="Fossil Hunt" color="#FF8C42"/>
-            <LockedCard num="#007" game="Rex Run"     color="#FF6B35"/>
+            <LockedCard num="#007" game="Fossil Hunt" color="#FF8C42"/>
             <LockedCard num="#008" game="Pangaea"     color="#00D4FF"/>
+            <LockedCard num="#009" game="Dino Derby"  color="#FFD700"/>
           </div>
         </div>
 
