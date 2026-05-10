@@ -377,7 +377,7 @@ const CHARACTERS:CharData[] = [
     draw:drawPteraFn,
   },
   {
-    num:'#004', name:'KLAW', subtitle:'The Apex Hunter', game:'Dino Clash',
+    num:'#004', name:'RAPTORIA', subtitle:'The Apex Hunter', game:'Dino Clash',
     lore:'Pack hunter. Problem solver. She figured out how to open the door before anyone thought to lock it. Quick, calculating, and absolutely unnerving. The sickle claw is not the most dangerous thing about her.',
     stats:[{label:'Speed',value:9},{label:'Agility',value:10},{label:'Stealth',value:8},{label:'Claw',value:10}],
     power:{name:'Sickle Strike',desc:'One slash. Devastating. The killing claw curves up and forward — designed for one thing only.'},
