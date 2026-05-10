@@ -861,16 +861,22 @@ function render(ts){
       const luScale=0.65+0.35*entT;
       // Fade out: last 32%
       const luAlpha=Math.min(1,levelUpFx/0.32);
-      // Sweep lines — shoot from center outward during entrance
-      const sweepT=Math.min(1,(1-levelUpFx)/0.4);
-      if(sweepT>0&&sweepT<1){
-        const swLen=sweepT*W*.44;
-        const swA=(sweepT<0.65?(sweepT/0.65):(1-sweepT)/0.35)*luAlpha*.8;
-        ctx.save();ctx.globalAlpha=swA;
-        ctx.shadowColor='rgba(56,212,255,.9)';ctx.shadowBlur=18;
-        ctx.strokeStyle=luG;ctx.lineWidth=clamp(H*.004,1.5,3);ctx.lineCap='round';
-        ctx.beginPath();ctx.moveTo(luCx,luCy);ctx.lineTo(luCx-swLen,luCy);ctx.stroke();
-        ctx.beginPath();ctx.moveTo(luCx,luCy);ctx.lineTo(luCx+swLen,luCy);ctx.stroke();
+      // Echo rings — 4 concentric circles expanding from each text edge
+      const echoCols=['#7EFF50','#00FFCC','#38D4FF','#9B5CF6'];
+      const maxEchoR=clamp(W*.42,140,340);
+      for(let i=0;i<4;i++){
+        const eRaw=(1-levelUpFx)-i*0.18;
+        if(eRaw<=0)continue;
+        const eT=Math.min(1,eRaw/0.7);
+        const eR=eT*maxEchoR;
+        const eA=Math.pow(1-eT,1.3)*luAlpha*0.78;
+        if(eA<=0.01)continue;
+        ctx.save();
+        ctx.globalAlpha=eA;
+        ctx.shadowColor=echoCols[i];ctx.shadowBlur=16*(1-eT);
+        ctx.strokeStyle=echoCols[i];ctx.lineWidth=clamp(H*.004,1.5,3.5)*(1-eT*.65);
+        ctx.beginPath();ctx.arc(luCx-luW/2,luCy,eR,0,Math.PI*2);ctx.stroke();
+        ctx.beginPath();ctx.arc(luCx+luW/2,luCy,eR,0,Math.PI*2);ctx.stroke();
         ctx.restore();
       }
       ctx.save();ctx.textBaseline='middle';ctx.textAlign='center';ctx.globalAlpha=luAlpha;
@@ -886,14 +892,17 @@ function render(ts){
     // ── STREAK BADGE ─────────────────────────────────
     if(streak>=3){
       const sa=clamp(streakFx+.5,0,1);
-      const sw=clamp(H*.055,24,44),sh=clamp(H*.032,14,24),sr=sh/2;
+      const sh=2.6*REM,sr=sh/2;
       const milestone=streak%5===0&&streakFx>.5;
-      const sx2=cx+pw/2+clamp(W*.025,8,18),sy2=py;
+      const stSz=clamp(sh*.56,20,28);
+      ctx.font=`700 ${stSz}px 'Rajdhani',sans-serif`;
+      const stTxtW=ctx.measureText(`×${streak}`).width;
+      const stPadX=clamp(sh*.32,12,18);
+      const sw=Math.max(stTxtW+stPadX*2,sh*1.8);
+      const sx2=0.75*REM,sy2=0.75*REM+sh+clamp(H*.005,2,5);
       const sShift=((ts/3200)%1)*sw*3;
-      // Dark face
       rrect(sx2,sy2,sw,sh,sr);
       ctx.fillStyle='rgba(4,10,24,.92)';ctx.fill();
-      // Rainbow gradient border
       const sEG=ctx.createLinearGradient(sx2-sShift,0,sx2+sw*2-sShift,0);
       sEG.addColorStop(0,'#FF6B35');sEG.addColorStop(.2,'#FFD060');
       sEG.addColorStop(.4,'#7EFF50');sEG.addColorStop(.6,'#00FFCC');
@@ -904,8 +913,6 @@ function render(ts){
       ctx.shadowBlur=milestone?14*sa:7*sa;
       ctx.strokeStyle=sEG;ctx.lineWidth=milestone?2.5:1.5;ctx.stroke();
       ctx.restore();
-      // ×N text — rainbow, Rajdhani, vertically centered
-      const stSz=clamp(H*.021,8,14);
       ctx.font=`700 ${stSz}px 'Rajdhani',sans-serif`;
       const stG=ctx.createLinearGradient(sx2-sShift,0,sx2+sw*2-sShift,0);
       stG.addColorStop(0,'#7EFF50');stG.addColorStop(.33,'#00FFCC');
