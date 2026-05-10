@@ -1036,7 +1036,7 @@ function render(ts){
     if(ctx.measureText('EXTINCT').width>W*.88)dsz*=(W*.88)/ctx.measureText('EXTINCT').width;
     ctx.font=`400 ${dsz}px 'Rubik Glitch',sans-serif`;
     const extW=ctx.measureText('EXTINCT').width;
-    const extX=W/2,extY=H*.32+dsz*.35;
+    const extX=W/2,extY=H*.22+dsz*.6;
     const extShift=((ts/700)%1)*extW*2;
     const extPulse=1+.04*Math.sin(ts/140);
     const extG=ctx.createLinearGradient(extX-extW*.5-extShift,0,extX+extW*1.5-extShift,0);
@@ -1055,115 +1055,112 @@ function render(ts){
     ctx.shadowColor='rgba(0,220,255,.45)';ctx.shadowBlur=dsz*.3;
     ctx.fillStyle=extG;ctx.fillText('EXTINCT',extX,extY);
     ctx.shadowBlur=0;ctx.restore();
-    // Score — large standalone number, rainbow gradient
+    // Score — BIG, count-up entrance animation
     const scx=W/2;
-    const snSz=clamp(H*.14,56,106);
+    let snSz=clamp(H*.19,72,140);
     ctx.font=`700 ${snSz}px 'Rajdhani',sans-serif`;
-    const snShift=((ts/2800)%1)*200;
-    const snG=ctx.createLinearGradient(scx-100-snShift,0,scx+100-snShift,0);
+    const snWchk=ctx.measureText(String(score)).width;
+    if(snWchk>W*.82){snSz*=(W*.82)/snWchk;ctx.font=`700 ${snSz}px 'Rajdhani',sans-serif`;}
+    const snCy=H*.47;
+    const snShift=((ts/2800)%1)*240;
+    const snG=ctx.createLinearGradient(scx-120-snShift,0,scx+120-snShift,0);
     snG.addColorStop(0,'#FF6B35');snG.addColorStop(.2,'#FFD060');snG.addColorStop(.4,'#7EFF50');
     snG.addColorStop(.6,'#00FFCC');snG.addColorStop(.8,'#38D4FF');snG.addColorStop(1,'#FF6B35');
-    ctx.save();
-    ctx.textBaseline='middle';
-    ctx.fillStyle='rgba(0,0,0,.5)';ctx.fillText(score,scx+3,H*.49+3);
-    ctx.shadowColor='rgba(56,212,255,.6)';ctx.shadowBlur=snSz*.3;
-    ctx.fillStyle=snG;ctx.fillText(score,scx,H*.49);
-    ctx.shadowBlur=snSz*.12;ctx.fillText(score,scx,H*.49);
-    ctx.restore();
-    // SCORE label — anchored dynamically below score number
-    const slY=H*.49+snSz*.52+clamp(H*.015,7,14);
-    const slSz=clamp(H*.02,8,13);ctx.font=`700 ${slSz}px 'Rajdhani',sans-serif`;
-    const slG=ctx.createLinearGradient(scx-40-snShift,0,scx+80-snShift,0);
-    slG.addColorStop(0,'#7EFF50');slG.addColorStop(.5,'#00FFCC');slG.addColorStop(1,'#38D4FF');
-    ctx.save();ctx.textBaseline='middle';ctx.shadowColor='rgba(56,212,255,.5)';ctx.shadowBlur=5;
-    ctx.fillStyle=slG;ctx.fillText('SCORE',scx,slY);ctx.restore();
-    // Stats strip — LEVEL (rainbow) | BEST (gold) in unified dark card
+    const countT=Math.min(1,Math.max(0,(deadT-.55)/.55));
+    const displayScore=Math.round(score*(1-Math.pow(1-countT,3)));
+    // "SCORE" eyebrow — small, above the number
+    const eyeSz=clamp(H*.018,7,12);
+    const eyeY=snCy-snSz*.54-clamp(H*.018,8,18);
+    ctx.save();ctx.textBaseline='middle';
+    ctx.font=`700 ${eyeSz}px 'Rajdhani',sans-serif`;
+    const eyeG=ctx.createLinearGradient(scx-30,0,scx+70,0);
+    eyeG.addColorStop(0,'rgba(126,255,80,.75)');eyeG.addColorStop(1,'rgba(56,212,255,.75)');
+    ctx.fillStyle=eyeG;ctx.shadowColor='rgba(56,212,255,.4)';ctx.shadowBlur=8;
+    ctx.fillText('SCORE',scx,eyeY);ctx.restore();
+    // Score number — double glow pass for depth
+    ctx.save();ctx.textBaseline='middle';
+    ctx.font=`700 ${snSz}px 'Rajdhani',sans-serif`;
+    ctx.fillStyle='rgba(0,0,0,.55)';ctx.fillText(displayScore,scx+4,snCy+4);
+    ctx.shadowColor='rgba(56,212,255,.65)';ctx.shadowBlur=snSz*.35;
+    ctx.fillStyle=snG;ctx.fillText(displayScore,scx,snCy);
+    ctx.shadowColor='rgba(255,200,80,.3)';ctx.shadowBlur=snSz*.14;
+    ctx.fillText(displayScore,scx,snCy);ctx.restore();
+    // ── Stats cards — same total width as TAP TO FLAP button ──
     const deadLevel=Math.floor(score/10)+1;
     const isNewBest=score>0&&hiScore>0&&score===hiScore;
-    const stripH=clamp(H*.105,52,84);
-    const stripW=clamp(W*.78,220,480);
-    const stripX=scx-stripW/2;
-    const stripY=slY+clamp(H*.035,16,26);
-    const stripR=14;
-    const halfX=scx;
-    // Dark background
-    ctx.fillStyle='rgba(4,10,24,.92)';
-    ctx.beginPath();ctx.roundRect(stripX,stripY,stripW,stripH,stripR);ctx.fill();
-    // New best: pulsing gold glow on right half
-    if(isNewBest){
-      const nbPulse=0.5+0.5*Math.sin(ts/300);
-      ctx.save();
-      ctx.beginPath();ctx.roundRect(halfX,stripY,stripW/2,stripH,[0,stripR,stripR,0]);ctx.clip();
-      ctx.fillStyle=`rgba(255,160,30,${0.07+0.05*nbPulse})`;
-      ctx.shadowColor=`rgba(255,208,96,${0.4+0.3*nbPulse})`;ctx.shadowBlur=22+10*nbPulse;
-      ctx.fillRect(halfX,stripY,stripW/2,stripH);
-      ctx.restore();
-    }
-    // Rainbow animated border
-    const stripShift=((ts/3200)%1)*stripW*2;
-    const stripBG=ctx.createLinearGradient(stripX-stripShift,0,stripX+stripW*2-stripShift,0);
-    stripBG.addColorStop(0,'#FF6B35');stripBG.addColorStop(.2,'#FFD060');stripBG.addColorStop(.4,'#7EFF50');
-    stripBG.addColorStop(.6,'#00FFCC');stripBG.addColorStop(.8,'#38D4FF');stripBG.addColorStop(1,'#FF6B35');
-    ctx.save();ctx.shadowColor='rgba(56,212,255,.45)';ctx.shadowBlur=14;
-    ctx.strokeStyle=stripBG;ctx.lineWidth=2;
-    ctx.beginPath();ctx.roundRect(stripX,stripY,stripW,stripH,stripR);ctx.stroke();ctx.restore();
-    // Vertical divider — fades at top/bottom
-    ctx.save();
-    const divG=ctx.createLinearGradient(0,stripY,0,stripY+stripH);
-    divG.addColorStop(0,'rgba(255,255,255,0)');divG.addColorStop(.5,'rgba(255,255,255,.12)');divG.addColorStop(1,'rgba(255,255,255,0)');
-    ctx.strokeStyle=divG;ctx.lineWidth=1;
-    ctx.beginPath();ctx.moveTo(halfX,stripY+6);ctx.lineTo(halfX,stripY+stripH-6);ctx.stroke();ctx.restore();
-    // Shared text sizing
-    const stLblSz=clamp(stripH*.155,8,14);
-    const stLblY=stripY+stripH*.3;
-    const stNumY=stripY+stripH*.72;
-    // Left: LEVEL — rainbow
-    const lvCx=stripX+stripW*.25;
-    const lvNumSz=clamp(stripH*.46,22,42);
+    const _rSz2=clamp(H*.055,20,40),_rPadX2=clamp(W*.07,28,52);
+    ctx.font=`700 ${_rSz2}px 'Rajdhani',sans-serif`;
+    const btnTW=ctx.measureText('TAP TO FLAP').width+_rPadX2*2;
+    const cardGap=clamp(W*.025,8,14);
+    const cardW=(btnTW-cardGap)/2;
+    const cardH=clamp(H*.115,52,86);
+    const cardsX=scx-btnTW/2;
+    const cardsY=snCy+snSz*.54+clamp(H*.025,12,22);
+    const cardR=10;
+    const cLblSz=clamp(cardH*.135,7,12);
+    const cNumSz=clamp(cardH*.46,22,42);
+    const cLblY=cardsY+cardH*.3;
+    const cNumY=cardsY+cardH*.73;
+    // Card 1 — LEVEL (cool rainbow)
+    const c1X=cardsX;
+    ctx.fillStyle='rgba(4,10,24,.92)';ctx.beginPath();ctx.roundRect(c1X,cardsY,cardW,cardH,cardR);ctx.fill();
+    const lv1Sh=((ts/3200)%1)*cardW*2;
+    const lv1BG=ctx.createLinearGradient(c1X-lv1Sh,0,c1X+cardW*2-lv1Sh,0);
+    lv1BG.addColorStop(0,'#7EFF50');lv1BG.addColorStop(.33,'#00FFCC');lv1BG.addColorStop(.66,'#38D4FF');lv1BG.addColorStop(1,'#7EFF50');
+    ctx.save();ctx.shadowColor='rgba(56,212,255,.45)';ctx.shadowBlur=12;
+    ctx.strokeStyle=lv1BG;ctx.lineWidth=2;ctx.beginPath();ctx.roundRect(c1X,cardsY,cardW,cardH,cardR);ctx.stroke();ctx.restore();
     ctx.save();ctx.textBaseline='middle';
-    ctx.font=`700 ${stLblSz}px 'Rajdhani',sans-serif`;
-    ctx.fillStyle='rgba(126,255,80,.7)';ctx.shadowColor='rgba(126,255,80,.4)';ctx.shadowBlur=6;
-    ctx.fillText('LEVEL',lvCx,stLblY);
-    ctx.font=`700 ${lvNumSz}px 'Rajdhani',sans-serif`;
-    const lvShift=((ts/2500)%1)*lvNumSz*4;
-    const lvG=ctx.createLinearGradient(lvCx-lvNumSz*2-lvShift,0,lvCx+lvNumSz*2-lvShift,0);
-    lvG.addColorStop(0,'#7EFF50');lvG.addColorStop(.25,'#00FFCC');lvG.addColorStop(.5,'#38D4FF');lvG.addColorStop(.75,'#9B5CF6');lvG.addColorStop(1,'#7EFF50');
-    ctx.shadowColor='rgba(56,212,255,.7)';ctx.shadowBlur=lvNumSz*.22;
-    ctx.fillStyle=lvG;ctx.fillText(deadLevel,lvCx,stNumY);
-    ctx.restore();
-    // Right: BEST — gold, with crown star
-    const bsCx=stripX+stripW*.75;
-    const bsNumSz=clamp(stripH*.5,24,46);
+    ctx.font=`700 ${cLblSz}px 'Rajdhani',sans-serif`;
+    ctx.fillStyle='rgba(126,255,80,.7)';ctx.shadowColor='rgba(126,255,80,.3)';ctx.shadowBlur=5;
+    ctx.fillText('LEVEL',c1X+cardW/2,cLblY);
+    ctx.font=`700 ${cNumSz}px 'Rajdhani',sans-serif`;
+    const lvNG=ctx.createLinearGradient(c1X-lv1Sh,0,c1X+cardW*2-lv1Sh,0);
+    lvNG.addColorStop(0,'#7EFF50');lvNG.addColorStop(.25,'#00FFCC');lvNG.addColorStop(.5,'#38D4FF');lvNG.addColorStop(.75,'#9B5CF6');lvNG.addColorStop(1,'#7EFF50');
+    ctx.shadowColor='rgba(56,212,255,.7)';ctx.shadowBlur=cNumSz*.22;
+    ctx.fillStyle=lvNG;ctx.fillText(deadLevel,c1X+cardW/2,cNumY);ctx.restore();
+    // Card 2 — BEST (warm gold)
+    const c2X=cardsX+cardW+cardGap;
+    ctx.fillStyle='rgba(4,10,24,.92)';ctx.beginPath();ctx.roundRect(c2X,cardsY,cardW,cardH,cardR);ctx.fill();
+    if(isNewBest){
+      const nbP=0.5+0.5*Math.sin(ts/280);
+      ctx.save();ctx.beginPath();ctx.roundRect(c2X,cardsY,cardW,cardH,cardR);ctx.clip();
+      ctx.fillStyle=`rgba(255,150,20,${0.08+0.06*nbP})`;
+      ctx.shadowColor=`rgba(255,200,40,${0.5+0.3*nbP})`;ctx.shadowBlur=20+8*nbP;
+      ctx.fillRect(c2X,cardsY,cardW,cardH);ctx.restore();
+    }
+    const bs2Sh=((ts/3600)%1)*cardW*2;
+    const bs2BG=ctx.createLinearGradient(c2X-bs2Sh,0,c2X+cardW*2-bs2Sh,0);
+    bs2BG.addColorStop(0,'#FFD060');bs2BG.addColorStop(.33,'#FF9500');bs2BG.addColorStop(.66,'#FFD060');bs2BG.addColorStop(1,'#FF9500');
+    ctx.save();ctx.shadowColor=isNewBest?'rgba(255,190,30,.7)':'rgba(255,160,30,.35)';ctx.shadowBlur=isNewBest?18:8;
+    ctx.strokeStyle=bs2BG;ctx.lineWidth=2;ctx.beginPath();ctx.roundRect(c2X,cardsY,cardW,cardH,cardR);ctx.stroke();ctx.restore();
+    ctx.save();ctx.textBaseline='middle';
     if(hiScore>0){
-      ctx.save();ctx.textBaseline='middle';
-      ctx.font=`700 ${stLblSz}px 'Rajdhani',sans-serif`;
-      ctx.shadowColor=isNewBest?'rgba(255,220,60,.8)':'rgba(255,208,96,.5)';ctx.shadowBlur=isNewBest?14:6;
-      ctx.fillStyle=isNewBest?'rgba(255,235,100,1)':'rgba(255,208,96,.9)';
-      ctx.fillText('★ BEST',bsCx,stLblY);
-      ctx.font=`700 ${bsNumSz}px 'Rajdhani',sans-serif`;
-      const bsShift=((ts/3400)%1)*bsNumSz*4;
-      const bsG=ctx.createLinearGradient(bsCx-bsNumSz*2-bsShift,0,bsCx+bsNumSz*2-bsShift,0);
-      bsG.addColorStop(0,'#FFD060');bsG.addColorStop(.3,'#FFEE88');bsG.addColorStop(.6,'#FFA820');bsG.addColorStop(1,'#FFD060');
-      ctx.shadowColor=isNewBest?'rgba(255,220,60,.9)':'rgba(255,208,96,.55)';
-      ctx.shadowBlur=bsNumSz*(isNewBest?.35:.18);
-      ctx.fillStyle=bsG;ctx.fillText(hiScore,bsCx,stNumY);
-      if(isNewBest){ctx.shadowBlur=bsNumSz*.1;ctx.fillText(hiScore,bsCx,stNumY);}
-      ctx.restore();
-      if(isNewBest){
-        const nbSz=clamp(H*.018,8,12);
-        ctx.save();ctx.textBaseline='middle';
-        ctx.font=`700 ${nbSz}px 'Rajdhani',sans-serif`;
-        ctx.shadowColor='rgba(255,208,96,1)';ctx.shadowBlur=16;
-        ctx.fillStyle='rgba(255,235,80,1)';
-        ctx.fillText('★  NEW RECORD',bsCx,stripY+stripH+clamp(H*.022,10,16));
-        ctx.restore();
-      }
+      ctx.font=`700 ${cLblSz}px 'Rajdhani',sans-serif`;
+      ctx.shadowColor=isNewBest?'rgba(255,210,40,.8)':'rgba(255,208,96,.5)';ctx.shadowBlur=isNewBest?12:5;
+      ctx.fillStyle=isNewBest?'rgba(255,240,100,1)':'rgba(255,208,96,.9)';
+      ctx.fillText('★ BEST',c2X+cardW/2,cLblY);
+      ctx.font=`700 ${cNumSz}px 'Rajdhani',sans-serif`;
+      const bsNG=ctx.createLinearGradient(c2X-bs2Sh,0,c2X+cardW*2-bs2Sh,0);
+      bsNG.addColorStop(0,'#FFD060');bsNG.addColorStop(.35,'#FFEE88');bsNG.addColorStop(.7,'#FFA820');bsNG.addColorStop(1,'#FFD060');
+      ctx.shadowColor=isNewBest?'rgba(255,200,40,.9)':'rgba(255,180,30,.5)';
+      ctx.shadowBlur=cNumSz*(isNewBest?.35:.15);
+      ctx.fillStyle=bsNG;ctx.fillText(hiScore,c2X+cardW/2,cNumY);
+      if(isNewBest){ctx.shadowBlur=cNumSz*.08;ctx.fillText(hiScore,c2X+cardW/2,cNumY);}
     } else {
+      ctx.font=`700 ${cLblSz}px 'Rajdhani',sans-serif`;
+      ctx.fillStyle='rgba(255,208,96,.3)';ctx.fillText('★ BEST',c2X+cardW/2,cLblY);
+      ctx.font=`700 ${cNumSz}px 'Rajdhani',sans-serif`;
+      ctx.fillStyle='rgba(255,208,96,.18)';ctx.fillText('—',c2X+cardW/2,cNumY);
+    }
+    ctx.restore();
+    if(isNewBest&&hiScore>0){
+      const floatY=cardsY-clamp(H*.025,10,18)-3*Math.sin(ts/450);
+      const nbSz=clamp(H*.018,7,12);
       ctx.save();ctx.textBaseline='middle';
-      ctx.font=`700 ${stLblSz}px 'Rajdhani',sans-serif`;
-      ctx.fillStyle='rgba(255,208,96,.35)';ctx.fillText('★ BEST',bsCx,stLblY);
-      ctx.font=`700 ${bsNumSz}px 'Rajdhani',sans-serif`;
-      ctx.fillStyle='rgba(255,208,96,.2)';ctx.fillText('—',bsCx,stNumY);
+      ctx.font=`700 ${nbSz}px 'Rajdhani',sans-serif`;
+      ctx.shadowColor='rgba(255,208,96,1)';ctx.shadowBlur=18;
+      ctx.fillStyle='rgba(255,240,80,1)';
+      ctx.fillText('★  NEW RECORD',c2X+cardW/2,floatY);
       ctx.restore();
     }
     // TAP TO FLAP 3D button — retry
