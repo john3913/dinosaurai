@@ -655,34 +655,29 @@ function render(ts){
 
   // Water
   {
-    const wOff=ts*.0013,wBase=H-GNDH;
-    const wY=x=>wBase+Math.sin(x*.016+wOff)*5.5+Math.sin(x*.032-wOff*1.4)*3+Math.sin(x*.007+wOff*.45)*7;
-    // Body
-    ctx.beginPath();ctx.moveTo(0,H);
-    for(let x=0;x<=W;x+=3)ctx.lineTo(x,wY(x));
-    ctx.lineTo(W,H);ctx.closePath();
-    const wBG=ctx.createLinearGradient(0,wBase,0,H);
-    wBG.addColorStop(0,'rgba(0,60,105,.97)');wBG.addColorStop(.3,'rgba(0,28,62,.99)');wBG.addColorStop(1,'#010912');
-    ctx.fillStyle=wBG;ctx.fill();
-    // Caustic light blobs
-    const rOff=scrollX*.3;ctx.save();
-    for(let i=0;i<6;i++){
-      const rx=((i*175+40-rOff)%(W+200))-60;
-      const ry=wBase+GNDH*(.28+(i*.13)%.4)+Math.sin(ts/2200+i*1.4)*5;
-      const rr=42+(i*19%32);
-      const rG=ctx.createRadialGradient(rx,ry,0,rx,ry,rr);
-      rG.addColorStop(0,'rgba(0,175,255,.09)');rG.addColorStop(1,'rgba(0,0,0,0)');
-      ctx.fillStyle=rG;ctx.beginPath();ctx.ellipse(rx,ry,rr,rr*.3,0,0,Math.PI*2);ctx.fill();
-    }
-    ctx.restore();
-    // Glowing surface line
+    const wT=ts*0.001;
+    const wBase=H-GNDH;
+    const wY=wx=>wBase+Math.sin(wx*0.018+wT*1.2)*7+Math.sin(wx*0.034-wT*0.9)*4+Math.sin(wx*0.007+wT*0.5)*9;
+    // Body fill
     ctx.save();
-    ctx.beginPath();
-    for(let x=0;x<=W;x+=3){x===0?ctx.moveTo(x,wY(x)):ctx.lineTo(x,wY(x));}
-    ctx.shadowColor='#00CCFF';ctx.shadowBlur=12;
-    ctx.strokeStyle='rgba(0,215,255,.7)';ctx.lineWidth=1.8;ctx.stroke();
-    ctx.shadowBlur=3;ctx.strokeStyle='rgba(190,248,255,.45)';ctx.lineWidth=.85;ctx.stroke();
+    ctx.beginPath();ctx.moveTo(0,H+1);
+    for(let wx=0;wx<=W;wx+=4)ctx.lineTo(wx,wY(wx));
+    ctx.lineTo(W,H+1);ctx.closePath();
+    const wBG=ctx.createLinearGradient(0,wBase,0,H);
+    wBG.addColorStop(0,'rgba(0,65,110,.97)');
+    wBG.addColorStop(0.35,'rgba(0,30,65,.99)');
+    wBG.addColorStop(1,'#010912');
+    ctx.fillStyle=wBG;ctx.fill();
     ctx.restore();
+    // Glowing surface stroke — outer glow then crisp inner
+    ctx.save();
+    ctx.beginPath();ctx.moveTo(0,wY(0));
+    for(let wx=4;wx<=W;wx+=4)ctx.lineTo(wx,wY(wx));
+    ctx.shadowColor='#00CCFF';ctx.shadowBlur=14;
+    ctx.strokeStyle='rgba(0,210,255,.72)';ctx.lineWidth=2;ctx.stroke();
+    ctx.shadowBlur=4;ctx.strokeStyle='rgba(200,250,255,.5)';ctx.lineWidth=1;ctx.stroke();
+    ctx.restore();
+    ctx.beginPath(); // clear path
   }
 
   // Speed lines
